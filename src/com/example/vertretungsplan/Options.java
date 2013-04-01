@@ -44,7 +44,7 @@ public class Options extends Activity {
 		getMenuInflater().inflate(R.menu.options, menu);
 		return true;
 	}
-	//test
+	//test2
 	public void speichern(View v)
 	{
 		System.out.println("Speichervorgang");
@@ -65,9 +65,9 @@ public class Options extends Activity {
 			finish();
 		}
 		else{
-			System.out.println("Nicht ausreichend ausgefüllt");
+			System.out.println("Nicht ausreichend ausgefï¿½llt");
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
+			builder.setMessage("Bitte alle Felder ausfï¿½llen").setTitle("Fehler");
 			builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog,int id){}});
 			
