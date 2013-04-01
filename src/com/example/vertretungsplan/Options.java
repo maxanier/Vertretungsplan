@@ -44,7 +44,7 @@ public class Options extends Activity {
 		getMenuInflater().inflate(R.menu.options, menu);
 		return true;
 	}
-	
+	//test
 	public void speichern(View v)
 	{
 		System.out.println("Speichervorgang");
