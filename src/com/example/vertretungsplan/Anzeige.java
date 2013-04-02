@@ -96,23 +96,30 @@ public class Anzeige extends Activity {
 		HttpConnectionParams.setSoTimeout(httpParams,5000);
 		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams);
 		
-		if(abrufen(httpclient,username,password)){
-			if(login(httpclient,username,password)){
-				auslesen(httpclient);
+		try{
+			abrufen(httpclient,username,password);
+			login(httpclient,username,password);
+			auslesen(httpclient);
+			
+			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
+			if(f.exists()){
+				anzeigen(auswerten(f),klasse);
+			}
+			else{
+				throw new Exception("Datei nicht gefunden");
 			}
 		}
-		File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
-		if(f.exists()){
-			anzeigen(auswerten(f),klasse);
+		catch(Exception e){
+			webview.loadData(e.getMessage(), "text",null);			
 		}
-		else{
-			System.out.println("Keine Datei gefunden");
-		}
+		
+
+		
 
 	
 	}
 	
-	public boolean abrufen(HttpClient httpclient,String username,String password)
+	public boolean abrufen(HttpClient httpclient,String username,String password) throws Exception
 	{
 		try{
 			
@@ -150,11 +157,12 @@ public class Anzeige extends Activity {
 		{
 			System.out.println("Fehlgeschlagener Loginseiten Abruf:");
 			System.out.println(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
-		return false;
+		
 	}
 	
-	public boolean login(HttpClient httpclient,String username,String password)
+	public boolean login(HttpClient httpclient,String username,String password) throws Exception
 	{
 		
 		try{
@@ -194,12 +202,13 @@ public class Anzeige extends Activity {
 		{
 			System.out.println("Fehlgeschlagener Loginseiten Abruf2:");
 			System.out.println(e.getMessage());
-		}
-		return false;
+			throw new Exception(e.getMessage());
+			
+		}		
 	}
 	
 	
-	public void auslesen(HttpClient client)
+	public void auslesen(HttpClient client) throws Exception
 	{
 		try{
 			HttpResponse response = client.execute(new HttpGet(plan_url));
@@ -226,12 +235,13 @@ public class Anzeige extends Activity {
 		{
 			System.out.println("Fehlgeschlagener Plan Abruf");
 			System.out.println(e.getMessage());
+			throw new Exception(e.getMessage());
 		}
 
 	}
 	
 	
-	public ArrayList<Vertretung> auswerten(File file)
+	public ArrayList<Vertretung> auswerten(File file) throws Exception
 	{
 		try{
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -247,36 +257,39 @@ public class Anzeige extends Activity {
 			for(int j=0;j<font.getLength();j+=3){
 				String tag=font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();
 				System.out.println("Tag: "+tag);
-				NodeList tr=font.item(j).getChildNodes().item(2).getChildNodes();
-				//TODO 
+				NodeList tr=font.item(j).getChildNodes().item(3).getChildNodes();
 				System.out.println(tr.getLength()+" tr-Elemente");
-				for(int i=0;i<tr.getLength();i++)
+					
+
+				for(int i=2;i<tr.getLength();i++)
 				{
 					Node node = tr.item(i);
 					System.out.println(node.getNodeValue()+"---"+node.getNodeName());
-					NamedNodeMap attr = node.getAttributes();
-					System.out.println(attr.getLength());
-					if(attr.getLength()>0)
-					{
-						Node attrclass= attr.getNamedItem("class");
-						if(attrclass!=null)
+					if(node.getNodeName()!="#text"){
+						NamedNodeMap attr = node.getAttributes();
+						System.out.println(attr.getLength());
+						if(attr.getLength()>0)
 						{
-							String value=attrclass.getNodeValue();
-							System.out.println(value);
-							if(value.indexOf("list odd")!=-1||value.indexOf("list even")!=-1)
+							Node attrclass= attr.getNamedItem("class");
+							if(attrclass!=null)
 							{
-								NodeList childnodes = node.getChildNodes();
-								String klasse= childnodes.item(0).getChildNodes().item(0).getChildNodes().item(0).getNodeValue();
-								String stunde = childnodes.item(1).getChildNodes().item(0).getNodeValue();
-								String art = childnodes.item(2).getChildNodes().item(0).getNodeValue();
-								String fach = childnodes.item(3).getChildNodes().item(0).getNodeValue();
-								String raum = childnodes.item(4).getChildNodes().item(0).getNodeValue();
-								vertretungen.add(new Vertretung(klasse,stunde,art,fach,raum,tag));
-								
+								String value=attrclass.getNodeValue();
+								System.out.println(value);
+								if(value.indexOf("list odd")!=-1||value.indexOf("list even")!=-1)
+								{
+									NodeList childnodes = node.getChildNodes();
+									String klasse= childnodes.item(0).getChildNodes().item(0).getChildNodes().item(0).getNodeValue();
+									String stunde = childnodes.item(1).getChildNodes().item(0).getNodeValue();
+									String art = childnodes.item(2).getChildNodes().item(0).getNodeValue();
+									String fach = childnodes.item(3).getChildNodes().item(0).getNodeValue();
+									String raum = childnodes.item(4).getChildNodes().item(0).getNodeValue();
+									vertretungen.add(new Vertretung(klasse,stunde,art,fach,raum,tag));
+									
+								}
 							}
 						}
-					}
 				
+					}
 				}
 			}
 			return vertretungen;
@@ -285,32 +298,37 @@ public class Anzeige extends Activity {
 			
 		}
 		catch (SAXParseException err) {
-        System.out.println ("** Parsing error" + ", line " 
-             + err.getLineNumber () + ", uri " + err.getSystemId ());
-        System.out.println(" " + err.getMessage ());
+		String fehler="** Parsing error" + ", line " 
+	             + err.getLineNumber () + ", uri " + err.getSystemId ()+"\n Message: "+err.getMessage ();
+		throw new Exception(fehler);
 
         }catch (SAXException e) {
-        Exception x = e.getException ();
-        ((x == null) ? e : x).printStackTrace ();
+        throw new Exception("Auslesefehler");
 
-        }catch (Throwable t) {
-        t.printStackTrace ();
+        }catch (Exception t) {
+        throw t;
         }
-		
-		return null;
 		
 	}
 	
 	
-	public void anzeigen(ArrayList<Vertretung> vertretungen,String klasse)
+	public void anzeigen(ArrayList<Vertretung> vertretungen,String klasse) throws Exception
 	{
 		if(vertretungen!=null&&vertretungen.size()>0)
 		{
 			boolean gefunden=false;
-			String ergebnis="<html><body><table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
+			String tag=vertretungen.get(0).tag;
+			String ergebnis="<html><body> Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
 			for(int i=0;i<vertretungen.size();i++){
 				
 				Vertretung v=vertretungen.get(i);
+				if(tag!=v.tag){
+				tag=v.tag;
+				ergebnis+="</table>";
+				ergebnis+="Datum: "+tag+"\n";
+				ergebnis+="<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
+					
+				}
 				System.out.println("Gesuchte Klasse: "+klasse+" Gefundene Klasse: "+v.klasse+"|");
 				if(v.klasse.trim().equals(klasse.trim())||v.klasse.trim().equals("("+klasse.trim()+")")){
 					ergebnis+="<tr>";
@@ -330,17 +348,13 @@ public class Anzeige extends Activity {
 				ergebnis="Keine Vertretungen";
 			}
 
-			try{
-				webview.loadData(ergebnis,"text/html","utf-8");
-			}
-			catch(Exception e){
-				System.out.println(e.getMessage());
-			}
+			webview.loadData(ergebnis,"text/html","utf-8");
 			System.out.println(ergebnis);
 		
 		}
 		else{
 			System.out.println("keine Vertretungen gefunden");
+			throw new Exception("Keine Vertretungen gefunden");
 		}
 	}
 	
