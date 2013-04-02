@@ -35,6 +35,7 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Menu;
 import android.webkit.WebView;
 
@@ -44,6 +45,7 @@ public class Anzeige extends Activity {
 	private static final String loginsite_url="https://www.ratsgymnasium-bielefeld.de/index.php/intern";
 	public static final String newline = System.getProperty("line.separator");
 	public static final String PREFS_NAME = "Einstellungen";
+	public static final String TAG = "Anzeige_Activity";
 	private WebView webview=null;
 	private String username;
 	private String password;
@@ -62,7 +64,6 @@ public class Anzeige extends Activity {
 		username = settings.getString("username","");
 		password = settings.getString("password","");
 		klasse = settings.getString("klasse","");
-		System.out.println("Nutzername: "+username+" Passwort: "+password+" Klasse: "+klasse);
 		webview = (WebView) findViewById(R.id.webView1);
 		if(username!=""&&password!=""&&klasse!=""){
 			
@@ -71,6 +72,7 @@ public class Anzeige extends Activity {
 		else
 		{
 			webview.loadData("Bitte Nutzernamen, Passwort und Klasse einstellen","text/html",null);
+			Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
 		}
 		
 		
@@ -90,27 +92,29 @@ public class Anzeige extends Activity {
 	{
 		File dir = new File(Environment.getExternalStorageDirectory().getPath( )+"/vertretungsplan/");
 		dir.mkdirs();
-		System.out.println("Anfrage gestartet");
+		Log.i(TAG,"Anfrage gestartet");
 		final HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams,5000);
 		HttpConnectionParams.setSoTimeout(httpParams,5000);
 		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams);
 		
 		try{
-			abrufen(httpclient,username,password);
+			abrufen(httpclient);
 			login(httpclient,username,password);
 			auslesen(httpclient);
 			
 			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
 			if(f.exists()){
-				anzeigen(auswerten(f),klasse);
+				anzeigen(auswerten(f),username, klasse);
 			}
 			else{
 				throw new Exception("Datei nicht gefunden");
 			}
+			Log.i(TAG,"Anfrage erfolgreich abgeschloﬂen");
 		}
 		catch(Exception e){
-			webview.loadData(e.getMessage(), "text",null);			
+			Log.e(TAG,"Anfrage fehlgeschlagen: ",e);
+			webview.loadData(e.getMessage(), "text/html",null);			
 		}
 		
 
@@ -119,14 +123,13 @@ public class Anzeige extends Activity {
 	
 	}
 	
-	public boolean abrufen(HttpClient httpclient,String username,String password) throws Exception
+	public boolean abrufen(HttpClient httpclient) throws Exception
 	{
 		try{
-			
+			Log.i(TAG,"Abrufen der Loginseite gestartet");
 			HttpResponse response = httpclient.execute(new HttpGet(loginsite_url));
-			System.out.println("Anfrage abgeschloﬂen");
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				System.out.println("Erfolgreicher Loginseiten Abruf");
+				Log.i(TAG,"Erfolgreicher Loginseiten Abruf");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 		        response.getEntity().writeTo(out);
 		        out.close();
@@ -137,10 +140,10 @@ public class Anzeige extends Activity {
 		        
 		        String gesucht="<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";
 		        int index = responseString.indexOf(gesucht);
-		        System.out.println(index);
+		        //System.out.println(index);
 		        char[] chars=responseString.toCharArray();
 		        cookie=String.copyValueOf(chars,index+gesucht.length()+1,32);
-		        System.out.println(cookie);
+		        Log.i(TAG,"Cookie ausgelesen. Wert: "+cookie);
 		        
 		        return true;
 		        
@@ -155,8 +158,7 @@ public class Anzeige extends Activity {
 		}
 		catch (Exception e)
 		{
-			System.out.println("Fehlgeschlagener Loginseiten Abruf:");
-			System.out.println(e.getMessage());
+			Log.e(TAG,"Fehlgeschlagener Loginseiten Abruf. Fehler: ",e);
 			throw new Exception(e.getMessage());
 		}
 		
@@ -166,7 +168,7 @@ public class Anzeige extends Activity {
 	{
 		
 		try{
-			
+			Log.i(TAG,"Loginvorgang gestartet. Username: "+username+" Passwort: "+password);
 			HttpPost httppost = new HttpPost(login_url);
 		
 			List<NameValuePair> paare = new ArrayList<NameValuePair>(2);
@@ -178,7 +180,7 @@ public class Anzeige extends Activity {
 			
 			HttpResponse response = httpclient.execute(httppost);
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				System.out.println("Erfolgreicher Loginseiten Abruf2");
+				Log.i(TAG,"Loginvorgang erfolgreich abgeschloﬂen. Status aber unbekannt");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 		        response.getEntity().writeTo(out);
 		        out.close();
@@ -200,8 +202,7 @@ public class Anzeige extends Activity {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehlgeschlagener Loginseiten Abruf2:");
-			System.out.println(e.getMessage());
+			Log.e(TAG,"Loginvorgang fehlgeschlagen: ",e);
 			throw new Exception(e.getMessage());
 			
 		}		
@@ -211,10 +212,11 @@ public class Anzeige extends Activity {
 	public void auslesen(HttpClient client) throws Exception
 	{
 		try{
+			Log.i(TAG,"Abrufen des Plans und Auslesen gestartet");
 			HttpResponse response = client.execute(new HttpGet(plan_url));
 			
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				System.out.println("Erfolgreicher Plan Abruf");
+				Log.i(TAG,"Abrufen des Plans erfolgreich abgeschloﬂen");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 		        response.getEntity().writeTo(out);
 		        out.close();
@@ -233,8 +235,7 @@ public class Anzeige extends Activity {
 		}
 		catch(Exception e)
 		{
-			System.out.println("Fehlgeschlagener Plan Abruf");
-			System.out.println(e.getMessage());
+			Log.e(TAG,"Planabruf fehlgeschlagen: ",e);
 			throw new Exception(e.getMessage());
 		}
 
@@ -244,6 +245,7 @@ public class Anzeige extends Activity {
 	public ArrayList<Vertretung> auswerten(File file) throws Exception
 	{
 		try{
+			Log.i(TAG,"Auswerten gestartet");
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(file);
@@ -251,30 +253,29 @@ public class Anzeige extends Activity {
 			doc.getDocumentElement().normalize();
 			
 			NodeList font = doc.getElementsByTagName("font");
-			System.out.println(font.getLength()+" Font-Elemente");
+			Log.i(TAG,font.getLength()+" Font-Elemente gefunden");
 			
 			ArrayList<Vertretung> vertretungen=new ArrayList<Vertretung>();
 			for(int j=0;j<font.getLength();j+=3){
 				String tag=font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();
-				System.out.println("Tag: "+tag);
 				NodeList tr=font.item(j).getChildNodes().item(3).getChildNodes();
-				System.out.println(tr.getLength()+" tr-Elemente");
+				Log.i(TAG,tag+": "+tr.getLength()+" tr-Elemente gefunden");
 					
 
 				for(int i=2;i<tr.getLength();i++)
 				{
 					Node node = tr.item(i);
-					System.out.println(node.getNodeValue()+"---"+node.getNodeName());
+					//System.out.println(node.getNodeValue()+"---"+node.getNodeName());
 					if(node.getNodeName()!="#text"){
 						NamedNodeMap attr = node.getAttributes();
-						System.out.println(attr.getLength());
+						//System.out.println(attr.getLength());
 						if(attr.getLength()>0)
 						{
 							Node attrclass= attr.getNamedItem("class");
 							if(attrclass!=null)
 							{
 								String value=attrclass.getNodeValue();
-								System.out.println(value);
+								//System.out.println(value);
 								if(value.indexOf("list odd")!=-1||value.indexOf("list even")!=-1)
 								{
 									NodeList childnodes = node.getChildNodes();
@@ -292,6 +293,7 @@ public class Anzeige extends Activity {
 					}
 				}
 			}
+			Log.i(TAG,"Auswerten abgeschloﬂen");
 			return vertretungen;
 			
 			
@@ -300,20 +302,24 @@ public class Anzeige extends Activity {
 		catch (SAXParseException err) {
 		String fehler="** Parsing error" + ", line " 
 	             + err.getLineNumber () + ", uri " + err.getSystemId ()+"\n Message: "+err.getMessage ();
+		Log.e(TAG,"Parsen fehlgeschlagen: ",err);
 		throw new Exception(fehler);
 
         }catch (SAXException e) {
+        Log.e(TAG,"Parsen fehlgeschlagen: ",e);
         throw new Exception("Auslesefehler");
 
         }catch (Exception t) {
+        Log.e(TAG,"Auslesen fehlgeschlagen: ",t);
         throw t;
         }
 		
 	}
 	
 	
-	public void anzeigen(ArrayList<Vertretung> vertretungen,String klasse) throws Exception
+	public void anzeigen(ArrayList<Vertretung> vertretungen,String username, String klasse) throws Exception
 	{
+		Log.i(TAG,"Anzeigen gestartet");
 		if(vertretungen!=null&&vertretungen.size()>0)
 		{
 			boolean gefunden=false;
@@ -329,7 +335,7 @@ public class Anzeige extends Activity {
 				ergebnis+="<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
 					
 				}
-				System.out.println("Gesuchte Klasse: "+klasse+" Gefundene Klasse: "+v.klasse+"|");
+				//System.out.println("Gesuchte Klasse: "+klasse+" Gefundene Klasse: "+v.klasse+"|");
 				if(v.klasse.trim().equals(klasse.trim())||v.klasse.trim().equals("("+klasse.trim()+")")){
 					ergebnis+="<tr>";
 					ergebnis+="<th><font size=\"-1\">" + v.klasse+"</font></th>  ";
@@ -345,26 +351,29 @@ public class Anzeige extends Activity {
 			ergebnis+="</table></body></html>";
 			if(!gefunden)
 			{
-				ergebnis="Keine Vertretungen";
+				ergebnis="Keine Vertretungen f¸r die gew&aumlhlte Stufe/Klasse("+klasse+")";
 			}
 
 			webview.loadData(ergebnis,"text/html","utf-8");
-			System.out.println(ergebnis);
+			//System.out.println(ergebnis);
 		
 		}
 		else{
-			System.out.println("keine Vertretungen gefunden");
-			throw new Exception("Keine Vertretungen gefunden");
+			Log.e(TAG,"Keine Vertretungen angekommen");
+			throw new Exception("Fehler: Vermutlich falscher Benutzername oder falsches Passwort gew&aumlhlt:\n Nutzername: "+username+" Passwort: *****");
 		}
+		Log.i(TAG,"Anzeigen abgeschloﬂen");
 	}
 	
 	public void save(String s,String file) throws IOException
 	{
+		Log.i(TAG,"Speichern der Datei: "+file+" gestartet");
         FileWriter o=new FileWriter(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/"+file,false);
         BufferedWriter bw=new BufferedWriter(o);
         bw.write(s);
         bw.close();
         o.close();
+        Log.i(TAG,"Speichern der Datei: "+file+" abgeschloﬂen");
 		
 	}
 	

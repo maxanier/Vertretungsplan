@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import android.app.AlertDialog;
 
 public class Options extends Activity {
 	public static final String PREFS_NAME = "Einstellungen";
+	public static final String TAG = "Options_Activity";
 	private String username="";
 	private String password="";
 	private String klasse="";
@@ -44,7 +46,6 @@ public class Options extends Activity {
 		getMenuInflater().inflate(R.menu.options, menu);
 		return true;
 	}
-	//test2
 	public void speichern(View v)
 	{
 		System.out.println("Speichervorgang");
@@ -61,11 +62,11 @@ public class Options extends Activity {
 			editor.putString("password",temp_password);
 			editor.putString("klasse",temp_klasse);
 			editor.commit();
-			System.out.println("Gespeichert");
+			Log.i(TAG,"Einstellungen gespeichert");
 			finish();
 		}
 		else{
-			System.out.println("Nicht ausreichend ausgefï¿½llt");
+			Log.i(TAG,"Einstellungen nicht ausreichend ausgefüllt");
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("Bitte alle Felder ausfï¿½llen").setTitle("Fehler");
 			builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {

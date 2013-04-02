@@ -17,6 +17,7 @@ import android.content.Context;
 public class MyHttpsClient extends DefaultHttpClient {
 	 
     final Context context;
+    public static final String TAG="MyHttpsClient";
  
     public MyHttpsClient(Context context, HttpParams httpParams) {
     	super(httpParams);
