@@ -30,10 +30,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
@@ -60,20 +63,26 @@ public class Anzeige extends Activity {
 		    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		    StrictMode.setThreadPolicy(policy);
 		}
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
-		username = settings.getString("username","");
-		password = settings.getString("password","");
-		klasse = settings.getString("klasse","");
 		webview = (WebView) findViewById(R.id.webView1);
-		if(username!=""&&password!=""&&klasse!=""){
-			
-		planAnzeigen(username, password,klasse);
+		if(isOnline()){
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+			username = settings.getString("username","");
+			password = settings.getString("password","");
+			klasse = settings.getString("klasse","");
+			if(username!=""&&password!=""&&klasse!=""){
+				
+			planAnzeigen(username, password,klasse);
+			}
+			else
+			{
+				webview.loadData("Bitte Nutzernamen, Passwort und Klasse einstellen","text/html",null);
+				Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
+			}
 		}
-		else
-		{
-			webview.loadData("Bitte Nutzernamen, Passwort und Klasse einstellen","text/html",null);
-			Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
+		else{
+			webview.loadData("Keine Internetverbindung","text/html",null);
 		}
+		
 		
 		
 
@@ -324,14 +333,14 @@ public class Anzeige extends Activity {
 		{
 			boolean gefunden=false;
 			String tag=vertretungen.get(0).tag;
-			String ergebnis="<html><body> Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
+			String ergebnis="<html><body><div align=\"center\">Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
 			for(int i=0;i<vertretungen.size();i++){
 				
 				Vertretung v=vertretungen.get(i);
 				if(tag!=v.tag){
 				tag=v.tag;
-				ergebnis+="</table>";
-				ergebnis+="Datum: "+tag+"\n";
+				ergebnis+="</table>\n";
+				ergebnis+=newline+"Datum: "+tag+"\n";
 				ergebnis+="<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
 					
 				}
@@ -348,10 +357,10 @@ public class Anzeige extends Activity {
 					
 				}
 			}
-			ergebnis+="</table></body></html>";
+			ergebnis+="</table></div></body></html>";
 			if(!gefunden)
 			{
-				ergebnis="Keine Vertretungen für die gew&aumlhlte Stufe/Klasse("+klasse+")";
+				ergebnis="Keine Vertretungen für die gew&auml;hlte Stufe/Klasse("+klasse+")";
 			}
 
 			webview.loadData(ergebnis,"text/html","utf-8");
@@ -360,7 +369,7 @@ public class Anzeige extends Activity {
 		}
 		else{
 			Log.e(TAG,"Keine Vertretungen angekommen");
-			throw new Exception("Fehler: Vermutlich falscher Benutzername oder falsches Passwort gew&aumlhlt:\n Nutzername: "+username+" Passwort: *****");
+			throw new Exception("Fehler: Vermutlich falscher Benutzername oder falsches Passwort gew&aum;lhlt:\n Nutzername: "+username+" Passwort: *****");
 		}
 		Log.i(TAG,"Anzeigen abgeschloßen");
 	}
@@ -375,6 +384,16 @@ public class Anzeige extends Activity {
         o.close();
         Log.i(TAG,"Speichern der Datei: "+file+" abgeschloßen");
 		
+	}
+	public boolean isOnline()
+	{
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+		{
+			return true;
+		}
+		return false;
 	}
 	
 
