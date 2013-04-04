@@ -293,7 +293,9 @@ public class Anzeige extends Activity {
 									String art = childnodes.item(2).getChildNodes().item(0).getNodeValue();
 									String fach = childnodes.item(3).getChildNodes().item(0).getNodeValue();
 									String raum = childnodes.item(4).getChildNodes().item(0).getNodeValue();
+									if(fach==null){fach="--";}
 									vertretungen.add(new Vertretung(klasse,stunde,art,fach,raum,tag));
+									
 									
 								}
 							}
@@ -345,7 +347,8 @@ public class Anzeige extends Activity {
 					
 				}
 				//System.out.println("Gesuchte Klasse: "+klasse+" Gefundene Klasse: "+v.klasse+"|");
-				if(v.klasse.trim().equals(klasse.trim())||v.klasse.trim().equals("("+klasse.trim()+")")){
+				if(klasse.trim().equals("ALL")||v.klasse.trim().equals(klasse.trim())||v.klasse.trim().equals("("+klasse.trim()+")")){
+					
 					ergebnis+="<tr>";
 					ergebnis+="<th><font size=\"-1\">" + v.klasse+"</font></th>  ";
 					ergebnis+="<th><font size=\"-1\">"+v.stunde+"</th>  ";
@@ -363,7 +366,7 @@ public class Anzeige extends Activity {
 				ergebnis="Keine Vertretungen für die gew&auml;hlte Stufe/Klasse("+klasse+")";
 			}
 
-			webview.loadData(ergebnis,"text/html","utf-8");
+			webview.loadData(ergebnis,"text/html",null);
 			//System.out.println(ergebnis);
 		
 		}
