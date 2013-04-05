@@ -63,24 +63,11 @@
         android:text="Klasse/Stufe z.B. &quot;UI&quot;. &quot;ALL&quot; für alle"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <EditText
-        android:id="@+id/editText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView4"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="31dp"
-        android:capitalize="characters"
-        android:ems="10"
-        android:inputType="textNoSuggestions"
-        android:singleLine="true" />
-
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button1"
-        android:layout_alignBottom="@+id/button1"
+        android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/editText3"
         android:onClick="abbrechen"
         android:text="Abbrechen" />
@@ -89,10 +76,21 @@
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button2"
+        android:layout_alignBottom="@+id/button2"
         android:layout_alignLeft="@+id/editText3"
-        android:layout_below="@+id/editText3"
-        android:layout_marginTop="28dp"
         android:onClick="speichern"
         android:text="Fertig" />
+
+    <EditText
+        android:id="@+id/editText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editText2"
+        android:layout_below="@+id/textView4"
+        android:capitalize="characters"
+        android:ems="10"
+        android:inputType="textNoSuggestions"
+        android:singleLine="true" />
 
 </RelativeLayout>

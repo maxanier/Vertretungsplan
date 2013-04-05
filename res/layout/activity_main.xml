@@ -9,12 +9,22 @@
     tools:context=".MainActivity" >
 
     <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="38dp"
+        android:text="Credits" 
+        android:onClick="credits"/>
+
+    <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="94dp"
+        android:layout_marginTop="36dp"
         android:onClick="optionen"
         android:text="Optionen" />
 
@@ -24,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="94dp"
+        android:layout_marginTop="86dp"
         android:onClick="plan"
         android:text="Vertretungsplan" />
 

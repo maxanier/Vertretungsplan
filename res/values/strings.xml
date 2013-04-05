@@ -6,5 +6,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_anzeige">Anzeige</string>
     <string name="title_activity_options">Options</string>
+    <string name="title_activity_credits">Credits</string>
 
 </resources>

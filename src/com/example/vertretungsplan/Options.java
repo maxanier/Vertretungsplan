@@ -51,7 +51,8 @@ public class Options extends Activity {
 		System.out.println("Speichervorgang");
 		String temp_username=username_eingabe.getText().toString().trim().toLowerCase();
 		String temp_password=password_eingabe.getText().toString().trim();
-		String temp_klasse=klasse_eingabe.getText().toString().trim().toUpperCase();
+		String temp_klasse=klasse_eingabe.getText().toString().trim();
+		if(temp_klasse.toUpperCase().equals("ALL")){temp_klasse="ALL";}
 		
 		if(!temp_username.trim().isEmpty()&&!temp_password.trim().isEmpty()&&!temp_klasse.trim().isEmpty())
 		{
@@ -68,7 +69,7 @@ public class Options extends Activity {
 		else{
 			Log.i(TAG,"Einstellungen nicht ausreichend ausgefüllt");
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Bitte alle Felder ausfï¿½llen").setTitle("Fehler");
+			builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
 			builder.setPositiveButton("OK",new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog,int id){}});
 			

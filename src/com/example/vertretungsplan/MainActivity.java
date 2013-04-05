@@ -1,16 +1,12 @@
 package com.example.vertretungsplan;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 
 public class MainActivity extends Activity {
 	public static final String TAG = "Main_Acticity";
@@ -49,6 +45,13 @@ public class MainActivity extends Activity {
 		Log.i(TAG,"Optionen anzeigen");
 		Intent i=new Intent();
 		i.setClass(this, Options.class);
+		startActivity(i);
+	}
+	public void credits(View v)
+	{
+		Log.i(TAG,"Credits anzeigen");
+		Intent i=new Intent();
+		i.setClass(this, Credits.class);
 		startActivity(i);
 	}
 

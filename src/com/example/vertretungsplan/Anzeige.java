@@ -37,18 +37,24 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 public class Anzeige extends Activity {
 	private static final String login_url="https://www.ratsgymnasium-bielefeld.de/index.php/intern?task=user.login";
 	private static final String plan_url="https://www.ratsgymnasium-bielefeld.de/index.php/intern/vertretungsplan-schueler";
 	private static final String loginsite_url="https://www.ratsgymnasium-bielefeld.de/index.php/intern";
 	public static final String newline = System.getProperty("line.separator");
-	public static final String PREFS_NAME = "Einstellungen";
-	public static final String TAG = "Anzeige_Activity";
+	private static final String PREFS_NAME = "Einstellungen";
+	private static final String TAG = "Anzeige_Activity";
+	private static final String no_username ="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Bitte Nutzernamen, Passwort und Klasse einstellen</div></p></body></html>";
+	private static final String no_internet="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Internetverbindung</div></p></body></html>";
+	
 	private WebView webview=null;
 	private String username;
 	private String password;
@@ -75,12 +81,12 @@ public class Anzeige extends Activity {
 			}
 			else
 			{
-				webview.loadData("Bitte Nutzernamen, Passwort und Klasse einstellen","text/html",null);
+				webview.loadData(no_username,"text/html; charset=UTF-8",null);
 				Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
 			}
 		}
 		else{
-			webview.loadData("Keine Internetverbindung","text/html",null);
+			webview.loadData(no_internet,"text/html; charset=UTF-8",null);
 		}
 		
 		
@@ -94,6 +100,44 @@ public class Anzeige extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.anzeige, menu);
 		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch(item.getItemId()){
+		case R.id.action_refresh:
+			if(isOnline()){
+				SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+				username = settings.getString("username","");
+				password = settings.getString("password","");
+				klasse = settings.getString("klasse","");
+				if(username!=""&&password!=""&&klasse!=""){
+					
+				planAnzeigen(username, password,klasse);
+				}
+				else
+				{
+					webview.loadData(no_username,"text/html; charset=UTF-8",null);
+					Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
+				}
+			}
+			else{
+				webview.loadData(no_internet,"text/html; charset=UTF-8",null);
+			}
+			Toast.makeText(getApplicationContext(), "Aktualisiert", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.action_settings:
+			Log.i(TAG,"Optionen anzeigen");
+			Intent i=new Intent();
+			i.setClass(this, Options.class);
+			startActivity(i);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	public void refresh(){
+		Log.i(TAG,"Aktualisiert");
 	}
 	
 	
@@ -335,7 +379,7 @@ public class Anzeige extends Activity {
 		{
 			boolean gefunden=false;
 			String tag=vertretungen.get(0).tag;
-			String ergebnis="<html><body><div align=\"center\">Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
+			String ergebnis="<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head><body><div align=\"center\">Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
 			for(int i=0;i<vertretungen.size();i++){
 				
 				Vertretung v=vertretungen.get(i);
@@ -363,10 +407,10 @@ public class Anzeige extends Activity {
 			ergebnis+="</table></div></body></html>";
 			if(!gefunden)
 			{
-				ergebnis="Keine Vertretungen für die gew&auml;hlte Stufe/Klasse("+klasse+")";
+				ergebnis="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Vertretungen für die gewählte Stufe/Klasse("+klasse+")</div></p></body></html>";
 			}
 
-			webview.loadData(ergebnis,"text/html",null);
+			webview.loadData(ergebnis,"text/html; charset=UTF-8",null);
 			//System.out.println(ergebnis);
 		
 		}
