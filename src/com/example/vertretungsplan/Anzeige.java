@@ -70,7 +70,6 @@ public class Anzeige extends Activity {
 		    StrictMode.setThreadPolicy(policy);
 		}
 		webview = (WebView) findViewById(R.id.webView1);
-		if(isOnline()){
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
 			username = settings.getString("username","");
 			password = settings.getString("password","");
@@ -83,13 +82,7 @@ public class Anzeige extends Activity {
 			{
 				webview.loadData(no_username,"text/html; charset=UTF-8",null);
 				Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
-			}
-		}
-		else{
-			webview.loadData(no_internet,"text/html; charset=UTF-8",null);
-		}
-		
-		
+			}		
 		
 
 		
@@ -105,7 +98,6 @@ public class Anzeige extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
 		case R.id.action_refresh:
-			if(isOnline()){
 				SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
 				username = settings.getString("username","");
 				password = settings.getString("password","");
@@ -119,10 +111,6 @@ public class Anzeige extends Activity {
 					webview.loadData(no_username,"text/html; charset=UTF-8",null);
 					Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
 				}
-			}
-			else{
-				webview.loadData(no_internet,"text/html; charset=UTF-8",null);
-			}
 			Toast.makeText(getApplicationContext(), "Aktualisiert", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.action_settings:
@@ -136,9 +124,6 @@ public class Anzeige extends Activity {
 		}
 	}
 	
-	public void refresh(){
-		Log.i(TAG,"Aktualisiert");
-	}
 	
 	
 	public void planAnzeigen(String username,String password,String klasse)
@@ -152,10 +137,14 @@ public class Anzeige extends Activity {
 		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams);
 		
 		try{
+			if(isOnline()){
 			abrufen(httpclient);
 			login(httpclient,username,password);
 			auslesen(httpclient);
-			
+			}
+			else{
+				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
+			}
 			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
 			if(f.exists()){
 				anzeigen(auswerten(f),username, klasse);

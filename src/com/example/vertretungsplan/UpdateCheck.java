@@ -76,7 +76,7 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maxgb.de/vertretungsplan"));
 				main.startActivity(browserIntent);
 				
 			}
