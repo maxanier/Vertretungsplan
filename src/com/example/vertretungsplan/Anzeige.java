@@ -32,10 +32,12 @@ import org.xml.sax.SAXParseException;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,33 +58,37 @@ public class Anzeige extends Activity {
 	private static final String no_internet="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Internetverbindung</div></p></body></html>";
 	
 	private WebView webview=null;
+	private ProgressDialog progressDialog;
 	private String username;
 	private String password;
 	private String klasse;
+	private boolean initialisiert=false; //true wenn das Layout geladen wurde
 	
 	public String cookie="";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_anzeige);
+		
 		if (android.os.Build.VERSION.SDK_INT > 9) {
 		    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		    StrictMode.setThreadPolicy(policy);
 		}
-		webview = (WebView) findViewById(R.id.webView1);
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
-			username = settings.getString("username","");
-			password = settings.getString("password","");
-			klasse = settings.getString("klasse","");
-			if(username!=""&&password!=""&&klasse!=""){
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+		username = settings.getString("username","");
+		password = settings.getString("password","");
+		klasse = settings.getString("klasse","");
+		if(username!=""&&password!=""&&klasse!=""){
 				
-			planAnzeigen(username, password,klasse);
-			}
-			else
-			{
-				webview.loadData(no_username,"text/html; charset=UTF-8",null);
-				Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
-			}		
+			new LoadPlanTask().execute(username,password,klasse);
+			
+		}
+		else
+		{
+			setContentView(R.layout.activity_anzeige);
+			webview = (WebView) findViewById(R.id.webView1);
+			webview.loadData(no_username,"text/html; charset=UTF-8",null);
+			Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
+		}		
 		
 
 		
@@ -102,16 +108,21 @@ public class Anzeige extends Activity {
 				username = settings.getString("username","");
 				password = settings.getString("password","");
 				klasse = settings.getString("klasse","");
-				if(username!=""&&password!=""&&klasse!=""){
-					
-				planAnzeigen(username, password,klasse);
+				if(isOnline()){	
+				
+					if(username!=""&&password!=""&&klasse!=""){					
+						new LoadPlanTask().execute(username,password,klasse);
+					}
+					else
+					{
+						webview.loadData(no_username,"text/html; charset=UTF-8",null);
+						Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
+					}
 				}
-				else
-				{
-					webview.loadData(no_username,"text/html; charset=UTF-8",null);
-					Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
+				else{
+					Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
 				}
-			Toast.makeText(getApplicationContext(), "Aktualisiert", Toast.LENGTH_SHORT).show();
+			
 			return true;
 		case R.id.action_settings:
 			Log.i(TAG,"Optionen anzeigen");
@@ -124,9 +135,54 @@ public class Anzeige extends Activity {
 		}
 	}
 	
+	private class LoadPlanTask extends AsyncTask<String, Void, String>
+	{
+		//Vor ausf¸hren in einem seperaten Task
+		@Override
+		protected void onPreExecute(){
+			//Neuer progress dialog
+			progressDialog = new ProgressDialog(Anzeige.this);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			progressDialog.setTitle("L‰dt...");
+			progressDialog.setCancelable(false);
+			progressDialog.setIndeterminate(false);
+			progressDialog.show();
+			
+		}
+		//Background Thread
+		protected String doInBackground(String... params)
+		{
+			try{
+				//Get the current thread`s token ????
+				synchronized(this)
+				{
+					return planAnzeigen(params[0],params[1],params[2]);
+				}
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		//after Execution
+		@Override
+		protected void onPostExecute(String result)
+		{
+			//ProgressDialog schlieﬂen
+			progressDialog.dismiss();
+			if(!initialisiert){
+			//initialisiere View
+			setContentView(R.layout.activity_anzeige);
+			//finde WebView
+			webview = (WebView) findViewById(R.id.webView1);}
+			//Ergebnis Anzeigen
+			webview.loadData(result,"text/html; charset=UTF-8",null);
+			Toast.makeText(getApplicationContext(), "Aktualisiert", Toast.LENGTH_SHORT).show();
+		}
+	}
 	
-	
-	public void planAnzeigen(String username,String password,String klasse)
+	public String planAnzeigen(String username,String password,String klasse)
 	{
 		File dir = new File(Environment.getExternalStorageDirectory().getPath( )+"/vertretungsplan/");
 		dir.mkdirs();
@@ -147,16 +203,17 @@ public class Anzeige extends Activity {
 			}
 			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
 			if(f.exists()){
-				anzeigen(auswerten(f),username, klasse);
+				Log.i(TAG,"Anfrage erfolgreich abgeschloﬂen");
+				return anzeigen(auswerten(f),username, klasse);
 			}
 			else{
 				throw new Exception("Datei nicht gefunden");
 			}
-			Log.i(TAG,"Anfrage erfolgreich abgeschloﬂen");
+			
 		}
 		catch(Exception e){
 			Log.e(TAG,"Anfrage fehlgeschlagen: ",e);
-			webview.loadData(e.getMessage(), "text/html",null);			
+			return e.getMessage();
 		}
 		
 
@@ -361,7 +418,7 @@ public class Anzeige extends Activity {
 	}
 	
 	
-	public void anzeigen(ArrayList<Vertretung> vertretungen,String username, String klasse) throws Exception
+	public String anzeigen(ArrayList<Vertretung> vertretungen,String username, String klasse) throws Exception
 	{
 		Log.i(TAG,"Anzeigen gestartet");
 		if(vertretungen!=null&&vertretungen.size()>0)
@@ -398,16 +455,15 @@ public class Anzeige extends Activity {
 			{
 				ergebnis="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Vertretungen f¸r die gew‰hlte Stufe/Klasse("+klasse+")</div></p></body></html>";
 			}
-
-			webview.loadData(ergebnis,"text/html; charset=UTF-8",null);
-			//System.out.println(ergebnis);
+			Log.i(TAG,"Anzeigen abgeschloﬂen");
+			return ergebnis;
 		
 		}
 		else{
 			Log.e(TAG,"Keine Vertretungen angekommen");
 			throw new Exception("Fehler: Vermutlich falscher Benutzername oder falsches Passwort gew&aum;lhlt:\n Nutzername: "+username+" Passwort: *****");
 		}
-		Log.i(TAG,"Anzeigen abgeschloﬂen");
+		
 	}
 	
 	public void save(String s,String file) throws IOException
