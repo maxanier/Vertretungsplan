@@ -15,11 +15,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.webkit.WebView;
 
 public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 	private final String updateUrl="http://dl.dropbox.com/u/10820678/Vertretungsplan/version";
 	public final static String TAG="UpdateCheck";
 	public Activity main=null;
+	private String changelog="";
 	
 	public UpdateCheck(Activity a){
 		main=a;
@@ -47,6 +50,10 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 				else{
 					throw new Exception("Datei leer");
 				}
+				changelog="<html><body><b>Neue Version</b><p>Changelog:";
+				while((ergebnis = buffer.readLine()) != null){
+					changelog+="<br>"+ergebnis;
+				}
 				
 			}
 			catch(Exception e){
@@ -71,7 +78,11 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 	}
 	public void updateHinweis(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(main);
-		builder.setMessage("Eine neue Version ist verfügbar").setTitle("Update");
+
+	    WebView view = new WebView(main.getApplicationContext());
+	    view.loadData(changelog, "text/html; charset=UTF-8", null);
+	    builder.setView(view);
+		builder.setTitle("Update");
 		builder.setPositiveButton("Herunterladen",new DialogInterface.OnClickListener(){
 			
 			@Override

@@ -1,7 +1,10 @@
 package com.example.vertretungsplan;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
@@ -25,12 +28,14 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		Log.i(TAG,"Portrait");
 		}
+		if(isOnline()){
 		UpdateCheck check = new UpdateCheck(this);
 		try{PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 		Double version = Double.parseDouble(pInfo.versionName);
 		Log.i(TAG,"Version: "+version);
 		check.execute(version);}
 		catch(Exception e){}
+		}
 		
 		//final Button plan_button = (Button) findViewById(R.id.button1);
 	}
@@ -62,6 +67,16 @@ public class MainActivity extends Activity {
 		i.setClass(this, Credits.class);
 		startActivity(i);
 	}
-
+	
+	public boolean isOnline()
+	{
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+		{
+			return true;
+		}
+		return false;
+	}
 
 }
