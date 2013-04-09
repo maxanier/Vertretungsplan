@@ -41,6 +41,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -91,9 +92,11 @@ public class Anzeige extends Activity {
 				webview = (WebView) findViewById(R.id.webView1); //Webview  finden und speichern
 				File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html"); 
 				if(f.exists()){
-				Log.i("Anzeige ohne Internetverbindung");
-				webview.loadData(anzeigen(auswerten(f),username, klasse),"text/html; charset=UTF-8",null)//Gespeicherten Plan anzeigen
+				Log.i(TAG,"Anzeige ohne Internetverbindung");
+				try{webview.loadData(anzeigen(auswerten(f),username, klasse),"text/html; charset=UTF-8",null);}//Gespeicherten Plan anzeigen
+				catch (Exception e){}
 				}
+				
 			}
 			
 		}
@@ -152,25 +155,32 @@ public class Anzeige extends Activity {
 		}
 	}
 	
+	@Override
+	public void onConfigurationChanged(Configuration newconfig){
+		super.onConfigurationChanged(newconfig);
+	}
+	
 	//Asynchrones Laden des Plans mit Hilfe von AsyncTask
 	private class LoadPlanTask extends AsyncTask<String, Void, String>
 	{
-		//Vor ausfï¿½hren in einem seperaten Task
+		//Vor ausführen in einem seperaten Task
 		@Override
 		protected void onPreExecute(){
 			//Neuer progress dialog
 			progressDialog = new ProgressDialog(Anzeige.this);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialog.setTitle("Lï¿½dt...");
+			progressDialog.setTitle("Lädt...");
 			progressDialog.setCancelable(false);
 			progressDialog.setIndeterminate(false);
 			progressDialog.show();
 			
 		}
+		
 		/**
 		 * BackgroundProzess
 		 * @params params Nutzername,passwort,klasse
-		 * /
+		 */
+		
 		protected String doInBackground(String... params)
 		{
 			try{
@@ -209,7 +219,7 @@ public class Anzeige extends Activity {
 	 * @params passwort Passwort fÃ¼r Login
 	 * @params klasse Klasse
 	 * @return Html-String mit Plan
-	 * /
+	 */
 
 	public String planAnzeigen(String username,String password,String klasse)
 	{
@@ -251,7 +261,7 @@ public class Anzeige extends Activity {
 	 * Ruft die Loginseite ab
 	 * @param httpclient Httpsclient zum abrufen(HttpsClient mit Ratszertifikat benÃ¶tigt)
 	 * @return Erfolg der Anfrage
-	 * /
+	 */
 	public boolean abrufen(HttpClient httpclient) throws Exception
 	{
 		try{
@@ -299,7 +309,7 @@ public class Anzeige extends Activity {
 	 * @param username Nutzername
 	 * @param password Passwort
 	 * @return Erfolg der Anfrage
-	 * /
+	 */
 	public boolean login(HttpClient httpclient,String username,String password) throws Exception
 	{
 		
@@ -352,7 +362,7 @@ public class Anzeige extends Activity {
 	/**
 	 * Abruf und speichern der Planseite
 	 * @param client HttpClient
-	 * /
+	 */
 	public void auslesen(HttpClient client) throws Exception
 	{
 		try{
@@ -389,7 +399,7 @@ public class Anzeige extends Activity {
 	 * Auswerten der gespeicherten Plan Datei
 	 * @param file gespeicherte Plandatei
 	 * @return Array mit allen Vertretungen
-	 * /
+	 */
 	
 	public ArrayList<Vertretung> auswerten(File file) throws Exception
 	{
@@ -477,7 +487,7 @@ public class Anzeige extends Activity {
 	 * @param username Nutzername fÃ¼r Fehlermeldung
 	 * @param klasse Klasse fÃ¼r Fehlermeldung
 	 * @return Html-String mit Vertretungen
-	 * /
+	 */
 	
 	public String anzeigen(ArrayList<Vertretung> vertretungen,String username, String klasse) throws Exception
 	{
@@ -531,7 +541,7 @@ public class Anzeige extends Activity {
 	 * Speichern eines Strings in einer angegebenen Datei
 	 * @param s Zu speichernde String
 	 * @param file Speicherort
-	 * /
+	 */
 	public void save(String s,String file) throws IOException
 	{
 		Log.i(TAG,"Speichern der Datei: "+file+" gestartet");
@@ -544,9 +554,9 @@ public class Anzeige extends Activity {
 		
 	}
 	/**
-	 * ÃœberprÃ¼fen der Internetverbindung
+	 * Überprüfung der Internetverbindung
 	 * return Verbindungsstatus
-	 * /
+	 */
 	public boolean isOnline()
 	{
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

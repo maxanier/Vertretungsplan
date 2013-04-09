@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -22,10 +23,17 @@ public class Options extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_options);
-		username_eingabe = (TextView)findViewById(R.id.editText1);
-		password_eingabe = (TextView)findViewById(R.id.editText2);
-		klasse_eingabe = (TextView)findViewById(R.id.editText3);
+		if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE){
+			setContentView(R.layout.activity_options_land);
+			Log.i(TAG,"Landscape");
+			}
+		else{
+			setContentView(R.layout.activity_options);
+			Log.i(TAG,"Portrait");
+		}
+		username_eingabe = (TextView)findViewById(R.id.edit_username);
+		password_eingabe = (TextView)findViewById(R.id.edit_password);
+		klasse_eingabe = (TextView)findViewById(R.id.edit_klasse);
 		
 		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
@@ -53,6 +61,13 @@ public class Options extends Activity {
 		String temp_password=password_eingabe.getText().toString().trim();
 		String temp_klasse=klasse_eingabe.getText().toString().trim();
 		if(temp_klasse.toUpperCase().equals("ALL")){temp_klasse="ALL";}
+		if(temp_klasse.toUpperCase().equals("UI")){temp_klasse="UI";}
+		if(temp_klasse.toUpperCase().equals("II")){temp_klasse="II";}
+		if(temp_klasse.toUpperCase().equals("OI")){temp_klasse="OI";}
+		if(temp_klasse.toUpperCase().equals("OIIIA")){temp_klasse="OIIIa";}
+		if(temp_klasse.toUpperCase().equals("OIIIB")){temp_klasse="OIIIb";}
+		if(temp_klasse.toUpperCase().equals("OIIIC")){temp_klasse="OIIIc";}
+		if(temp_klasse.toUpperCase().equals("OIIID")){temp_klasse="OIIId";}
 		
 		if(!temp_username.trim().isEmpty()&&!temp_password.trim().isEmpty()&&!temp_klasse.trim().isEmpty())
 		{

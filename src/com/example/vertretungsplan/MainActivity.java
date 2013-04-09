@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -16,7 +17,14 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE){
+		setContentView(R.layout.activity_main_land);
+		Log.i(TAG,"Landscape");
+		}
+		else{
 		setContentView(R.layout.activity_main);
+		Log.i(TAG,"Portrait");
+		}
 		UpdateCheck check = new UpdateCheck(this);
 		try{PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 		Double version = Double.parseDouble(pInfo.versionName);

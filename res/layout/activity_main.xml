@@ -15,7 +15,7 @@
         android:layout_below="@+id/button2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="38dp"
-        android:text="Credits" 
+        android:text="Credits"
         android:onClick="credits"/>
 
     <Button
