@@ -167,7 +167,10 @@ public class Anzeige extends Activity {
 			progressDialog.show();
 			
 		}
-		//Background Thread
+		/**
+		 * BackgroundProzess
+		 * @params params Nutzername,passwort,klasse
+		 * /
 		protected String doInBackground(String... params)
 		{
 			try{
@@ -201,30 +204,31 @@ public class Anzeige extends Activity {
 	}
 	
 	/**
-	 * 
+	 * zeigt den Plan an
+	 * @params username Nutzername für Login
+	 * @params passwort Passwort für Login
+	 * @params klasse Klasse
+	 * @return Html-String mit Plan
 	 * /
 
 	public String planAnzeigen(String username,String password,String klasse)
 	{
 		File dir = new File(Environment.getExternalStorageDirectory().getPath( )+"/vertretungsplan/");
-		dir.mkdirs();
+		dir.mkdirs();	//Erstellen des Verzeichnises falls noch nicht vorhanden
 		Log.i(TAG,"Anfrage gestartet");
 		final HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams,10000);
 		HttpConnectionParams.setSoTimeout(httpParams,10000);
-		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams);
+		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams); //neuer HttpsClient mit eigener Timeoutzeit
 		
 		try{
-			if(isOnline()){
-			abrufen(httpclient);
-			login(httpclient,username,password);
-			auslesen(httpclient);
-			}
-			else{
-				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
-			}
+			
+			abrufen(httpclient);//abrufen der Loginseite 
+			login(httpclient,username,password);//Login -- gleicher HttpClient
+			auslesen(httpclient);//Speichern der Loginseite -- gleicher HttpClient
+			
 			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
-			if(f.exists()){
+			if(f.exists()){ //Wenn Datei vorhanden->Auswerten und erstellen des HTML Codes
 				Log.i(TAG,"Anfrage erfolgreich abgeschlo�en");
 				return anzeigen(auswerten(f),username, klasse);
 			}
@@ -243,37 +247,41 @@ public class Anzeige extends Activity {
 
 	
 	}
-	
+	/**
+	 * Ruft die Loginseite ab
+	 * @param httpclient Httpsclient zum abrufen(HttpsClient mit Ratszertifikat benötigt)
+	 * @return Erfolg der Anfrage
+	 * /
 	public boolean abrufen(HttpClient httpclient) throws Exception
 	{
 		try{
 			Log.i(TAG,"Abrufen der Loginseite gestartet");
-			HttpResponse response = httpclient.execute(new HttpGet(loginsite_url));
-			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
+			HttpResponse response = httpclient.execute(new HttpGet(loginsite_url)); //Abruf der Seite
+			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){ //Erfolg der Anfrage
 				Log.i(TAG,"Erfolgreicher Loginseiten Abruf");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        response.getEntity().writeTo(out);
-		        out.close();
-		        String responseString = out.toString();
-		        
-		        
-		        save(responseString,"debug_login.html");
-		        
-		        String gesucht="<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";
-		        int index = responseString.indexOf(gesucht);
-		        //System.out.println(index);
-		        char[] chars=responseString.toCharArray();
-		        cookie=String.copyValueOf(chars,index+gesucht.length()+1,32);
-		        Log.i(TAG,"Cookie ausgelesen. Wert: "+cookie);
-		        
-		        return true;
+			        response.getEntity().writeTo(out); //Schreiben der Loginseite in den ByteArrayOutputStream
+			        out.close();
+			        String responseString = out.toString(); //Umwandlung des ByteArrayOutputStream(Loginseite) in einen String
+			        
+			        
+			        save(responseString,"debug_login.html"); //Speichern der Seite zum Debuggen
+			        
+			        String gesucht="<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";//SuchString
+			        int index = responseString.indexOf(gesucht);//Sucht mit dem Suchstring nach Anfang des "Cookies"
+			        //System.out.println(index);
+			        char[] chars=responseString.toCharArray();
+			        cookie=String.copyValueOf(chars,index+gesucht.length()+1,32);//Auslesen des "Cookies"(Länge: 32) und speichern in der globalen Variable cookie
+			        Log.i(TAG,"Cookie ausgelesen. Wert: "+cookie);
+			        
+			        return true;
 		        
 			}
 			else
 			{
 				StatusLine statusLine=response.getStatusLine();
 				response.getEntity().getContent().close();
-		        throw new IOException(statusLine.getReasonPhrase());
+		        throw new IOException(statusLine.getReasonPhrase());//Fehlermeldung werfen wenn Abfrage fehlgeschlagen
 			}	
 		
 		}
@@ -285,30 +293,42 @@ public class Anzeige extends Activity {
 		
 	}
 	
+	/**
+	 * Login mit Http-Post
+	 * @param httpclient HttpClient
+	 * @param username Nutzername
+	 * @param password Passwort
+	 * @return Erfolg der Anfrage
+	 * /
 	public boolean login(HttpClient httpclient,String username,String password) throws Exception
 	{
 		
 		try{
-			Log.i(TAG,"Loginvorgang gestartet. Username: "+username+" Passwort: "+password);
+			Log.i(TAG,"Loginvorgang gestartet");
+			//Log.i(TAG,"Loginvorgang gestartet. Username: "+username+" Passwort: "+password);
+			
+			//Erstellen des Postrequest
 			HttpPost httppost = new HttpPost(login_url);
-		
-			List<NameValuePair> paare = new ArrayList<NameValuePair>(2);
+			
+			List<NameValuePair> paare = new ArrayList<NameValuePair>(2); //Post-Parameter
 			paare.add(new BasicNameValuePair("username",username));
 			paare.add(new BasicNameValuePair("password",password));
-			paare.add(new BasicNameValuePair("return","L2luZGV4LnBocC9pbnRlcm4v"));
+			paare.add(new BasicNameValuePair("return","L2luZGV4LnBocC9pbnRlcm4v")); //Unbekannte Funktion
 			paare.add(new BasicNameValuePair(cookie,"1"));
 			httppost.setEntity(new UrlEncodedFormEntity(paare));
+			//-----------------------------------------------
+			HttpResponse response = httpclient.execute(httppost);//Login mit Http-Post
 			
-			HttpResponse response = httpclient.execute(httppost);
+			//Siehe abrufen()
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
 				Log.i(TAG,"Loginvorgang erfolgreich abgeschlo�en. Status aber unbekannt");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        response.getEntity().writeTo(out);
-		        out.close();
-		        String responseString = out.toString();
-		        
-		        
-		        save(responseString,"debug_login2.html");
+			        response.getEntity().writeTo(out);
+			        out.close();
+			        String responseString = out.toString();
+			        
+			        
+			        save(responseString,"debug_login2.html");
 		        
 		        return true;
 			}
@@ -318,7 +338,7 @@ public class Anzeige extends Activity {
 				response.getEntity().getContent().close();
 		        throw new IOException(statusLine.getReasonPhrase());
 			}
-			
+			//------------------------------------------------
 			
 		}
 		catch(Exception e)
@@ -329,21 +349,24 @@ public class Anzeige extends Activity {
 		}		
 	}
 	
-	
+	/**
+	 * Abruf und speichern der Planseite
+	 * @param client HttpClient
+	 * /
 	public void auslesen(HttpClient client) throws Exception
 	{
 		try{
 			Log.i(TAG,"Abrufen des Plans und Auslesen gestartet");
-			HttpResponse response = client.execute(new HttpGet(plan_url));
+			HttpResponse response = client.execute(new HttpGet(plan_url));//Planseite abrufen
 			
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
 				Log.i(TAG,"Abrufen des Plans erfolgreich abgeschlo�en");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        response.getEntity().writeTo(out);
-		        out.close();
-		        String responseString = out.toString();
-		        
-		        save(responseString,"plan.html");
+			        response.getEntity().writeTo(out);
+			        out.close();
+			        String responseString = out.toString();
+			        
+			        save(responseString,"plan.html");
 		        
 		        
 			}
@@ -362,14 +385,21 @@ public class Anzeige extends Activity {
 
 	}
 	
+	/**
+	 * Auswerten der gespeicherten Plan Datei
+	 * @param file gespeicherte Plandatei
+	 * @return Array mit allen Vertretungen
+	 * /
 	
 	public ArrayList<Vertretung> auswerten(File file) throws Exception
 	{
 		try{
 			Log.i(TAG,"Auswerten gestartet");
+			//Erstellen eines DocBuilder und parsen der PlanWebsite in ein Document
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(file);
+			//---------------------------------------------------------
 			
 			doc.getDocumentElement().normalize();
 			
@@ -439,6 +469,13 @@ public class Anzeige extends Activity {
 		
 	}
 	
+	/**
+	 * Auswählen der Vertretungen und erzeugen einer HTML-Datei als String
+	 * @param vertretungen Alle gefunden Vertretungen
+	 * @param username Nutzername für Fehlermeldung
+	 * @param klasse Klasse für Fehlermeldung
+	 * @return Html-String mit Vertretungen
+	 * /
 	
 	public String anzeigen(ArrayList<Vertretung> vertretungen,String username, String klasse) throws Exception
 	{
@@ -488,6 +525,11 @@ public class Anzeige extends Activity {
 		
 	}
 	
+	/**
+	 * Speichern eines Strings in einer angegebenen Datei
+	 * @param s Zu speichernde String
+	 * @param file Speicherort
+	 * /
 	public void save(String s,String file) throws IOException
 	{
 		Log.i(TAG,"Speichern der Datei: "+file+" gestartet");
@@ -499,6 +541,10 @@ public class Anzeige extends Activity {
         Log.i(TAG,"Speichern der Datei: "+file+" abgeschlo�en");
 		
 	}
+	/**
+	 * Überprüfen der Internetverbindung
+	 * return Verbindungsstatus
+	 * /
 	public boolean isOnline()
 	{
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
