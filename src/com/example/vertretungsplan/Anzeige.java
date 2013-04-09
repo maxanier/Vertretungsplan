@@ -65,39 +65,43 @@ public class Anzeige extends Activity {
 	private boolean initialisiert=false; //true wenn das Layout geladen wurde
 	
 	public String cookie="";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (android.os.Build.VERSION.SDK_INT > 9) {
+		//Irgendwas- Schon wieder vergessen- Irgendeine Fehlervorbeugung
+		if (android.os.Build.VERSION.SDK_INT > 9) { 
 		    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		    StrictMode.setThreadPolicy(policy);
 		}
+		//--------------------------------------
+		//Laden der Nutzereinstellungen
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
 		username = settings.getString("username","");
 		password = settings.getString("password","");
 		klasse = settings.getString("klasse","");
+		//--------------------------------------
 		if(username!=""&&password!=""&&klasse!=""){
 				
-			if(isOnline())
-			{new LoadPlanTask().execute(username,password,klasse);}
-			else{
-				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();	
-				setContentView(R.layout.activity_anzeige);
-				webview = (WebView) findViewById(R.id.webView1);
-				File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
+			if(isOnline()){
+				new LoadPlanTask().execute(username,password,klasse);}//Bei Internetverbindung Plan aktualiseren und anzeigen
+			else{	//Ohne Internet Verbindung
+				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();	//Anzeige von "Keine Internetverbindung
+				setContentView(R.layout.activity_anzeige); //Layout laden
+				webview = (WebView) findViewById(R.id.webView1); //Webview  finden und speichern
+				File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html"); 
 				if(f.exists()){
 				Log.i("Anzeige ohne Internetverbindung");
-				webview.loadData(anzeigen(auswerten(f),username, klasse),"text/html; charset=UTF-8",null)
+				webview.loadData(anzeigen(auswerten(f),username, klasse),"text/html; charset=UTF-8",null)//Gespeicherten Plan anzeigen
 				}
 			}
 			
 		}
 		else
 		{
-			setContentView(R.layout.activity_anzeige);
-			webview = (WebView) findViewById(R.id.webView1);
-			webview.loadData(no_username,"text/html; charset=UTF-8",null);
+			setContentView(R.layout.activity_anzeige); //Layout laden
+			webview = (WebView) findViewById(R.id.webView1); //Webview  finden und speichern
+			webview.loadData(no_username,"text/html; charset=UTF-8",null); //Anzeige der Fehlermeldung, dass no_username
 			Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
 		}		
 		
@@ -111,6 +115,7 @@ public class Anzeige extends Activity {
 		getMenuInflater().inflate(R.menu.anzeige, menu);
 		return true;
 	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
@@ -147,6 +152,7 @@ public class Anzeige extends Activity {
 		}
 	}
 	
+	//Asynchrones Laden des Plans mit Hilfe von AsyncTask
 	private class LoadPlanTask extends AsyncTask<String, Void, String>
 	{
 		//Vor ausf�hren in einem seperaten Task
@@ -194,6 +200,10 @@ public class Anzeige extends Activity {
 		}
 	}
 	
+	/**
+	 * 
+	 * /
+
 	public String planAnzeigen(String username,String password,String klasse)
 	{
 		File dir = new File(Environment.getExternalStorageDirectory().getPath( )+"/vertretungsplan/");
