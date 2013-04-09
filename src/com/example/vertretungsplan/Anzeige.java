@@ -79,7 +79,18 @@ public class Anzeige extends Activity {
 		klasse = settings.getString("klasse","");
 		if(username!=""&&password!=""&&klasse!=""){
 				
-			new LoadPlanTask().execute(username,password,klasse);
+			if(isOnline())
+			{new LoadPlanTask().execute(username,password,klasse);}
+			else{
+				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();	
+				setContentView(R.layout.activity_anzeige);
+				webview = (WebView) findViewById(R.id.webView1);
+				File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
+				if(f.exists()){
+				Log.i("Anzeige ohne Internetverbindung");
+				webview.loadData(anzeigen(auswerten(f),username, klasse),"text/html; charset=UTF-8",null)
+				}
+			}
 			
 		}
 		else
@@ -121,6 +132,7 @@ public class Anzeige extends Activity {
 				}
 				else{
 					Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
+					
 				}
 			
 			return true;
@@ -137,13 +149,13 @@ public class Anzeige extends Activity {
 	
 	private class LoadPlanTask extends AsyncTask<String, Void, String>
 	{
-		//Vor ausführen in einem seperaten Task
+		//Vor ausfï¿½hren in einem seperaten Task
 		@Override
 		protected void onPreExecute(){
 			//Neuer progress dialog
 			progressDialog = new ProgressDialog(Anzeige.this);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialog.setTitle("Lädt...");
+			progressDialog.setTitle("Lï¿½dt...");
 			progressDialog.setCancelable(false);
 			progressDialog.setIndeterminate(false);
 			progressDialog.show();
@@ -169,7 +181,7 @@ public class Anzeige extends Activity {
 		@Override
 		protected void onPostExecute(String result)
 		{
-			//ProgressDialog schließen
+			//ProgressDialog schlieï¿½en
 			progressDialog.dismiss();
 			if(!initialisiert){
 			//initialisiere View
@@ -203,7 +215,7 @@ public class Anzeige extends Activity {
 			}
 			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
 			if(f.exists()){
-				Log.i(TAG,"Anfrage erfolgreich abgeschloßen");
+				Log.i(TAG,"Anfrage erfolgreich abgeschloï¿½en");
 				return anzeigen(auswerten(f),username, klasse);
 			}
 			else{
@@ -279,7 +291,7 @@ public class Anzeige extends Activity {
 			
 			HttpResponse response = httpclient.execute(httppost);
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				Log.i(TAG,"Loginvorgang erfolgreich abgeschloßen. Status aber unbekannt");
+				Log.i(TAG,"Loginvorgang erfolgreich abgeschloï¿½en. Status aber unbekannt");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 		        response.getEntity().writeTo(out);
 		        out.close();
@@ -315,7 +327,7 @@ public class Anzeige extends Activity {
 			HttpResponse response = client.execute(new HttpGet(plan_url));
 			
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				Log.i(TAG,"Abrufen des Plans erfolgreich abgeschloßen");
+				Log.i(TAG,"Abrufen des Plans erfolgreich abgeschloï¿½en");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 		        response.getEntity().writeTo(out);
 		        out.close();
@@ -394,7 +406,7 @@ public class Anzeige extends Activity {
 					}
 				}
 			}
-			Log.i(TAG,"Auswerten abgeschloßen");
+			Log.i(TAG,"Auswerten abgeschloï¿½en");
 			return vertretungen;
 			
 			
@@ -453,9 +465,9 @@ public class Anzeige extends Activity {
 			ergebnis+="</table></div></body></html>";
 			if(!gefunden)
 			{
-				ergebnis="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Vertretungen für die gewählte Stufe/Klasse("+klasse+")</div></p></body></html>";
+				ergebnis="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Vertretungen fï¿½r die gewï¿½hlte Stufe/Klasse("+klasse+")</div></p></body></html>";
 			}
-			Log.i(TAG,"Anzeigen abgeschloßen");
+			Log.i(TAG,"Anzeigen abgeschloï¿½en");
 			return ergebnis;
 		
 		}
@@ -474,7 +486,7 @@ public class Anzeige extends Activity {
         bw.write(s);
         bw.close();
         o.close();
-        Log.i(TAG,"Speichern der Datei: "+file+" abgeschloßen");
+        Log.i(TAG,"Speichern der Datei: "+file+" abgeschloï¿½en");
 		
 	}
 	public boolean isOnline()
