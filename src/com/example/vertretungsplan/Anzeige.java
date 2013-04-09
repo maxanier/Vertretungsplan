@@ -65,6 +65,7 @@ public class Anzeige extends Activity {
 	private boolean initialisiert=false; //true wenn das Layout geladen wurde
 	
 	public String cookie="";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -103,7 +104,7 @@ public class Anzeige extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
-		case R.id.action_refresh:
+		case R.id.action_refresh: //Aktualisieren
 				SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
 				username = settings.getString("username","");
 				password = settings.getString("password","");
@@ -111,11 +112,11 @@ public class Anzeige extends Activity {
 				if(isOnline()){	
 				
 					if(username!=""&&password!=""&&klasse!=""){					
-						new LoadPlanTask().execute(username,password,klasse);
+						new LoadPlanTask().execute(username,password,klasse);//Lädt den Plan im Hintergrund
 					}
 					else
 					{
-						webview.loadData(no_username,"text/html; charset=UTF-8",null);
+						webview.loadData(no_username,"text/html; charset=UTF-8",null);//Zeigt no_username Fehler an
 						Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
 					}
 				}
@@ -124,7 +125,7 @@ public class Anzeige extends Activity {
 				}
 			
 			return true;
-		case R.id.action_settings:
+		case R.id.action_settings://Optionen öffnen
 			Log.i(TAG,"Optionen anzeigen");
 			Intent i=new Intent();
 			i.setClass(this, Options.class);
