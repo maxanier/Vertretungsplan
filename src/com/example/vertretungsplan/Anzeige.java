@@ -200,8 +200,8 @@ public class Anzeige extends Activity {
 		dir.mkdirs();
 		Log.i(TAG,"Anfrage gestartet");
 		final HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams,5000);
-		HttpConnectionParams.setSoTimeout(httpParams,5000);
+		HttpConnectionParams.setConnectionTimeout(httpParams,10000);
+		HttpConnectionParams.setSoTimeout(httpParams,10000);
 		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams);
 		
 		try{
