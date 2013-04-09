@@ -403,20 +403,21 @@ public class Anzeige extends Activity {
 			
 			doc.getDocumentElement().normalize();
 			
-			NodeList font = doc.getElementsByTagName("font");
+			NodeList font = doc.getElementsByTagName("font"); //Filtern der neun Font-Nodes
 			Log.i(TAG,font.getLength()+" Font-Elemente gefunden");
 			
 			ArrayList<Vertretung> vertretungen=new ArrayList<Vertretung>();
-			for(int j=0;j<font.getLength();j+=3){
-				String tag=font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();
+			for(int j=0;j<font.getLength();j+=3){ //Durchlaufen der  Font-Nodes, wobei jede dritte Node ein Tag ist
+				String tag=font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();//Auslesen des Tags
 				NodeList tr=font.item(j).getChildNodes().item(3).getChildNodes();
 				Log.i(TAG,tag+": "+tr.getLength()+" tr-Elemente gefunden");
 					
 
-				for(int i=2;i<tr.getLength();i++)
+				for(int i=2;i<tr.getLength();i++)//Durchlaufen aller tr-Elemente
 				{
 					Node node = tr.item(i);
 					//System.out.println(node.getNodeValue()+"---"+node.getNodeName());
+					//Überprüfen von welchem Typ die Node ist und ob sie Attribute hat und dann Überprüfen der class, ob es sich im eine Vertretung handelt
 					if(node.getNodeName()!="#text"){
 						NamedNodeMap attr = node.getAttributes();
 						//System.out.println(attr.getLength());
@@ -429,6 +430,7 @@ public class Anzeige extends Activity {
 								//System.out.println(value);
 								if(value.indexOf("list odd")!=-1||value.indexOf("list even")!=-1)
 								{
+									//Vertretung gefunden
 									NodeList childnodes = node.getChildNodes();
 									String klasse= childnodes.item(0).getChildNodes().item(0).getChildNodes().item(0).getNodeValue();
 									String stunde = childnodes.item(1).getChildNodes().item(0).getNodeValue();
