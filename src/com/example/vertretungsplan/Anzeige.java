@@ -69,25 +69,39 @@ public class Anzeige extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		if (android.os.Build.VERSION.SDK_INT > 9) {
+		//Irgendwas- Schon wieder vergessen- Irgendeine Fehlervorbeugung
+		if (android.os.Build.VERSION.SDK_INT > 9) { 
 		    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		    StrictMode.setThreadPolicy(policy);
 		}
+		//--------------------------------------
+		//Laden der Nutzereinstellungen
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
 		username = settings.getString("username","");
 		password = settings.getString("password","");
 		klasse = settings.getString("klasse","");
+		//--------------------------------------
 		if(username!=""&&password!=""&&klasse!=""){
 				
-			new LoadPlanTask().execute(username,password,klasse);
+			if(isOnline()){
+				new LoadPlanTask().execute(username,password,klasse);}//Bei Internetverbindung Plan aktualiseren und anzeigen
+			else{	//Ohne Internet Verbindung
+				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();	//Anzeige von "Keine Internetverbindung
+				setContentView(R.layout.activity_anzeige); //Layout laden
+				webview = (WebView) findViewById(R.id.webView1); //Webview  finden und speichern
+				File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html"); 
+				if(f.exists()){
+				Log.i("Anzeige ohne Internetverbindung");
+				webview.loadData(anzeigen(auswerten(f),username, klasse),"text/html; charset=UTF-8",null)//Gespeicherten Plan anzeigen
+				}
+			}
 			
 		}
 		else
 		{
-			setContentView(R.layout.activity_anzeige);
-			webview = (WebView) findViewById(R.id.webView1);
-			webview.loadData(no_username,"text/html; charset=UTF-8",null);
+			setContentView(R.layout.activity_anzeige); //Layout laden
+			webview = (WebView) findViewById(R.id.webView1); //Webview  finden und speichern
+			webview.loadData(no_username,"text/html; charset=UTF-8",null); //Anzeige der Fehlermeldung, dass no_username
 			Log.w(TAG,"Nutzername,Passwort oder Klasse nicht eingestellt");
 		}		
 		
@@ -101,6 +115,7 @@ public class Anzeige extends Activity {
 		getMenuInflater().inflate(R.menu.anzeige, menu);
 		return true;
 	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch(item.getItemId()){
@@ -122,6 +137,7 @@ public class Anzeige extends Activity {
 				}
 				else{
 					Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
+					
 				}
 			
 			return true;
@@ -136,21 +152,25 @@ public class Anzeige extends Activity {
 		}
 	}
 	
+	//Asynchrones Laden des Plans mit Hilfe von AsyncTask
 	private class LoadPlanTask extends AsyncTask<String, Void, String>
 	{
-		//Vor ausführen in einem seperaten Task
+		//Vor ausfï¿½hren in einem seperaten Task
 		@Override
 		protected void onPreExecute(){
 			//Neuer progress dialog
 			progressDialog = new ProgressDialog(Anzeige.this);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialog.setTitle("Lädt...");
+			progressDialog.setTitle("Lï¿½dt...");
 			progressDialog.setCancelable(false);
 			progressDialog.setIndeterminate(false);
 			progressDialog.show();
 			
 		}
-		//Background Thread
+		/**
+		 * BackgroundProzess
+		 * @params params Nutzername,passwort,klasse
+		 * /
 		protected String doInBackground(String... params)
 		{
 			try{
@@ -170,7 +190,7 @@ public class Anzeige extends Activity {
 		@Override
 		protected void onPostExecute(String result)
 		{
-			//ProgressDialog schließen
+			//ProgressDialog schlieï¿½en
 			progressDialog.dismiss();
 			if(!initialisiert){
 			//initialisiere View
@@ -183,28 +203,33 @@ public class Anzeige extends Activity {
 		}
 	}
 	
+	/**
+	 * zeigt den Plan an
+	 * @params username Nutzername fÃ¼r Login
+	 * @params passwort Passwort fÃ¼r Login
+	 * @params klasse Klasse
+	 * @return Html-String mit Plan
+	 * /
+
 	public String planAnzeigen(String username,String password,String klasse)
 	{
 		File dir = new File(Environment.getExternalStorageDirectory().getPath( )+"/vertretungsplan/");
-		dir.mkdirs();
+		dir.mkdirs();	//Erstellen des Verzeichnises falls noch nicht vorhanden
 		Log.i(TAG,"Anfrage gestartet");
 		final HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams,5000);
-		HttpConnectionParams.setSoTimeout(httpParams,5000);
-		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams);
+		HttpConnectionParams.setConnectionTimeout(httpParams,10000);
+		HttpConnectionParams.setSoTimeout(httpParams,10000);
+		HttpClient httpclient = new MyHttpsClient(getApplicationContext(),httpParams); //neuer HttpsClient mit eigener Timeoutzeit
 		
 		try{
-			if(isOnline()){
-			abrufen(httpclient);
-			login(httpclient,username,password);
-			auslesen(httpclient);
-			}
-			else{
-				Toast.makeText(getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
-			}
+			
+			abrufen(httpclient);//abrufen der Loginseite 
+			login(httpclient,username,password);//Login -- gleicher HttpClient
+			auslesen(httpclient);//Speichern der Loginseite -- gleicher HttpClient
+			
 			File f=new File(Environment.getExternalStorageDirectory().getPath()+"/vertretungsplan/plan.html");
-			if(f.exists()){
-				Log.i(TAG,"Anfrage erfolgreich abgeschloßen");
+			if(f.exists()){ //Wenn Datei vorhanden->Auswerten und erstellen des HTML Codes
+				Log.i(TAG,"Anfrage erfolgreich abgeschloï¿½en");
 				return anzeigen(auswerten(f),username, klasse);
 			}
 			else{
@@ -222,37 +247,41 @@ public class Anzeige extends Activity {
 
 	
 	}
-	
+	/**
+	 * Ruft die Loginseite ab
+	 * @param httpclient Httpsclient zum abrufen(HttpsClient mit Ratszertifikat benÃ¶tigt)
+	 * @return Erfolg der Anfrage
+	 * /
 	public boolean abrufen(HttpClient httpclient) throws Exception
 	{
 		try{
 			Log.i(TAG,"Abrufen der Loginseite gestartet");
-			HttpResponse response = httpclient.execute(new HttpGet(loginsite_url));
-			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
+			HttpResponse response = httpclient.execute(new HttpGet(loginsite_url)); //Abruf der Seite
+			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){ //Erfolg der Anfrage
 				Log.i(TAG,"Erfolgreicher Loginseiten Abruf");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        response.getEntity().writeTo(out);
-		        out.close();
-		        String responseString = out.toString();
-		        
-		        
-		        save(responseString,"debug_login.html");
-		        
-		        String gesucht="<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";
-		        int index = responseString.indexOf(gesucht);
-		        //System.out.println(index);
-		        char[] chars=responseString.toCharArray();
-		        cookie=String.copyValueOf(chars,index+gesucht.length()+1,32);
-		        Log.i(TAG,"Cookie ausgelesen. Wert: "+cookie);
-		        
-		        return true;
+			        response.getEntity().writeTo(out); //Schreiben der Loginseite in den ByteArrayOutputStream
+			        out.close();
+			        String responseString = out.toString(); //Umwandlung des ByteArrayOutputStream(Loginseite) in einen String
+			        
+			        
+			        save(responseString,"debug_login.html"); //Speichern der Seite zum Debuggen
+			        
+			        String gesucht="<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";//SuchString
+			        int index = responseString.indexOf(gesucht);//Sucht mit dem Suchstring nach Anfang des "Cookies"
+			        //System.out.println(index);
+			        char[] chars=responseString.toCharArray();
+			        cookie=String.copyValueOf(chars,index+gesucht.length()+1,32);//Auslesen des "Cookies"(LÃ¤nge: 32) und speichern in der globalen Variable cookie
+			        Log.i(TAG,"Cookie ausgelesen. Wert: "+cookie);
+			        
+			        return true;
 		        
 			}
 			else
 			{
 				StatusLine statusLine=response.getStatusLine();
 				response.getEntity().getContent().close();
-		        throw new IOException(statusLine.getReasonPhrase());
+		        throw new IOException(statusLine.getReasonPhrase());//Fehlermeldung werfen wenn Abfrage fehlgeschlagen
 			}	
 		
 		}
@@ -264,30 +293,42 @@ public class Anzeige extends Activity {
 		
 	}
 	
+	/**
+	 * Login mit Http-Post
+	 * @param httpclient HttpClient
+	 * @param username Nutzername
+	 * @param password Passwort
+	 * @return Erfolg der Anfrage
+	 * /
 	public boolean login(HttpClient httpclient,String username,String password) throws Exception
 	{
 		
 		try{
-			Log.i(TAG,"Loginvorgang gestartet. Username: "+username+" Passwort: "+password);
+			Log.i(TAG,"Loginvorgang gestartet");
+			//Log.i(TAG,"Loginvorgang gestartet. Username: "+username+" Passwort: "+password);
+			
+			//Erstellen des Postrequest
 			HttpPost httppost = new HttpPost(login_url);
-		
-			List<NameValuePair> paare = new ArrayList<NameValuePair>(2);
+			
+			List<NameValuePair> paare = new ArrayList<NameValuePair>(2); //Post-Parameter
 			paare.add(new BasicNameValuePair("username",username));
 			paare.add(new BasicNameValuePair("password",password));
-			paare.add(new BasicNameValuePair("return","L2luZGV4LnBocC9pbnRlcm4v"));
+			paare.add(new BasicNameValuePair("return","L2luZGV4LnBocC9pbnRlcm4v")); //Unbekannte Funktion
 			paare.add(new BasicNameValuePair(cookie,"1"));
 			httppost.setEntity(new UrlEncodedFormEntity(paare));
+			//-----------------------------------------------
+			HttpResponse response = httpclient.execute(httppost);//Login mit Http-Post
 			
-			HttpResponse response = httpclient.execute(httppost);
+			//Siehe abrufen()
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				Log.i(TAG,"Loginvorgang erfolgreich abgeschloßen. Status aber unbekannt");
+				Log.i(TAG,"Loginvorgang erfolgreich abgeschloï¿½en. Status aber unbekannt");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        response.getEntity().writeTo(out);
-		        out.close();
-		        String responseString = out.toString();
-		        
-		        
-		        save(responseString,"debug_login2.html");
+			        response.getEntity().writeTo(out);
+			        out.close();
+			        String responseString = out.toString();
+			        
+			        
+			        save(responseString,"debug_login2.html");
 		        
 		        return true;
 			}
@@ -297,7 +338,7 @@ public class Anzeige extends Activity {
 				response.getEntity().getContent().close();
 		        throw new IOException(statusLine.getReasonPhrase());
 			}
-			
+			//------------------------------------------------
 			
 		}
 		catch(Exception e)
@@ -308,21 +349,24 @@ public class Anzeige extends Activity {
 		}		
 	}
 	
-	
+	/**
+	 * Abruf und speichern der Planseite
+	 * @param client HttpClient
+	 * /
 	public void auslesen(HttpClient client) throws Exception
 	{
 		try{
 			Log.i(TAG,"Abrufen des Plans und Auslesen gestartet");
-			HttpResponse response = client.execute(new HttpGet(plan_url));
+			HttpResponse response = client.execute(new HttpGet(plan_url));//Planseite abrufen
 			
 			if(response.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
-				Log.i(TAG,"Abrufen des Plans erfolgreich abgeschloßen");
+				Log.i(TAG,"Abrufen des Plans erfolgreich abgeschloï¿½en");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        response.getEntity().writeTo(out);
-		        out.close();
-		        String responseString = out.toString();
-		        
-		        save(responseString,"plan.html");
+			        response.getEntity().writeTo(out);
+			        out.close();
+			        String responseString = out.toString();
+			        
+			        save(responseString,"plan.html");
 		        
 		        
 			}
@@ -341,31 +385,39 @@ public class Anzeige extends Activity {
 
 	}
 	
+	/**
+	 * Auswerten der gespeicherten Plan Datei
+	 * @param file gespeicherte Plandatei
+	 * @return Array mit allen Vertretungen
+	 * /
 	
 	public ArrayList<Vertretung> auswerten(File file) throws Exception
 	{
 		try{
 			Log.i(TAG,"Auswerten gestartet");
+			//Erstellen eines DocBuilder und parsen der PlanWebsite in ein Document
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(file);
+			//---------------------------------------------------------
 			
 			doc.getDocumentElement().normalize();
 			
-			NodeList font = doc.getElementsByTagName("font");
+			NodeList font = doc.getElementsByTagName("font"); //Filtern der neun Font-Nodes
 			Log.i(TAG,font.getLength()+" Font-Elemente gefunden");
 			
 			ArrayList<Vertretung> vertretungen=new ArrayList<Vertretung>();
-			for(int j=0;j<font.getLength();j+=3){
-				String tag=font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();
+			for(int j=0;j<font.getLength();j+=3){ //Durchlaufen der  Font-Nodes, wobei jede dritte Node ein Tag ist
+				String tag=font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();//Auslesen des Tags
 				NodeList tr=font.item(j).getChildNodes().item(3).getChildNodes();
 				Log.i(TAG,tag+": "+tr.getLength()+" tr-Elemente gefunden");
 					
 
-				for(int i=2;i<tr.getLength();i++)
+				for(int i=2;i<tr.getLength();i++)//Durchlaufen aller tr-Elemente
 				{
 					Node node = tr.item(i);
 					//System.out.println(node.getNodeValue()+"---"+node.getNodeName());
+					//ÃœberprÃ¼fen von welchem Typ die Node ist und ob sie Attribute hat und dann ÃœberprÃ¼fen der class, ob es sich im eine Vertretung handelt
 					if(node.getNodeName()!="#text"){
 						NamedNodeMap attr = node.getAttributes();
 						//System.out.println(attr.getLength());
@@ -378,6 +430,7 @@ public class Anzeige extends Activity {
 								//System.out.println(value);
 								if(value.indexOf("list odd")!=-1||value.indexOf("list even")!=-1)
 								{
+									//Vertretung gefunden
 									NodeList childnodes = node.getChildNodes();
 									String klasse= childnodes.item(0).getChildNodes().item(0).getChildNodes().item(0).getNodeValue();
 									String stunde = childnodes.item(1).getChildNodes().item(0).getNodeValue();
@@ -395,7 +448,7 @@ public class Anzeige extends Activity {
 					}
 				}
 			}
-			Log.i(TAG,"Auswerten abgeschloßen");
+			Log.i(TAG,"Auswerten abgeschloï¿½en");
 			return vertretungen;
 			
 			
@@ -418,6 +471,13 @@ public class Anzeige extends Activity {
 		
 	}
 	
+	/**
+	 * AuswÃ¤hlen der Vertretungen und erzeugen einer HTML-Datei als String
+	 * @param vertretungen Alle gefunden Vertretungen
+	 * @param username Nutzername fÃ¼r Fehlermeldung
+	 * @param klasse Klasse fÃ¼r Fehlermeldung
+	 * @return Html-String mit Vertretungen
+	 * /
 	
 	public String anzeigen(ArrayList<Vertretung> vertretungen,String username, String klasse) throws Exception
 	{
@@ -454,9 +514,9 @@ public class Anzeige extends Activity {
 			ergebnis+="</table></div></body></html>";
 			if(!gefunden)
 			{
-				ergebnis="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Vertretungen für die gewählte Stufe/Klasse("+klasse+")</div></p></body></html>";
+				ergebnis="<html><body><p style=\"padding-top:40%;\"><div align=\"center\">Keine Vertretungen fï¿½r die gewï¿½hlte Stufe/Klasse("+klasse+")</div></p></body></html>";
 			}
-			Log.i(TAG,"Anzeigen abgeschloßen");
+			Log.i(TAG,"Anzeigen abgeschloï¿½en");
 			return ergebnis;
 		
 		}
@@ -467,6 +527,11 @@ public class Anzeige extends Activity {
 		
 	}
 	
+	/**
+	 * Speichern eines Strings in einer angegebenen Datei
+	 * @param s Zu speichernde String
+	 * @param file Speicherort
+	 * /
 	public void save(String s,String file) throws IOException
 	{
 		Log.i(TAG,"Speichern der Datei: "+file+" gestartet");
@@ -475,9 +540,13 @@ public class Anzeige extends Activity {
         bw.write(s);
         bw.close();
         o.close();
-        Log.i(TAG,"Speichern der Datei: "+file+" abgeschloßen");
+        Log.i(TAG,"Speichern der Datei: "+file+" abgeschloï¿½en");
 		
 	}
+	/**
+	 * ÃœberprÃ¼fen der Internetverbindung
+	 * return Verbindungsstatus
+	 * /
 	public boolean isOnline()
 	{
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
