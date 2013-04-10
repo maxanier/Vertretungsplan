@@ -46,6 +46,10 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	/**
+	 * Startet neue Plan-Anzeige
+	*/
+	
 	public void plan(View v)
 	{
 		Log.i(TAG,"Plan anzeigen");
@@ -53,6 +57,10 @@ public class MainActivity extends Activity {
 		i.setClass(this, Anzeige.class);
 		startActivity(i);
 	}
+	/**
+	 * Startet neue Optionen-Anzeige
+	*/
+	
 	public void optionen(View v)
 	{
 		Log.i(TAG,"Optionen anzeigen");
@@ -60,6 +68,9 @@ public class MainActivity extends Activity {
 		i.setClass(this, Options.class);
 		startActivity(i);
 	}
+	/**
+	 * Startet neue Credits-Anzeige
+	*/
 	public void credits(View v)
 	{
 		Log.i(TAG,"Credits anzeigen");
@@ -68,6 +79,11 @@ public class MainActivity extends Activity {
 		startActivity(i);
 	}
 	
+	/**
+	 * Überprüft die Internetverbindung
+	 * @return Verbindungsstatus
+	*/
+	 
 	public boolean isOnline()
 	{
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
