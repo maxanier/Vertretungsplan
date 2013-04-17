@@ -92,4 +92,13 @@
         android:text="Klasse/Stufe z.B. &quot;UI&quot;. &quot;ALL&quot; für alle"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <CheckBox
+        android:id="@+id/direkt_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/edit_klasse"
+        android:layout_alignRight="@+id/edit_klasse"
+        android:layout_below="@+id/edit_klasse"
+        android:text="Direkt zum Vertretungsplan" />
+
 </RelativeLayout>

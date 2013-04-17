@@ -64,6 +64,7 @@ public class Anzeige extends Activity {
 	private String password;
 	private String klasse;
 	private boolean initialisiert=false; //true wenn das Layout geladen wurde
+	private String stand="";
 	
 	public String cookie="";
 	
@@ -409,10 +410,38 @@ public class Anzeige extends Activity {
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(file);
+			doc.getDocumentElement().normalize();
 			//---------------------------------------------------------
 			
-			doc.getDocumentElement().normalize();
 			
+			//Stand herausfinden
+			try{
+			NodeList table = doc.getElementsByTagName("TABLE");
+			if(table!=null){
+			Log.i(TAG,table.getLength()+" TABLE-Elemente gefunden");
+			Node center = table.item(0);
+			Node tr = center.getChildNodes().item(1);
+			Log.i(TAG,"Type: "+tr);
+			Log.i(TAG,"Childs: "+tr.getChildNodes().getLength());
+			Node td = tr.getChildNodes().item(1);
+			Log.i(TAG,"Type: "+td);
+			Log.i(TAG,"Childs: "+td.getChildNodes().getLength());
+			Log.i(TAG,"Childs: "+td.getChildNodes().item(1));
+			Node xyz = td.getChildNodes().item(1);
+			Log.i(TAG,"Type: "+xyz);
+			Log.i(TAG,"Childs: "+xyz.getChildNodes().getLength());
+			String stand = xyz.getChildNodes().item(0).getNodeValue();
+			this.stand= stand;
+			Log.i(TAG,"Stand: "+stand);}
+			else
+				Log.w(TAG,"Stand nicht gefunden");
+			}
+			catch (Exception e){}
+			//------------------------------------------------
+			
+			
+			
+			//Vertretungen auslesen
 			NodeList font = doc.getElementsByTagName("font"); //Filtern der neun Font-Nodes
 			Log.i(TAG,font.getLength()+" Font-Elemente gefunden");
 			
@@ -445,10 +474,17 @@ public class Anzeige extends Activity {
 									String klasse= childnodes.item(0).getChildNodes().item(0).getChildNodes().item(0).getNodeValue();
 									String stunde = childnodes.item(1).getChildNodes().item(0).getNodeValue();
 									String art = childnodes.item(2).getChildNodes().item(0).getNodeValue();
-									String fach = childnodes.item(3).getChildNodes().item(0).getNodeValue();
+									Node fach = childnodes.item(3).getChildNodes().item(0);
+									String sfach=null;
+									if(fach.getNodeType()==Node.TEXT_NODE){
+									sfach = fach.getNodeValue();
+									}
+									else if(fach.getNodeType()==Node.ELEMENT_NODE) {
+										sfach = fach.getChildNodes().item(0).getNodeValue();
+									}
 									String raum = childnodes.item(4).getChildNodes().item(0).getNodeValue();
-									if(fach==null){fach="--";}
-									vertretungen.add(new Vertretung(klasse,stunde,art,fach,raum,tag));
+									if(sfach==null){sfach="--";}
+									vertretungen.add(new Vertretung(klasse,stunde,art,sfach,raum,tag));
 									
 									
 								}
@@ -460,7 +496,7 @@ public class Anzeige extends Activity {
 			}
 			Log.i(TAG,"Auswerten abgeschlo�en");
 			return vertretungen;
-			
+			//------------------------------------------------------------------
 			
 			
 		}
@@ -496,7 +532,7 @@ public class Anzeige extends Activity {
 		{
 			boolean gefunden=false;
 			String tag=vertretungen.get(0).tag;
-			String ergebnis="<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head><body><div align=\"center\">Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
+			String ergebnis="<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head><body><div align=\"center\"><i>"+stand+"</i><br>Datum: "+tag+"\n<table border=\"1\"><tr><th><font size=\"-1\">Klasse</font></th>  <th><font size=\"-1\">Stunde</font></th>  <th><font size=\"-1\">Art</font></th>  <th><font size=\"-1\">Fach</font></th>  <th><font size=\"-1\">Raum</font></th></tr>\n";
 			for(int i=0;i<vertretungen.size();i++){
 				
 				Vertretung v=vertretungen.get(i);

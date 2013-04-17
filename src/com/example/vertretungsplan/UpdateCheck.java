@@ -44,16 +44,18 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 					Log.i(TAG,"Aktuellste Version: "+ergebnis);
 		            if(aktuelleVersion<Double.parseDouble(ergebnis))
 		            {
+						changelog="<html><body><b>Neue Version</b><p>Changelog:";
+						while((ergebnis = buffer.readLine() )!= null){
+							changelog+="<br>"+ergebnis;
+							Log.i(TAG,"Neue Zeile");
+						}
 		            	return true;
 		            }
 		          }
 				else{
 					throw new Exception("Datei leer");
 				}
-				changelog="<html><body><b>Neue Version</b><p>Changelog:";
-				while((ergebnis = buffer.readLine()) != null){
-					changelog+="<br>"+ergebnis;
-				}
+
 				
 			}
 			catch(Exception e){

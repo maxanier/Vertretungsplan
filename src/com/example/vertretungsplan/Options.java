@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.app.AlertDialog;
 
@@ -17,9 +18,11 @@ public class Options extends Activity {
 	private String username="";
 	private String password="";
 	private String klasse="";
+	private boolean direkt=false;
 	private TextView klasse_eingabe;
 	private TextView password_eingabe;
 	private TextView username_eingabe;
+	private CheckBox direkt_box;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,16 +37,20 @@ public class Options extends Activity {
 		username_eingabe = (TextView)findViewById(R.id.edit_username);
 		password_eingabe = (TextView)findViewById(R.id.edit_password);
 		klasse_eingabe = (TextView)findViewById(R.id.edit_klasse);
+		direkt_box = (CheckBox)findViewById(R.id.direkt_box);
 		
 		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
 		username=settings.getString("username","");
 		password=settings.getString("password","");
 		klasse=settings.getString("klasse", "");
+		direkt=settings.getBoolean("direkt", false);
+		
 		
 		username_eingabe.setText(username);
 		password_eingabe.setText(password);
 		klasse_eingabe.setText(klasse);
+		direkt_box.setChecked(direkt);
 		
 		
 	}
@@ -77,6 +84,7 @@ public class Options extends Activity {
 			editor.putString("username",temp_username);
 			editor.putString("password",temp_password);
 			editor.putString("klasse",temp_klasse);
+			editor.putBoolean("direkt", direkt_box.isChecked());
 			editor.commit();
 			Log.i(TAG,"Einstellungen gespeichert");
 			finish();

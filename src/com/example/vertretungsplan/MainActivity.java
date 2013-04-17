@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 
 public class MainActivity extends Activity {
 	public static final String TAG = "Main_Acticity";
+	public static final String PREFS_NAME = "Einstellungen";
 	
 	
 
@@ -36,8 +38,18 @@ public class MainActivity extends Activity {
 		check.execute(version);}
 		catch(Exception e){}
 		}
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+		if(settings.getBoolean("direkt",false)){
+			Log.i(TAG,"Direkt Plan anzeigen");
+			Intent i=new Intent();
+			i.setClass(this, Anzeige.class);
+			startActivity(i);
+		}
 		
 		//final Button plan_button = (Button) findViewById(R.id.button1);
+	}
+	protected void onStart(){
+		super.onStart();
 	}
 
 	@Override
