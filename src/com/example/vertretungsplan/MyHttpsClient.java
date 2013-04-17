@@ -13,6 +13,10 @@ import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.HttpParams;
 
 import android.content.Context;
+/**
+ * Klasse zur HttpsVerbindung mit eigenem Zertifikat(mykeystore)
+ * 
+*/
 
 public class MyHttpsClient extends DefaultHttpClient {
 	 

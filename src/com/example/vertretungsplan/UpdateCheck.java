@@ -78,6 +78,9 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 		}
 		
 	}
+	/**
+	 * Zeigt Update-Hinweis mit Changelog an
+	*/
 	public void updateHinweis(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(main);
 
@@ -85,6 +88,7 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 	    view.loadData(changelog, "text/html; charset=UTF-8", null);
 	    builder.setView(view);
 		builder.setTitle("Update");
+		//Erstellt zwei Optionsbuttons
 		builder.setPositiveButton("Herunterladen",new DialogInterface.OnClickListener(){
 			
 			@Override
@@ -102,6 +106,7 @@ public class UpdateCheck extends AsyncTask<Double,Void,Boolean> {
 				
 			}
 		});
+		//------------------------------------
 		AlertDialog dialog=builder.create();
 		dialog.show();
 	}
