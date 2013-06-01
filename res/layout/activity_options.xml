@@ -1,104 +1,107 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Options" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-    <EditText
-        android:id="@+id/edit_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="69dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:singleLine="true" >
+	<TableLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="377dp" >
 
-        <requestFocus />
-    </EditText>
+		<TextView
+		    android:id="@+id/textView5"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="Medium Text"
+		    android:textAppearance="?android:attr/textAppearanceMedium"
+		    android:visibility="invisible" />
+	
+	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Nutzername"
+	        android:gravity="center"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <EditText
+	        android:id="@+id/edit_username"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true" >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <TextView
+	        android:id="@+id/textView2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Passwort"
+	        android:gravity="center"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <EditText
+	        android:id="@+id/edit_password"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:inputType="textPassword"
+	        android:singleLine="true" />
+	
+	    <TextView
+	        android:id="@+id/textView3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Klasse z.B. UI"
+	        android:gravity="center"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <EditText
+	        android:id="@+id/edit_klasse"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true" />
+	
+	    <CheckBox
+	        android:id="@+id/box_direkt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Direkt zum Vertretungsplan" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="23dp"
-        android:text="Nutzername"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+	    <CheckBox
+	        android:id="@+id/box_kurse"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:onClick="onBoxKurseClick"
+	        android:text="Nur eigene Kurse anzeigen" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_username"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="29dp"
-        android:text="Passwort"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+	    <Button
+	        android:id="@+id/button_kurse"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:onClick="kurswahlAnzeigen"
+	        android:text="Kurswahl"
+	        android:visibility="invisible" />
 
-    <EditText
-        android:id="@+id/edit_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView3"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
-        android:inputType="textPassword" />
+	    <TextView
+	        android:id="@+id/textView4"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Small Text"
+	        android:textAppearance="?android:attr/textAppearanceSmall"
+	        android:visibility="invisible" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/edit_klasse"
-        android:onClick="abbrechen"
-        android:text="Abbrechen" />
+	    <Button
+	        android:id="@+id/button2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:onClick="speichern"
+	        android:text="Fertig" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button2"
-        android:layout_alignBottom="@+id/button2"
-        android:layout_alignLeft="@+id/edit_klasse"
-        android:onClick="speichern"
-        android:text="Fertig" />
-
-    <EditText
-        android:id="@+id/edit_klasse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView4"
-        android:layout_below="@+id/textView4"
-        android:capitalize="characters"
-        android:ems="10"
-        android:inputType="textNoSuggestions"
-        android:singleLine="true" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/edit_password"
-        android:layout_alignRight="@+id/edit_password"
-        android:layout_below="@+id/edit_password"
-        android:gravity="center"
-        android:maxLines="2"
-        android:text="Klasse/Stufe z.B. &quot;UI&quot;. &quot;ALL&quot; für alle"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <CheckBox
-        android:id="@+id/direkt_box"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/edit_klasse"
-        android:layout_alignRight="@+id/edit_klasse"
-        android:layout_below="@+id/edit_klasse"
-        android:text="Direkt zum Vertretungsplan" />
-
-</RelativeLayout>
+	    <Button
+	        android:id="@+id/button3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:onClick="abbrechen"
+	        android:text="Abbrechen" />
+	
+	</TableLayout>
+</ScrollView>

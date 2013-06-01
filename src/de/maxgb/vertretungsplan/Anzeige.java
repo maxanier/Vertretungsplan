@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,7 +31,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -62,6 +63,8 @@ public class Anzeige extends Activity {
 	private String username;
 	private String password;
 	private String klasse;
+	private Set<String> kurse;
+	private boolean kurse_anzeigen;
 	private boolean initialisiert = false; // true wenn das Layout geladen wurde
 	private String stand = "";
 
@@ -82,11 +85,12 @@ public class Anzeige extends Activity {
 		username = settings.getString("username", "");
 		password = settings.getString("password", "");
 		klasse = settings.getString("klasse", "");
+
 		// --------------------------------------
 		if (username != "" && password != "" && klasse != "") {
 
 			if (isOnline()) {
-				new LoadPlanTask().execute(username, password, klasse);
+				new LoadPlanTask().execute();
 			}// Bei Internetverbindung Plan aktualiseren und anzeigen
 			else { // Ohne Internet Verbindung
 				Toast.makeText(getApplicationContext(),
@@ -105,7 +109,7 @@ public class Anzeige extends Activity {
 					Log.i(TAG, "Anzeige ohne Internetverbindung");
 					try {
 						webview.loadData(
-								anzeigen(auswerten(f), username, klasse),
+								anzeigen(auswerten(f), username, klasse, kurse),
 								"text/html; charset=UTF-8", null);
 					}// Gespeicherten Plan anzeigen
 					catch (Exception e) {
@@ -139,18 +143,15 @@ public class Anzeige extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.action_refresh: // Aktualisieren
-				SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-				username = settings.getString("username", "");
-				password = settings.getString("password", "");
-				klasse = settings.getString("klasse", "");
+
 				if (isOnline()) {
 
 					if (username != "" && password != "" && klasse != "") {
-						new LoadPlanTask().execute(username, password, klasse);// Lädt
-																				// den
-																				// Plan
-																				// im
-																				// Hintergrund
+						new LoadPlanTask().execute();// Lädt
+														// den
+														// Plan
+														// im
+														// Hintergrund
 					} else {
 						webview.loadData(no_username,
 								"text/html; charset=UTF-8", null);// Zeigt
@@ -201,7 +202,7 @@ public class Anzeige extends Activity {
 		/**
 		 * BackgroundProzess
 		 * 
-		 * @params params Nutzername,passwort,klasse
+		 * @params params leer
 		 */
 
 		@Override
@@ -209,7 +210,7 @@ public class Anzeige extends Activity {
 			try {
 				// Get the current thread`s token ????
 				synchronized (this) {
-					return planAnzeigen(params[0], params[1], params[2]);
+					return planAnzeigen();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -238,13 +239,23 @@ public class Anzeige extends Activity {
 	/**
 	 * zeigt den Plan an
 	 * 
-	 * @params username Nutzername fÃ¼r Login
-	 * @params passwort Passwort fÃ¼r Login
-	 * @params klasse Klasse
 	 * @return Html-String mit Plan
 	 */
 
-	public String planAnzeigen(String username, String password, String klasse) {
+	@SuppressLint("NewApi")
+	public String planAnzeigen() {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		username = settings.getString("username", "");
+		password = settings.getString("password", "");
+		klasse = settings.getString("klasse", "");
+		kurse_anzeigen = settings.getBoolean("kurse_anzeigen", false);
+
+		if (android.os.Build.VERSION.SDK_INT >= 11 && kurse_anzeigen) {
+			kurse = settings.getStringSet("kurse", null);
+		} else {
+			kurse = null;
+		}
+
 		File dir = new File(Environment.getExternalStorageDirectory().getPath()
 				+ "/vertretungsplan/");
 		dir.mkdirs(); // Erstellen des Verzeichnises falls noch nicht vorhanden
@@ -268,7 +279,7 @@ public class Anzeige extends Activity {
 			if (f.exists()) { // Wenn Datei vorhanden->Auswerten und erstellen
 								// des HTML Codes
 				Log.i(TAG, "Anfrage erfolgreich abgeschloï¿½en");
-				return anzeigen(auswerten(f), username, klasse);
+				return anzeigen(auswerten(f), username, klasse, kurse);
 			} else
 				throw new Exception("Datei nicht gefunden");
 
@@ -584,11 +595,12 @@ public class Anzeige extends Activity {
 	 *            Nutzername fÃ¼r Fehlermeldung
 	 * @param klasse
 	 *            Klasse fÃ¼r Fehlermeldung
+	 * @param kurse
 	 * @return Html-String mit Vertretungen
 	 */
 
 	public String anzeigen(ArrayList<Vertretung> vertretungen, String username,
-			String klasse) throws Exception {
+			String klasse, Set<String> kurse) throws Exception {
 		Log.i(TAG, "Anzeigen gestartet");
 		if (vertretungen != null && vertretungen.size() > 0) {
 			boolean gefunden = false;
@@ -609,9 +621,7 @@ public class Anzeige extends Activity {
 
 				}
 				// System.out.println("Gesuchte Klasse: "+klasse+" Gefundene Klasse: "+v.klasse+"|");
-				if (klasse.trim().equals("ALL")
-						|| v.klasse.trim().equals(klasse.trim())
-						|| v.klasse.trim().equals("(" + klasse.trim() + ")")) {
+				if (ueberpruefen(v, klasse, kurse)) {
 
 					ergebnis += "<tr>";
 					ergebnis += "<th><font size=\"-1\">" + v.klasse
@@ -643,6 +653,33 @@ public class Anzeige extends Activity {
 							+ username + " Passwort: *****");
 		}
 
+	}
+
+	/**
+	 * Überprüft ob die übergebene Vertretung anzeige-relevant ist
+	 * 
+	 * @param v
+	 *            Zu Überprüfende Vertretung
+	 * @param klasse
+	 *            Klasse
+	 * @param kurse
+	 *            String-Set mit Kursen, wenn keine gewählt: null
+	 * @return relevant
+	 */
+	private boolean ueberpruefen(Vertretung v, String klasse, Set<String> kurse) {
+		if (klasse.trim().equals("ALL")
+				|| v.klasse.trim().equals(klasse.trim())
+				|| v.klasse.trim().equals("(" + klasse.trim() + ")")) {
+			if (kurse != null) {
+				if (!kurse.contains(v.fach))
+					return false;
+			}
+
+			return true;
+
+		}
+
+		return false;
 	}
 
 	/**

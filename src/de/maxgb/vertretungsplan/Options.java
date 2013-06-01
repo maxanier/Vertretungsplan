@@ -3,52 +3,78 @@ package de.maxgb.vertretungsplan;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class Options extends Activity {
 	public static final String PREFS_NAME = "Einstellungen";
 	public static final String TAG = "Options_Activity";
+	public static final float LETZE_AENDERUNG = (float) 1.51;
+	public static String ANLEITUNG = "Gebe hier deinen Benutzernamen und dein Passwort aus der Schule ein.";
+	
 	private String username = "";
 	private String password = "";
 	private String klasse = "";
 	private boolean direkt = false;
+	private boolean kurse_anzeigen = false;
 	private TextView klasse_eingabe;
 	private TextView password_eingabe;
 	private TextView username_eingabe;
 	private CheckBox direkt_box;
+	private CheckBox box_kurse;
+	private Button button_kurse;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//Kontrolle zur Zeit nicht benötigt
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			setContentView(R.layout.activity_options_land);
+			setContentView(R.layout.activity_options);
 			Log.i(TAG, "Landscape");
-		} else {
+		}
+		else {
 			setContentView(R.layout.activity_options);
 			Log.i(TAG, "Portrait");
 		}
 		username_eingabe = (TextView) findViewById(R.id.edit_username);
 		password_eingabe = (TextView) findViewById(R.id.edit_password);
 		klasse_eingabe = (TextView) findViewById(R.id.edit_klasse);
-		direkt_box = (CheckBox) findViewById(R.id.direkt_box);
+		direkt_box = (CheckBox) findViewById(R.id.box_direkt);
+		box_kurse = (CheckBox) findViewById(R.id.box_kurse);
+		button_kurse = (Button) findViewById(R.id.button_kurse);
 
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		username = settings.getString("username", "");
 		password = settings.getString("password", "");
 		klasse = settings.getString("klasse", "");
 		direkt = settings.getBoolean("direkt", false);
+		kurse_anzeigen = settings.getBoolean("kurse_anzeigen", false);
 
 		username_eingabe.setText(username);
 		password_eingabe.setText(password);
 		klasse_eingabe.setText(klasse);
 		direkt_box.setChecked(direkt);
+		box_kurse.setChecked(kurse_anzeigen);
+
+		if (!(android.os.Build.VERSION.SDK_INT >= 11)) {
+			box_kurse.setVisibility(4);
+			
+		}
+		else{
+			ANLEITUNG+="<br>'Nur eigene Kurse anzeigen' sorgt dafür, dass nur die von dir gewählten Kurse auf dem Vertretungsplan erscheinen (Nur für die Oberstufe nötig).";
+		}
+		onBoxKurseClick(box_kurse);
+		
+		new InfoBox(this,TAG,LETZE_AENDERUNG,ANLEITUNG);
 
 	}
 
@@ -57,6 +83,20 @@ public class Options extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.options, menu);
 		return true;
+	}
+
+	public void onBoxKurseClick(View v) {
+		if (((CheckBox) v).isChecked()) {
+			button_kurse.setVisibility(0);
+		} else {
+			button_kurse.setVisibility(4);
+		}
+
+	}
+
+	public void kurswahlAnzeigen(View v) {
+		Intent i = new Intent(this,Kurswahl.class);
+		startActivity(i);
 	}
 
 	public void speichern(View v) {
@@ -99,6 +139,7 @@ public class Options extends Activity {
 			editor.putString("password", temp_password);
 			editor.putString("klasse", temp_klasse);
 			editor.putBoolean("direkt", direkt_box.isChecked());
+			editor.putBoolean("kurse_anzeigen", box_kurse.isChecked());
 			editor.commit();
 			Log.i(TAG, "Einstellungen gespeichert");
 			finish();

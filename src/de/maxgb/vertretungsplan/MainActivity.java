@@ -1,11 +1,9 @@
 package de.maxgb.vertretungsplan;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -29,18 +27,13 @@ public class MainActivity extends Activity {
 			Log.i(TAG, "Portrait");
 		}
 		/*
-		 * Überflüßig wegen PlayStore-Updates
-		 * if (isOnline()) {
-			UpdateCheck check = new UpdateCheck(this);
-			try {
-				PackageInfo pInfo = getPackageManager().getPackageInfo(
-						getPackageName(), 0);
-				Double version = Double.parseDouble(pInfo.versionName);
-				Log.i(TAG, "Version: " + version);
-				check.execute(version);
-			} catch (Exception e) {
-			}
-		}*/
+		 * Überflüßig wegen PlayStore-Updates if (isOnline()) { UpdateCheck
+		 * check = new UpdateCheck(this); try { PackageInfo pInfo =
+		 * getPackageManager().getPackageInfo( getPackageName(), 0); Double
+		 * version = Double.parseDouble(pInfo.versionName); Log.i(TAG,
+		 * "Version: " + version); check.execute(version); } catch (Exception e)
+		 * { } }
+		 */
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		if (settings.getBoolean("direkt", false)) {
 			Log.i(TAG, "Direkt Plan anzeigen");
