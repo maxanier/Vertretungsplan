@@ -15,6 +15,8 @@ import android.view.View;
 public class MainActivity extends Activity {
 	public static final String TAG = "Main_Acticity";
 	public static final String PREFS_NAME = "Einstellungen";
+	public static final String CHANGELOG="<html><body>Changelog<br><ul><li>Anzeige überarbeitet</li><li>Verschiedene Tabs für: Alle Vertretungen, Vertretungen für die eigene Stufe und Vertretungen für die eigenen Kurse (siehe Options Menü)(Android 3.0+)</li></ul></body></html>";
+	public static final float LETZE_AENDERUNG =(float)1.6;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +28,11 @@ public class MainActivity extends Activity {
 			setContentView(R.layout.activity_main);
 			Log.i(TAG, "Portrait");
 		}
+		
+		@SuppressWarnings("unused")
+		InfoBox info=new InfoBox(this,TAG,LETZE_AENDERUNG,"Changelog",CHANGELOG);
 		/*
-		 * Überflüßig wegen PlayStore-Updates if (isOnline()) { UpdateCheck
+		 * Seit 1.5 überflüßig wegen PlayStore-Updates if (isOnline()) { UpdateCheck
 		 * check = new UpdateCheck(this); try { PackageInfo pInfo =
 		 * getPackageManager().getPackageInfo( getPackageName(), 0); Double
 		 * version = Double.parseDouble(pInfo.versionName); Log.i(TAG,
@@ -38,11 +43,10 @@ public class MainActivity extends Activity {
 		if (settings.getBoolean("direkt", false)) {
 			Log.i(TAG, "Direkt Plan anzeigen");
 			Intent i = new Intent();
-			i.setClass(this, Anzeige.class);
+			i.setClass(this, Anzeigen.class);
 			startActivity(i);
 		}
 
-		// final Button plan_button = (Button) findViewById(R.id.button1);
 	}
 
 	@Override
@@ -64,7 +68,7 @@ public class MainActivity extends Activity {
 	public void plan(View v) {
 		Log.i(TAG, "Plan anzeigen");
 		Intent i = new Intent();
-		i.setClass(this, Anzeige.class);
+		i.setClass(this, Anzeigen.class);
 		startActivity(i);
 	}
 

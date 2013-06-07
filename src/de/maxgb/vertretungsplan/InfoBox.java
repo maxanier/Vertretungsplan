@@ -11,11 +11,11 @@ import android.webkit.WebView;
 public class InfoBox {
 	public static final String PREFS_NAME = "InfoBox";
 	
-	public InfoBox(Context context, String activity_name, float letzte_aenderung, String anleitung){
+	public InfoBox(Context context, String activity_name, float letzte_aenderung, String titel, String anleitung){
 		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
 		if(settings.getFloat(activity_name, 0)<letzte_aenderung){
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
-			builder.setTitle("Anleitung");
+			builder.setTitle(titel);
 			builder.setPositiveButton("Ok",new OnClickListener(){
 				@Override
 				public void onClick(DialogInterface i, int a){}

@@ -8,5 +8,9 @@
     <string name="title_activity_options">Optionen</string>
     <string name="title_activity_credits">Credits</string>
     <string name="title_activity_kurswahl">Kurswahl</string>
+    <string name="title_activity_anzeigen">Vertretungsplan</string>
+    <string name="title_section1">Eigene Kurse</string>
+    <string name="title_section2">Eigene Stufe</string>
+    <string name="title_section3">Alle</string>
 
 </resources>

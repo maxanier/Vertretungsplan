@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -19,7 +22,7 @@ public class Options extends Activity {
 	public static final String TAG = "Options_Activity";
 	public static final float LETZE_AENDERUNG = (float) 1.51;
 	public static String ANLEITUNG = "Gebe hier deinen Benutzernamen und dein Passwort aus der Schule ein.";
-	
+
 	private String username = "";
 	private String password = "";
 	private String klasse = "";
@@ -35,13 +38,12 @@ public class Options extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		//Kontrolle zur Zeit nicht benötigt
+
+		// Kontrolle zur Zeit nicht benötigt
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			setContentView(R.layout.activity_options);
 			Log.i(TAG, "Landscape");
-		}
-		else {
+		} else {
 			setContentView(R.layout.activity_options);
 			Log.i(TAG, "Portrait");
 		}
@@ -67,14 +69,13 @@ public class Options extends Activity {
 
 		if (!(android.os.Build.VERSION.SDK_INT >= 11)) {
 			box_kurse.setVisibility(4);
-			
-		}
-		else{
-			ANLEITUNG+="<br>'Nur eigene Kurse anzeigen' sorgt dafür, dass nur die von dir gewählten Kurse auf dem Vertretungsplan erscheinen (Nur für die Oberstufe nötig).";
+
+		} else {
+			ANLEITUNG += "<br>'Nur eigene Kurse anzeigen' sorgt dafür, dass nur die von dir gewählten Kurse auf dem Vertretungsplan erscheinen (Nur für die Oberstufe nötig).";
 		}
 		onBoxKurseClick(box_kurse);
-		
-		new InfoBox(this,TAG,LETZE_AENDERUNG,ANLEITUNG);
+
+		new InfoBox(this, TAG, LETZE_AENDERUNG, "Anleitung", ANLEITUNG);
 
 	}
 
@@ -82,9 +83,34 @@ public class Options extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.options, menu);
+		
 		return true;
 	}
-
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    // Respond to the action bar's Up/Home button
+	    case android.R.id.home:
+	        Intent upIntent = NavUtils.getParentActivityIntent(this);
+	        if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+	            // This activity is NOT part of this app's task, so create a new task
+	            // when navigating up, with a synthesized back stack.
+	            TaskStackBuilder.create(this)
+	                    // Add all of this activity's parents to the back stack
+	                    .addNextIntentWithParentStack(upIntent)
+	                    // Navigate up to the closest parent
+	                    .startActivities();
+	        } else {
+	            // This activity is part of this app's task, so simply
+	            // navigate up to the logical parent activity.
+	            NavUtils.navigateUpTo(this, upIntent);
+	        }
+	        return true;
+	    }
+	    return super.onOptionsItemSelected(item);
+	}
+	
 	public void onBoxKurseClick(View v) {
 		if (((CheckBox) v).isChecked()) {
 			button_kurse.setVisibility(0);
@@ -95,7 +121,7 @@ public class Options extends Activity {
 	}
 
 	public void kurswahlAnzeigen(View v) {
-		Intent i = new Intent(this,Kurswahl.class);
+		Intent i = new Intent(this, Kurswahl.class);
 		startActivity(i);
 	}
 

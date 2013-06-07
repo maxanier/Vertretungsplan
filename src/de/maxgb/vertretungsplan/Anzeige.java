@@ -1,3 +1,6 @@
+//Ersetzt durch Anzeigen.java
+
+/*
 package de.maxgb.vertretungsplan;
 
 import java.io.BufferedWriter;
@@ -108,6 +111,11 @@ public class Anzeige extends Activity {
 				if (f.exists()) {
 					Log.i(TAG, "Anzeige ohne Internetverbindung");
 					try {
+						if (android.os.Build.VERSION.SDK_INT >= 11 && kurse_anzeigen) {
+							kurse = settings.getStringSet("kurse", null);
+						} else {
+							kurse = null;
+						}
 						webview.loadData(
 								anzeigen(auswerten(f), username, klasse, kurse),
 								"text/html; charset=UTF-8", null);
@@ -199,11 +207,7 @@ public class Anzeige extends Activity {
 
 		}
 
-		/**
-		 * BackgroundProzess
-		 * 
-		 * @params params leer
-		 */
+
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -236,11 +240,7 @@ public class Anzeige extends Activity {
 		}
 	}
 
-	/**
-	 * zeigt den Plan an
-	 * 
-	 * @return Html-String mit Plan
-	 */
+
 
 	@SuppressLint("NewApi")
 	public String planAnzeigen() {
@@ -290,14 +290,7 @@ public class Anzeige extends Activity {
 
 	}
 
-	/**
-	 * Ruft die Loginseite ab
-	 * 
-	 * @param httpclient
-	 *            Httpsclient zum abrufen(HttpsClient mit Ratszertifikat
-	 *            benÃ¶tigt)
-	 * @return Erfolg der Anfrage
-	 */
+
 	public boolean abrufen(HttpClient httpclient) throws Exception {
 		try {
 			Log.i(TAG, "Abrufen der Loginseite gestartet");
@@ -353,17 +346,7 @@ public class Anzeige extends Activity {
 
 	}
 
-	/**
-	 * Login mit Http-Post
-	 * 
-	 * @param httpclient
-	 *            HttpClient
-	 * @param username
-	 *            Nutzername
-	 * @param password
-	 *            Passwort
-	 * @return Erfolg der Anfrage
-	 */
+
 	public boolean login(HttpClient httpclient, String username, String password)
 			throws Exception {
 
@@ -411,12 +394,7 @@ public class Anzeige extends Activity {
 		}
 	}
 
-	/**
-	 * Abruf und speichern der Planseite
-	 * 
-	 * @param client
-	 *            HttpClient
-	 */
+
 	public void auslesen(HttpClient client) throws Exception {
 		try {
 			Log.i(TAG, "Abrufen des Plans und Auslesen gestartet");
@@ -444,13 +422,7 @@ public class Anzeige extends Activity {
 
 	}
 
-	/**
-	 * Auswerten der gespeicherten Plan Datei
-	 * 
-	 * @param file
-	 *            gespeicherte Plandatei
-	 * @return Array mit allen Vertretungen
-	 */
+
 
 	public ArrayList<Vertretung> auswerten(File file) throws Exception {
 		try {
@@ -586,18 +558,7 @@ public class Anzeige extends Activity {
 
 	}
 
-	/**
-	 * AuswÃ¤hlen der Vertretungen und erzeugen einer HTML-Datei als String
-	 * 
-	 * @param vertretungen
-	 *            Alle gefunden Vertretungen
-	 * @param username
-	 *            Nutzername fÃ¼r Fehlermeldung
-	 * @param klasse
-	 *            Klasse fÃ¼r Fehlermeldung
-	 * @param kurse
-	 * @return Html-String mit Vertretungen
-	 */
+
 
 	public String anzeigen(ArrayList<Vertretung> vertretungen, String username,
 			String klasse, Set<String> kurse) throws Exception {
@@ -655,17 +616,6 @@ public class Anzeige extends Activity {
 
 	}
 
-	/**
-	 * Überprüft ob die übergebene Vertretung anzeige-relevant ist
-	 * 
-	 * @param v
-	 *            Zu Überprüfende Vertretung
-	 * @param klasse
-	 *            Klasse
-	 * @param kurse
-	 *            String-Set mit Kursen, wenn keine gewählt: null
-	 * @return relevant
-	 */
 	private boolean ueberpruefen(Vertretung v, String klasse, Set<String> kurse) {
 		if (klasse.trim().equals("ALL")
 				|| v.klasse.trim().equals(klasse.trim())
@@ -682,14 +632,7 @@ public class Anzeige extends Activity {
 		return false;
 	}
 
-	/**
-	 * Speichern eines Strings in einer angegebenen Datei
-	 * 
-	 * @param s
-	 *            Zu speichernde String
-	 * @param file
-	 *            Speicherort
-	 */
+
 	public void save(String s, String file) throws IOException {
 		Log.i(TAG, "Speichern der Datei: " + file + " gestartet");
 		FileWriter o = new FileWriter(Environment.getExternalStorageDirectory()
@@ -700,11 +643,7 @@ public class Anzeige extends Activity {
 		o.close();
 		Log.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
 
-	}
 
-	/**
-	 * Überprüfung der Internetverbindung return Verbindungsstatus
-	 */
 	public boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -714,3 +653,4 @@ public class Anzeige extends Activity {
 	}
 
 }
+*/
