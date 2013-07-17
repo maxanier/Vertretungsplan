@@ -43,6 +43,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -196,6 +197,11 @@ public class Anzeigen extends SherlockFragmentActivity implements ActionBar.TabL
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newconfig) {
+		super.onConfigurationChanged(newconfig);
 	}
 	
 	@Override

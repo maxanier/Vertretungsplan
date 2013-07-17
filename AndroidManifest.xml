@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.maxgb.vertretungsplan"
-    android:versionCode="9"
-    android:versionName="1.6.3" >
+    android:versionCode="10"
+    android:versionName="1.6.4" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -52,7 +52,9 @@
         </activity>
         <activity
             android:name="de.maxgb.vertretungsplan.Anzeigen"
-            android:label="@string/title_activity_anzeigen" >
+            android:label="@string/title_activity_anzeigen"
+            android:configChanges="orientation|screenSize"
+			android:screenOrientation="fullSensor" >
         </activity>
     </application>
 
