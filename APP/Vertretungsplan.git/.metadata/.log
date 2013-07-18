@@ -7,3 +7,22 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data D:\User\Dokument
 
 !ENTRY org.eclipse.ui 2 2 2013-04-19 16:39:34.439
 !MESSAGE Invalid property category path: ValidationPropertiesPage (bundle: org.eclipse.wst.xml.ui, propertyPage: org.eclipse.wst.xml.ui.propertyPage.project.validation)
+!SESSION 2013-07-18 16:55:24.435 -----------------------------------------------
+eclipse.buildId=M20130204-1200
+java.version=1.7.0_21
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_DE
+Command-line arguments:  -data D:\User\Dokumente\Programmieren\Vertretungsplan\APP\Vertretungsplan.git -os win32 -ws win32 -arch x86_64
+
+!ENTRY org.eclipse.ui 2 2 2013-07-18 16:56:02.054
+!MESSAGE Invalid property category path: ValidationPropertiesPage (bundle: org.eclipse.wst.xml.ui, propertyPage: org.eclipse.wst.xml.ui.propertyPage.project.validation)
+!SESSION 2013-07-18 16:58:01.522 -----------------------------------------------
+eclipse.buildId=M20130204-1200
+java.version=1.7.0_21
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=de_DE
+Framework arguments:  D:\User\Dokumente\Programmieren\Vertretungsplan\.project
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 D:\User\Dokumente\Programmieren\Vertretungsplan\.project
+
+!ENTRY org.eclipse.ui 2 2 2013-07-18 16:58:55.532
+!MESSAGE Invalid property category path: ValidationPropertiesPage (bundle: org.eclipse.wst.xml.ui, propertyPage: org.eclipse.wst.xml.ui.propertyPage.project.validation)
