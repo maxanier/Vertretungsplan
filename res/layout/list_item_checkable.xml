@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<de.maxgb.vertretungsplan.util.CheckableLinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="@dimen/item_height"
+  android:id="@+id/id__id_android:list_item_checkable"
+  android:orientation="horizontal">
+  <ImageView
+    android:id="@id/drag_handle"
+    android:background="@drawable/drag"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/item_height"
+    android:layout_weight="0" />
+  <CheckedTextView
+    android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+    android:id="@+id/select_tabs_item_text"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/item_height"
+    android:layout_weight="1"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:gravity="center_vertical"
+    android:paddingLeft="8dp" />
+
+</de.maxgb.vertretungsplan.util.CheckableLinearLayout>

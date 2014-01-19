@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Vertretungsplan</string>
+    <string name="title_activity_anzeige">Vertretungsplan</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_options">Optionen</string>
+    <string name="title_activity_kurswahl">Kurswahl</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="select_type">Bitte wählen Sie einen Typ</string>
+    <string name="select_tabs">Wählen Sie aus, welche Tabs angezeigt werden sollen</string>
+    <string name="info_text">Aufgrund einer kompletten Überarbeitung dieser App, ist es nötig Nutzername, Passwort und leider auch die eigenen Kurse(Android 3.0+) neu einzustellen. \n\nDafür können jetzt auch die anzuzeigenden Tabs ausgewählt werden, sodass zum Beispiel nur Vertretungen für eigene Kurse und für die eigene Stufe angezeigt werden.</string>
+    <string name="stand_error">Login Info eventuell falsch</string>
+    <string name="title_activity_stundenplan_options">Stundenplan</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="stundenplan_erstellung">"Bitte besuche (vorzugsweise am Pc) die Seite \"sp.maxgb.de\", dort kannst du deinen Stundenplan erstellen. Du erhälst dann einen Code, welchen du hier einfügen musst. "</string>
+    <string name="title_activity_select_tabs">SelectTabsActivity</string>
+
+</resources>
