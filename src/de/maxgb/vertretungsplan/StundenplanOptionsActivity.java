@@ -131,20 +131,13 @@ public class StundenplanOptionsActivity extends Activity {
 			progressDialog.show();
 		}
 	}
+
 	private final String TAG = "Stundenplan_options";
 	private ProgressDialog progressDialog;
 	private EditText edit_id;
 	private CheckBox checkBox_kurse_with_namen;
 
 	private boolean old_kurse_mit_namen;
-
-	// ------------------------------------------------------------------------
-	private void alert(String msg) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(msg);
-		builder.setPositiveButton("Ok", null);
-		builder.create().show();
-	}
 
 	public void fertig(View v) {
 		SharedPreferences.Editor editor = getSharedPreferences(Constants.PREFS_NAME, 0).edit();
@@ -160,33 +153,6 @@ public class StundenplanOptionsActivity extends Activity {
 			StundenplanManager.getInstance().notifyListener();
 		}
 		finish();
-	}
-
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting())
-			return true;
-		return false;
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		// Load Layout
-		setContentView(R.layout.activity_stundenplan_options);
-		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
-		edit_id = (EditText) findViewById(R.id.edit_stundenplan_id);
-		checkBox_kurse_with_namen = (CheckBox) findViewById(R.id.checkBox_stundenplan_with_name);
-		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID, 0)));
-		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false));
-		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false);
-		if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
-			checkBox_kurse_with_namen.setVisibility(View.INVISIBLE);
-			checkBox_kurse_with_namen.setEnabled(false);
-
-		}
 	}
 
 	@Override
@@ -214,6 +180,41 @@ public class StundenplanOptionsActivity extends Activity {
 			task.execute(Integer.parseInt(edit_id.getText().toString()));
 		} catch (NumberFormatException e) {
 			alert("Bitte eine ID(nur aus Zahlen bestehend) eingeben");
+		}
+	}
+
+	// ------------------------------------------------------------------------
+	private void alert(String msg) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg);
+		builder.setPositiveButton("Ok", null);
+		builder.create().show();
+	}
+
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+			return true;
+		return false;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		// Load Layout
+		setContentView(R.layout.activity_stundenplan_options);
+		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
+		edit_id = (EditText) findViewById(R.id.edit_stundenplan_id);
+		checkBox_kurse_with_namen = (CheckBox) findViewById(R.id.checkBox_stundenplan_with_name);
+		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID, 0)));
+		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false));
+		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false);
+		if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
+			checkBox_kurse_with_namen.setVisibility(View.INVISIBLE);
+			checkBox_kurse_with_namen.setEnabled(false);
+
 		}
 	}
 }

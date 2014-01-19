@@ -8,24 +8,15 @@ import de.maxgb.vertretungsplan.util.Stunde;
 
 public class NormalStundenplanFragment extends StundenplanFragment {
 
-
-	
-	
-	
-
-	
-	
-
-
 	@Override
 	protected void anzeigen(ScrollView s) {
 		s.removeAllViews();
-		ArrayList<Stunde[]> stundenplan =StundenplanManager.getInstance().getStundenplan();
-		if(stundenplan==null){
-			alert(StundenplanManager.getInstance().getLastResult());//TODO
-			return ;
+		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
+		if (stundenplan == null) {
+			alert(StundenplanManager.getInstance().getLastResult());// TODO
+			return;
 		}
 		super.anzeigen(stundenplan, s);
-		
+
 	}
 }

@@ -12,18 +12,14 @@ import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 public class StufeSchuelerFragment extends SchuelerFragment {
 	private final String TAG = "StufeSchuelerFragment";
 
-	
 	@Override
 	protected void anzeigen(ScrollView s) {
 		try {
 			s.removeAllViews();
-			SharedPreferences pref = getActivity().getSharedPreferences(
-					Constants.PREFS_NAME, 0);
+			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);
 			VertretungsplanManager vertretungsplan = VertretungsplanManager.getInstance(
-					pref.getBoolean(Constants.SCHUELER_KEY, false),
-					pref.getBoolean(Constants.LEHRER_KEY, false));
-			ArrayList<SchuelerVertretung> vertretungen = vertretungsplan
-					.getSchuelerVertretungen();
+					pref.getBoolean(Constants.SCHUELER_KEY, false), pref.getBoolean(Constants.LEHRER_KEY, false));
+			ArrayList<SchuelerVertretung> vertretungen = vertretungsplan.getSchuelerVertretungen();
 
 			String stufe = pref.getString(Constants.STUFE_KEY, "");
 
@@ -31,8 +27,7 @@ public class StufeSchuelerFragment extends SchuelerFragment {
 			if (stufe != null && !stufe.equals("")) {
 				for (int i = 0; i < vertretungen.size(); i++) {
 					String klasse = vertretungen.get(i).klasse.trim();
-					if (klasse.equals(stufe.trim())
-							|| klasse.equals("(" + stufe.trim() + ")")) {
+					if (klasse.equals(stufe.trim()) || klasse.equals("(" + stufe.trim() + ")")) {
 						eigeneVertretungen.add(vertretungen.get(i));
 					}
 				}
@@ -43,6 +38,6 @@ public class StufeSchuelerFragment extends SchuelerFragment {
 		} catch (Exception e) {
 			Logger.e(TAG, "Auswerten und Anzeigen fehlgeschlagen", e);
 		}
-		
+
 	}
 }

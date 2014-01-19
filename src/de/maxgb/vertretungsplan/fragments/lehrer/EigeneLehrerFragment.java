@@ -12,19 +12,14 @@ import de.maxgb.vertretungsplan.util.Logger;
 public class EigeneLehrerFragment extends LehrerFragment {
 	private final String TAG = "EigeneLehrerFragment";
 
-	
-	
 	@Override
-	protected void anzeigen(ScrollView s){
+	protected void anzeigen(ScrollView s) {
 		try {
 			s.removeAllViews();
-			SharedPreferences pref = getActivity().getSharedPreferences(
-					Constants.PREFS_NAME, 0);
+			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);
 			VertretungsplanManager vertretungsplan = VertretungsplanManager.getInstance(
-					pref.getBoolean(Constants.SCHUELER_KEY, false),
-					pref.getBoolean(Constants.LEHRER_KEY, false));
-			ArrayList<LehrerVertretung> vertretungen = vertretungsplan
-					.getLehrerVertretungen();
+					pref.getBoolean(Constants.SCHUELER_KEY, false), pref.getBoolean(Constants.LEHRER_KEY, false));
+			ArrayList<LehrerVertretung> vertretungen = vertretungsplan.getLehrerVertretungen();
 
 			String kuerzel = pref.getString(Constants.LEHRER_KUERZEL_KEY, "");
 
@@ -32,16 +27,13 @@ public class EigeneLehrerFragment extends LehrerFragment {
 			if (kuerzel != null && !kuerzel.equals("")) {
 
 				for (int i = 0; i < vertretungen.size(); i++) {
-					if (vertretungen.get(i).vertreter.trim().equals(
-							kuerzel.trim())
-							|| vertretungen.get(i).zuvertretender.trim()
-									.equals(kuerzel.trim())) {
+					if (vertretungen.get(i).vertreter.trim().equals(kuerzel.trim())
+							|| vertretungen.get(i).zuvertretender.trim().equals(kuerzel.trim())) {
 						eigeneVertretungen.add(vertretungen.get(i));
 					}
 				}
 			}
 
-			
 			anzeigen(eigeneVertretungen, vertretungsplan.getLehrerStand(), s);
 
 		} catch (Exception e) {
@@ -49,5 +41,4 @@ public class EigeneLehrerFragment extends LehrerFragment {
 		}
 	}
 
-	
 }

@@ -12,20 +12,18 @@ import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
 
 /**
- * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one
- * of the sections/tabs/pages.
+ * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the sections/tabs/pages.
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 	private List<TabSelector> tabList;
 	private TabManager tabManager;
-	private final String TAG="SectionsPagerAdapter";
+	private final String TAG = "SectionsPagerAdapter";
 
 	public SectionsPagerAdapter(FragmentManager fm, String json_tabs) {
 		super(fm);
-		tabManager=new TabManager();
+		tabManager = new TabManager();
 		setTabs(json_tabs);
-
 
 	}
 
@@ -47,9 +45,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 	public Fragment getItem(int position) {
 
 		Fragment fragment = null;
-		
+
 		try {
-			fragment = (Fragment) tabManager.getTabClass(tabList.get(position)).newInstance(); //Creates a new instance of the specific tab, by getting the right class from the TabManager instance
+			fragment = (Fragment) tabManager.getTabClass(tabList.get(position)).newInstance(); // Creates a new instance of the
+																								// specific tab, by getting the
+																								// right class from the TabManager
+																								// instance
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,20 +75,18 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		return tabManager.getTabTitle(tabList.get(position));
 	}
 
-
-	
-	public void setTabs(String json_tabs){
-		ArrayList<TabSelector> all_tabs =TabManager.convertToArrayList(json_tabs);
-		tabList=new ArrayList<TabSelector>();
-		for(int i=0;i<all_tabs.size();i++){
-			if(all_tabs.get(i).isEnabled()){
+	public void setTabs(String json_tabs) {
+		ArrayList<TabSelector> all_tabs = TabManager.convertToArrayList(json_tabs);
+		tabList = new ArrayList<TabSelector>();
+		for (int i = 0; i < all_tabs.size(); i++) {
+			if (all_tabs.get(i).isEnabled()) {
 				tabList.add(all_tabs.get(i));
 			}
 		}
-		if(tabList.size()==0){
-			tabList.add(new TabSelector("InfoFragment.class",true));
+		if (tabList.size() == 0) {
+			tabList.add(new TabSelector("InfoFragment.class", true));
 		}
-		Logger.i(TAG,"JsonString: "+json_tabs+" TabList: "+tabList.toString());
+		Logger.i(TAG, "JsonString: " + json_tabs + " TabList: " + tabList.toString());
 		notifyDataSetChanged();
 	}
 }

@@ -14,21 +14,16 @@ import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 public class KurseSchuelerFragment extends SchuelerFragment {
 	private final String TAG = "KurseSchuelerFragment";
 
-	
-
 	@SuppressLint("NewApi")
 	@Override
 	protected void anzeigen(ScrollView s) {
 		try {
 			s.removeAllViews();
-			SharedPreferences pref = getActivity().getSharedPreferences(
-					Constants.PREFS_NAME, 0);
+			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);
 
 			VertretungsplanManager vertretungsplan = VertretungsplanManager.getInstance(
-					pref.getBoolean(Constants.SCHUELER_KEY, false),
-					pref.getBoolean(Constants.LEHRER_KEY, false));
-			ArrayList<SchuelerVertretung> vertretungen = vertretungsplan
-					.getSchuelerVertretungen();
+					pref.getBoolean(Constants.SCHUELER_KEY, false), pref.getBoolean(Constants.LEHRER_KEY, false));
+			ArrayList<SchuelerVertretung> vertretungen = vertretungsplan.getSchuelerVertretungen();
 
 			String stufe = pref.getString(Constants.STUFE_KEY, "");
 			Set<String> kurse = pref.getStringSet(Constants.KURSE_KEY, null);
@@ -49,13 +44,11 @@ public class KurseSchuelerFragment extends SchuelerFragment {
 				}
 			}
 
-			
 			anzeigen(eigeneVertretungen, vertretungsplan.getSchuelerStand(), s);
 
 		} catch (Exception e) {
 			Logger.e(TAG, "Auswerten und Anzeigen fehlgeschlagen", e);
 		}
 
-		
 	}
 }

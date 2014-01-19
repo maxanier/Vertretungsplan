@@ -20,12 +20,21 @@ import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 
 /**
  * Singleton Klasse zur Auswertung des Vertretungsplans und zur Speicherung der Vertretungen
+ * 
  * @author Max Becker
- *
+ * 
  */
 public class VertretungsplanManager {
-	private class AuswertenTask extends AsyncTask<Void, Void, Boolean> {
+	public interface OnUpdateFinishedListener {
+		public void onVertretungsplanUpdateFinished(boolean update);// Wenn update==false Keine Änderung
+	}
 
+	// Listener-------------
+	public interface OnUpdateListener {
+		public void onVertretungsplanUpdate();
+	}
+
+	private class AuswertenTask extends AsyncTask<Void, Void, Boolean> {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
@@ -35,29 +44,21 @@ public class VertretungsplanManager {
 
 		@Override
 		protected void onPostExecute(Boolean update) {
-			if(update){
+			if (update) {
 				notifyUpdateListener();
 			}
 			notifyUpdateFinishedListener(update);
 		}
 	}
-	
 
-	public interface OnUpdateFinishedListener{
-		public void onVertretungsplanUpdateFinished(boolean update);//Wenn update==false Keine Änderung
-	}
-	//Listener-------------
-	public interface OnUpdateListener{
-		public void onVertretungsplanUpdate();
-	}
 	private static VertretungsplanManager instance;
-	
-	public static VertretungsplanManager getCreatedInstance(){
+
+	public static VertretungsplanManager getCreatedInstance() {
 		return instance;
 	}
-	public static synchronized VertretungsplanManager getInstance(boolean schueler,
-			boolean lehrer) {
-		
+
+	public static synchronized VertretungsplanManager getInstance(boolean schueler, boolean lehrer) {
+
 		if (instance == null) {
 			instance = new VertretungsplanManager(schueler, lehrer);
 		} else if (instance.schueler != schueler || instance.lehrer != lehrer) {
@@ -67,6 +68,7 @@ public class VertretungsplanManager {
 		}
 		return instance;
 	}
+
 	private ArrayList<OnUpdateListener> update_listener;
 	private ArrayList<OnUpdateFinishedListener> update_finished_listener;
 	private final String TAG = "VertretungsplanManager";
@@ -80,28 +82,28 @@ public class VertretungsplanManager {
 	private long lehrerDateiLastModified;
 
 	private boolean schueler;
-	
+
 	private boolean lehrer;
+
 	private VertretungsplanManager(boolean schueler, boolean lehrer) {
 		this.schueler = schueler;
 		this.lehrer = lehrer;
-		update_listener=new ArrayList<OnUpdateListener>();
-		update_finished_listener=new ArrayList<OnUpdateFinishedListener>();
+		update_listener = new ArrayList<OnUpdateListener>();
+		update_finished_listener = new ArrayList<OnUpdateFinishedListener>();
 		auswerten();
 	}
-	
-	//------------------------
+
+	// ------------------------
 	public void asyncAuswerten() {
 		AuswertenTask task = new AuswertenTask();
 		task.execute();
 	}
+
 	public boolean auswerten() {
 		boolean modified = false;
 		if (schueler) {
-			File f1 = new File(Constants.PLAN_DIRECTORY
-					+ Constants.SCHUELER_PLAN_FILE_NAME);
-			if (schuelerDateiLastModified != f1.lastModified()
-					|| schuelerVertretungen == null) {
+			File f1 = new File(Constants.PLAN_DIRECTORY + Constants.SCHUELER_PLAN_FILE_NAME);
+			if (schuelerDateiLastModified != f1.lastModified() || schuelerVertretungen == null) {
 				schuelerDateiLastModified = f1.lastModified();
 				modified = auswertenSchueler(f1);
 
@@ -109,10 +111,8 @@ public class VertretungsplanManager {
 
 		}
 		if (lehrer) {
-			File f2 = new File(Constants.PLAN_DIRECTORY
-					+ Constants.LEHRER_PLAN_FILE_NAME);
-			if (lehrerDateiLastModified != f2.lastModified()
-					|| lehrerVertretungen == null) {
+			File f2 = new File(Constants.PLAN_DIRECTORY + Constants.LEHRER_PLAN_FILE_NAME);
+			if (lehrerDateiLastModified != f2.lastModified() || lehrerVertretungen == null) {
 				lehrerDateiLastModified = f2.lastModified();
 				modified = auswertenLehrer(f2);
 
@@ -121,7 +121,45 @@ public class VertretungsplanManager {
 		}
 		return modified;
 	}
-	
+
+	public String getLehrerStand() {
+		return lehrerStand;
+	}
+
+	public ArrayList<LehrerVertretung> getLehrerVertretungen() {
+		if (lehrerVertretungen == null) {
+			return (new ArrayList<LehrerVertretung>());
+		}
+		return lehrerVertretungen;
+	}
+
+	public String getSchuelerStand() {
+		return schuelerStand;
+	}
+
+	public ArrayList<SchuelerVertretung> getSchuelerVertretungen() {
+		if (schuelerVertretungen == null) {
+			return (new ArrayList<SchuelerVertretung>());
+		}
+		return schuelerVertretungen;
+	}
+
+	public void registerOnUpdateFinishedListener(OnUpdateFinishedListener listener) {
+		this.update_finished_listener.add(listener);
+	}
+
+	public void registerOnUpdateListener(OnUpdateListener listener) {
+		this.update_listener.add(listener);
+	}
+
+	public void unregisterOnUpdateFinishedListener(OnUpdateFinishedListener listener) {
+		this.update_finished_listener.remove(listener);
+	}
+
+	public void unregisterOnUpdateListener(OnUpdateListener listener) {
+		this.update_listener.remove(listener);
+	}
+
 	private boolean auswertenLehrer(File f) {
 		Document doc = getDoc(f);
 		if (doc == null) {
@@ -149,25 +187,18 @@ public class VertretungsplanManager {
 														// jede dritte
 														// Node
 														// ein Tag ist
-			String tag = font.item(j).getChildNodes().item(1).getChildNodes()
-					.item(0).getNodeValue();// Auslesen
-											// des
-											// Tags
-			
-			//Zwei Möglichkeiten: 1. Mit Nachrichten zum Tag 2. ohne Nachrichten zum Tag
-			Node table=null;
-			table=font.item(j).getChildNodes().item(5);//Table falls mit  Nachrichten zum Tag
-			
-			
-			if(!table.getNodeName().equals("table")){
-				table=font.item(j).getChildNodes().item(3);//Table falls ohne  Nachrichten zum Tag
+			String tag = font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();// Auslesen
+																										// des
+																										// Tags
+
+			// Zwei Möglichkeiten: 1. Mit Nachrichten zum Tag 2. ohne Nachrichten zum Tag
+			Node table = null;
+			table = font.item(j).getChildNodes().item(5);// Table falls mit Nachrichten zum Tag
+
+			if (!table.getNodeName().equals("table")) {
+				table = font.item(j).getChildNodes().item(3);// Table falls ohne Nachrichten zum Tag
 			}
-			
-			
-			
-			
-			
-			
+
 			NodeList tr = table.getChildNodes();
 			Logger.i(TAG, tag + ": " + tr.getLength() + " tr-Elemente gefunden");
 
@@ -188,20 +219,17 @@ public class VertretungsplanManager {
 						if (attrclass != null) {
 							String value = attrclass.getNodeValue();
 							// System.out.println(value);
-							if (value.indexOf("list odd") != -1
-									|| value.indexOf("list even") != -1) {
+							if (value.indexOf("list odd") != -1 || value.indexOf("list even") != -1) {
 								// Vertretung gefunden
 								NodeList childnodes = node.getChildNodes();
 								String vertreter = "";
 								try {
-									Node nVertreter = childnodes.item(0)
-											.getChildNodes().item(0)
-											.getChildNodes().item(0);
+									Node nVertreter = childnodes.item(0).getChildNodes().item(0).getChildNodes()
+											.item(0);
 									if (nVertreter.getNodeType() == Node.TEXT_NODE) {
 										vertreter = nVertreter.getNodeValue();
 									} else if (nVertreter.getNodeType() == Node.ELEMENT_NODE) {
-										vertreter = nVertreter.getChildNodes()
-												.item(0).getNodeValue();
+										vertreter = nVertreter.getChildNodes().item(0).getNodeValue();
 									}
 								} catch (NullPointerException e1) {
 									Logger.i(TAG, "Vertreter Feld Leer");
@@ -209,46 +237,39 @@ public class VertretungsplanManager {
 
 								String art = "";
 								try {
-									art = childnodes.item(1).getChildNodes()
-											.item(0).getNodeValue();
+									art = childnodes.item(1).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Art Feld");
 								}
 
 								String stunde = "";
 								try {
-									stunde = childnodes.item(2).getChildNodes()
-											.item(0).getNodeValue();
+									stunde = childnodes.item(2).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Stunden Feld");
 								}
 
 								String klasse = "";
 								try {
-									klasse = childnodes.item(3).getChildNodes()
-											.item(0).getNodeValue();
+									klasse = childnodes.item(3).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Klassen Feld");
 								}
 
 								String zuVertretender = "";
 								try {
-									zuVertretender = childnodes.item(4)
-											.getChildNodes().item(0)
-											.getNodeValue();
+									zuVertretender = childnodes.item(4).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres zuVertretender Feld");
 								}
 
-								Node fach = childnodes.item(5).getChildNodes()
-										.item(0);
+								Node fach = childnodes.item(5).getChildNodes().item(0);
 								String sfach = null;
 								try {
 									if (fach.getNodeType() == Node.TEXT_NODE) {
 										sfach = fach.getNodeValue();
 									} else if (fach.getNodeType() == Node.ELEMENT_NODE) {
-										sfach = fach.getChildNodes().item(0)
-												.getNodeValue();
+										sfach = fach.getChildNodes().item(0).getNodeValue();
 									}
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Fach Feld");
@@ -260,30 +281,24 @@ public class VertretungsplanManager {
 
 								String raum = "";
 								try {
-									raum = childnodes.item(6).getChildNodes()
-											.item(0).getNodeValue();
+									raum = childnodes.item(6).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Raum Feld");
 								}
 
 								String bemerkung = "";
 								try {
-									bemerkung = childnodes.item(8)
-											.getChildNodes().item(0)
-											.getNodeValue();
+									bemerkung = childnodes.item(8).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 								}
 
 								String klausur = "";
 								try {
-									klausur = childnodes.item(9)
-											.getChildNodes().item(0)
-											.getNodeValue();
+									klausur = childnodes.item(9).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 								}
 
-								vertretungen.add(new LehrerVertretung(klasse,
-										stunde, art, sfach, raum, tag, klausur,
+								vertretungen.add(new LehrerVertretung(klasse, stunde, art, sfach, raum, tag, klausur,
 										bemerkung, vertreter, zuVertretender));
 
 							}
@@ -297,7 +312,7 @@ public class VertretungsplanManager {
 		return true;
 
 	}
-	
+
 	private boolean auswertenSchueler(File f) {
 		Document doc = getDoc(f);
 		if (doc == null) {
@@ -325,10 +340,9 @@ public class VertretungsplanManager {
 														// jede dritte
 														// Node
 														// ein Tag ist
-			String tag = font.item(j).getChildNodes().item(1).getChildNodes()
-					.item(0).getNodeValue();// Auslesen
-											// des
-											// Tags
+			String tag = font.item(j).getChildNodes().item(1).getChildNodes().item(0).getNodeValue();// Auslesen
+																										// des
+																										// Tags
 			NodeList tr = font.item(j).getChildNodes().item(3).getChildNodes();
 			Logger.i(TAG, tag + ": " + tr.getLength() + " tr-Elemente gefunden");
 
@@ -349,15 +363,13 @@ public class VertretungsplanManager {
 						if (attrclass != null) {
 							String value = attrclass.getNodeValue();
 							// System.out.println(value);
-							if (value.indexOf("list odd") != -1
-									|| value.indexOf("list even") != -1) {
+							if (value.indexOf("list odd") != -1 || value.indexOf("list even") != -1) {
 								// Vertretung gefunden
 								NodeList childnodes = node.getChildNodes();
 
 								String klasse;
 								try {
-									klasse = childnodes.item(0).getChildNodes()
-											.item(0).getChildNodes().item(0)
+									klasse = childnodes.item(0).getChildNodes().item(0).getChildNodes().item(0)
 											.getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Klassen Feld");
@@ -366,8 +378,7 @@ public class VertretungsplanManager {
 
 								String stunde;
 								try {
-									stunde = childnodes.item(1).getChildNodes()
-											.item(0).getNodeValue();
+									stunde = childnodes.item(1).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Stunden Feld");
 									stunde = "";
@@ -375,22 +386,19 @@ public class VertretungsplanManager {
 
 								String art;
 								try {
-									art = childnodes.item(2).getChildNodes()
-											.item(0).getNodeValue();
+									art = childnodes.item(2).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Art Feld");
 									art = "";
 								}
 
-								Node fach = childnodes.item(3).getChildNodes()
-										.item(0);
+								Node fach = childnodes.item(3).getChildNodes().item(0);
 								String sfach = null;
 								try {
 									if (fach.getNodeType() == Node.TEXT_NODE) {
 										sfach = fach.getNodeValue();
 									} else if (fach.getNodeType() == Node.ELEMENT_NODE) {
-										sfach = fach.getChildNodes().item(0)
-												.getNodeValue();
+										sfach = fach.getChildNodes().item(0).getNodeValue();
 									}
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Fach Feld");
@@ -402,8 +410,7 @@ public class VertretungsplanManager {
 
 								String raum;
 								try {
-									raum = childnodes.item(4).getChildNodes()
-											.item(0).getNodeValue();
+									raum = childnodes.item(4).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Raum Feld");
 									raum = "";
@@ -411,24 +418,19 @@ public class VertretungsplanManager {
 
 								String bemerkung;
 								try {
-									bemerkung = childnodes.item(6)
-											.getChildNodes().item(0)
-											.getNodeValue();
+									bemerkung = childnodes.item(6).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									bemerkung = "";
 								}
 
 								String klausur;
 								try {
-									klausur = childnodes.item(7)
-											.getChildNodes().item(0)
-											.getNodeValue();
+									klausur = childnodes.item(7).getChildNodes().item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									klausur = "";
 								}
 
-								vertretungen.add(new SchuelerVertretung(klasse,
-										stunde, art, sfach, raum, tag, klausur,
+								vertretungen.add(new SchuelerVertretung(klasse, stunde, art, sfach, raum, tag, klausur,
 										bemerkung));
 
 							}
@@ -441,12 +443,12 @@ public class VertretungsplanManager {
 		schuelerVertretungen = vertretungen;
 		return true;
 	}
+
 	private Document getDoc(File file) {
 		// Erstellen eines DocBuilder und parsen der PlanWebsite in ein
 		// Document
 		try {
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
-					.newInstance();
+			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse(file);
 			doc.getDocumentElement().normalize();
@@ -459,52 +461,21 @@ public class VertretungsplanManager {
 			return null;
 		}
 	}
-	
-	public String getLehrerStand() {
-		return lehrerStand;
-	}
-	
-	
-	public ArrayList<LehrerVertretung> getLehrerVertretungen() {
-		if (lehrerVertretungen == null) {
-			return (new ArrayList<LehrerVertretung>());
-		}
-		return lehrerVertretungen;
-	}
 
-	public String getSchuelerStand() {
-		return schuelerStand;
-	}
-
-	public ArrayList<SchuelerVertretung> getSchuelerVertretungen() {
-		if (schuelerVertretungen == null) {
-			return (new ArrayList<SchuelerVertretung>());
-		}
-		return schuelerVertretungen;
-	}
-
-	private void notifyUpdateFinishedListener(boolean update){
-		for(int i=0;i<update_finished_listener.size();i++){
-			if(update_finished_listener.get(i)!=null){
+	private void notifyUpdateFinishedListener(boolean update) {
+		for (int i = 0; i < update_finished_listener.size(); i++) {
+			if (update_finished_listener.get(i) != null) {
 				update_finished_listener.get(i).onVertretungsplanUpdateFinished(update);
 			}
 		}
 	}
 
-	private void notifyUpdateListener(){
-		for(int i=0;i<update_listener.size();i++){
-			if(update_listener.get(i)!=null){
+	private void notifyUpdateListener() {
+		for (int i = 0; i < update_listener.size(); i++) {
+			if (update_listener.get(i) != null) {
 				update_listener.get(i).onVertretungsplanUpdate();
 			}
 		}
-	}
-
-	public void registerOnUpdateFinishedListener(OnUpdateFinishedListener listener){
-		this.update_finished_listener.add(listener);
-	}
-
-	public void registerOnUpdateListener(OnUpdateListener listener){
-		this.update_listener.add(listener);
 	}
 
 	private String standHerausfinden(Document doc) {
@@ -535,13 +506,5 @@ public class VertretungsplanManager {
 		} catch (Exception e) {
 			return "Login-Info vlt. falsch";
 		}
-	}
-
-	public void unregisterOnUpdateFinishedListener(OnUpdateFinishedListener listener){
-		this.update_finished_listener.remove(listener);
-	}
-
-	public void unregisterOnUpdateListener(OnUpdateListener listener){
-		this.update_listener.remove(listener);
 	}
 }

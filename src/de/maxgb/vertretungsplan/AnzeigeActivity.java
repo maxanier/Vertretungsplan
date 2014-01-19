@@ -23,15 +23,14 @@ import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.SectionsPagerAdapter;
 
 /**
- * Hauptklasse, mit einer SherlockActionbar Dient zum Fragmentmanagment und zur
- * Verarbeitung von Nutzereingaben
+ * Hauptklasse, mit einer SherlockActionbar Dient zum Fragmentmanagment und zur Verarbeitung von Nutzereingaben
  * 
  * @author Max Becker
  * 
  * 
  */
-public class AnzeigeActivity extends SherlockFragmentActivity implements
-		ActionBar.TabListener,VertretungsplanManager.OnUpdateFinishedListener {
+public class AnzeigeActivity extends SherlockFragmentActivity implements ActionBar.TabListener,
+		VertretungsplanManager.OnUpdateFinishedListener {
 
 	private static final String STATE_SELECTED_NAVIGATION_TAB = "selected_navigation_tab";
 	private static final String TAG = "Anzeige";
@@ -40,7 +39,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 	private Menu optionsMenu;
 	ViewPager mViewPager;
 	SectionsPagerAdapter mSectionsPagerAdapter;
-
 
 	public void fehler(Exception e) {
 
@@ -58,95 +56,11 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Logger.i(TAG, "Receiving result " + resultCode);
-		if (requestCode == SHOW_OPTIONS_REQUEST) {
-			if (resultCode == OptionsActivity.UPDATE_TABS){
-				updateTabs();
-			}
-			else if(resultCode==OptionsActivity.UPDATE_VP){
-				updateAll();
-			}
-			else if(resultCode==OptionsActivity.UPDATE_ALL){
-				updateTabs();
-				updateAll();
-			}
-		}
-		
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_anzeige);
-		
-		Logger.init();
-
-		actionBar = getSupportActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(false);
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
-		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
-		Logger.setDebugMode(pref.getBoolean(Constants.DEBUG_KEY,false));
-		
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the app.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
-				getSupportFragmentManager(), pref.getString(Constants.JSON_TABS_KEY,""));
-
-		// Set up the ViewPager with the sections adapter.
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
-
-		// When swiping between different sections, select the corresponding
-		// tab. We can also use ActionBar.Tab#select() to do this if we have
-		// a reference to the Tab.
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						if (actionBar.getTabCount() > 0) {
-							actionBar.setSelectedNavigationItem(position);
-						}
-					}
-				});
-		
-		
-		//Register Listener
-		VertretungsplanManager.getInstance(
-				pref.getBoolean(Constants.SCHUELER_KEY, false),
-				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
-		updateTabs();
-
-		
-		if (System.currentTimeMillis()
-				- pref.getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
-			Logger.i(TAG, "Last refresh is to old -> Refreshing");
-			setRefreshActionButtonState(true);
-			DownloadTask task = new DownloadTask(getSharedPreferences(
-					Constants.PREFS_NAME, 0), this);
-			task.execute();
-		}
-
-	}
-
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		this.optionsMenu = menu;
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getSupportMenuInflater().inflate(R.menu.anzeige, menu);
 		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	protected void onDestroy(){
-		
-		try {
-			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateFinishedListener(this);
-		} catch (NullPointerException e) {
-
-		}
-		super.onDestroy();
 	}
 
 	@Override
@@ -172,14 +86,11 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// Restore the previously serialized current tab position.
-		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_TAB)
-				&& savedInstanceState.containsKey("TabCount")) {
-			if (savedInstanceState.getInt("TabCount") == getSupportActionBar()
-					.getTabCount()
+		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_TAB) && savedInstanceState.containsKey("TabCount")) {
+			if (savedInstanceState.getInt("TabCount") == getSupportActionBar().getTabCount()
 					&& getSupportActionBar().getNavigationMode() == ActionBar.NAVIGATION_MODE_TABS) {
 				getSupportActionBar().setSelectedNavigationItem(
-						savedInstanceState
-								.getInt(STATE_SELECTED_NAVIGATION_TAB));
+						savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_TAB));
 			}
 		}
 	}
@@ -188,8 +99,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 	public void onSaveInstanceState(Bundle outState) {
 		// Serialize the current tab position.
 		outState.putInt("TabCount", getSupportActionBar().getTabCount());
-		outState.putInt(STATE_SELECTED_NAVIGATION_TAB, getSupportActionBar()
-				.getSelectedNavigationIndex());
+		outState.putInt(STATE_SELECTED_NAVIGATION_TAB, getSupportActionBar().getSelectedNavigationIndex());
 	}
 
 	@Override
@@ -197,7 +107,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		// When the given tab is selected, switch to the corresponding page in
@@ -206,42 +116,39 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 
 	}
 
-
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 
 	}
 
-
-	
 	/**
-	 * Implements OptionsActivity.OnUpdateFinishedListener
-	 * Setzt den Status des Refresh-Icons auf false, wenn ein Update abgeschlossen ist
+	 * Implements OptionsActivity.OnUpdateFinishedListener Setzt den Status des Refresh-Icons auf false, wenn ein Update
+	 * abgeschlossen ist
 	 */
 	@Override
 	public void onVertretungsplanUpdateFinished(boolean update) {
 		Logger.i(TAG, "Received OnVertretungsplanUpdateFinished Notification");
 		setRefreshActionButtonState(false);
-		if(update){
+		if (update) {
 			Toast.makeText(this, "Aktualisiert", Toast.LENGTH_SHORT).show();
-		}
-		else{
+		} else {
 			Toast.makeText(this, "Keine Änderung", Toast.LENGTH_SHORT).show();
 		}
-		
+
 	}
 
 	/**
 	 * Setzt Status des Refresh-Icons
-	 * @param refreshing active or inactive
+	 * 
+	 * @param refreshing
+	 *            active or inactive
 	 * @see http://www.michenux.net/android-refresh-item-action-bar-circular-progressbar-578.html
 	 */
 	public void setRefreshActionButtonState(final boolean refreshing) {
 
 		if (optionsMenu != null) {
-			final MenuItem refreshItem = optionsMenu
-					.findItem(R.id.action_refresh);
+			final MenuItem refreshItem = optionsMenu.findItem(R.id.action_refresh);
 			if (refreshItem != null) {
 				if (refreshing) {
 					refreshItem.setActionView(R.layout.progressbar);
@@ -252,22 +159,19 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 			}
 		}
 	}
-	
-	//Sonstige
 
-	//Update Methoden
+	// Update Methoden
 	public void updateAll() {
 		setRefreshActionButtonState(true);
-		DownloadTask task = new DownloadTask(getSharedPreferences(
-				Constants.PREFS_NAME, 0), this);
+		DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this);
 		task.execute();
 	}
-	
-	public void updateTabs(){
+
+	public void updateTabs() {
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
-		//int count = actionBar.getTabCount();
-		//int selected = actionBar.getSelectedNavigationIndex();
+		// int count = actionBar.getTabCount();
+		// int selected = actionBar.getSelectedNavigationIndex();
 
 		actionBar.removeAllTabs();
 		mSectionsPagerAdapter.setTabs(pref.getString(Constants.JSON_TABS_KEY, ""));
@@ -278,22 +182,98 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 			// the adapter. Also specify this Activity object, which implements
 			// the TabListener interface, as the callback (listener) for when
 			// this tab is selected.
-			actionBar.addTab(actionBar.newTab()
-					.setText(mSectionsPagerAdapter.getPageTitle(i))
-					.setTabListener(this));
+			actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
 		}
 		if (actionBar.getTabCount() == 1) {
 			actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		}
 		setRefreshActionButtonState(false);
 	}
+
 	public void updateVertretungsplan() {
 		setRefreshActionButtonState(true);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
-		VertretungsplanManager.getInstance(
-				pref.getBoolean(Constants.SCHUELER_KEY, false),
+		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).asyncAuswerten();
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.ANZEIGEINFO);
 	}
-	
+
+	// Sonstige
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Logger.i(TAG, "Receiving result " + resultCode);
+		if (requestCode == SHOW_OPTIONS_REQUEST) {
+			if (resultCode == OptionsActivity.UPDATE_TABS) {
+				updateTabs();
+			} else if (resultCode == OptionsActivity.UPDATE_VP) {
+				updateAll();
+			} else if (resultCode == OptionsActivity.UPDATE_ALL) {
+				updateTabs();
+				updateAll();
+			}
+		}
+
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_anzeige);
+
+		Logger.init();
+
+		actionBar = getSupportActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(false);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
+		Logger.setDebugMode(pref.getBoolean(Constants.DEBUG_KEY, false));
+
+		// Create the adapter that will return a fragment for each of the three
+		// primary sections of the app.
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), pref.getString(
+				Constants.JSON_TABS_KEY, ""));
+
+		// Set up the ViewPager with the sections adapter.
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
+
+		// When swiping between different sections, select the corresponding
+		// tab. We can also use ActionBar.Tab#select() to do this if we have
+		// a reference to the Tab.
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				if (actionBar.getTabCount() > 0) {
+					actionBar.setSelectedNavigationItem(position);
+				}
+			}
+		});
+
+		// Register Listener
+		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
+				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
+		updateTabs();
+
+		if (System.currentTimeMillis() - pref.getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
+			Logger.i(TAG, "Last refresh is to old -> Refreshing");
+			setRefreshActionButtonState(true);
+			DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this);
+			task.execute();
+		}
+
+	}
+
+	@Override
+	protected void onDestroy() {
+
+		try {
+			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateFinishedListener(this);
+		} catch (NullPointerException e) {
+
+		}
+		super.onDestroy();
+	}
+
 }

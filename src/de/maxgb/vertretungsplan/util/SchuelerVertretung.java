@@ -3,9 +3,8 @@ package de.maxgb.vertretungsplan.util;
 public class SchuelerVertretung {
 	public String klasse, art, fach, stunde, raum, tag, klausur, bemerkung;
 
-	public SchuelerVertretung(String klasse, String stunde, String art,
-			String fach, String raum, String tag, String klausur,
-			String bemerkung) {
+	public SchuelerVertretung(String klasse, String stunde, String art, String fach, String raum, String tag,
+			String klausur, String bemerkung) {
 		this.klasse = (klasse == null) ? "" : klasse;
 		this.stunde = (stunde == null) ? "" : stunde;
 		art = (art == null) ? "" : art;

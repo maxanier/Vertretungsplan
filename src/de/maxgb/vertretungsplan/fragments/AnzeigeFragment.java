@@ -25,18 +25,21 @@ import de.maxgb.vertretungsplan.util.Logger;
 public class AnzeigeFragment extends Fragment {
 	private final String TAG = "AnzeigeFragment";
 	/**
-	 * DiplaySize:
-	 * 0=Normal	//3 Tage
-	 * 1=VerySmall	//3 Tage
-	 * 2=Small	//3 Tage
-	 * -1=Big	//4 Tage
-	 * -2=Very Big //7 Tage
+	 * DiplaySize: 0=Normal //3 Tage 1=VerySmall //3 Tage 2=Small //3 Tage -1=Big //4 Tage -2=Very Big //7 Tage
 	 */
 	protected int displaySize = 0;
 	protected boolean screenSizeSet = false;// Wurde die ScreenSize bereits
 											// aktualisiert
-	
-	protected  void alert(String msg){
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) { // first saving my state,
+														// so the bundle wont be
+														// empty.
+		outState.putString("WORKAROUND_FOR_BUG_19917_KEY", "WORKAROUND_FOR_BUG_19917_VALUE");
+		super.onSaveInstanceState(outState);
+	}
+
+	protected void alert(String msg) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setMessage(msg);
 		builder.setPositiveButton("Ok", null);
@@ -45,40 +48,36 @@ public class AnzeigeFragment extends Fragment {
 
 	protected TextView newBigTextView(CharSequence text) {
 		TextView temp = new TextView(getActivity());
-		TableRow.LayoutParams trparams = new TableRow.LayoutParams(
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+		TableRow.LayoutParams trparams = new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 		trparams.setMargins(3, 3, 2, 6);
 		temp.setLayoutParams(trparams);
-		temp.setTextSize(Constants.TEXTSIZESCHUELER+Constants.TEXTSIZEBIGGER);
+		temp.setTextSize(Constants.TEXTSIZESCHUELER + Constants.TEXTSIZEBIGGER);
 		temp.setText(text);
 		return temp;
 	}
-	
-	 protected TextView newBoldTextView(CharSequence text){
-		SpannableString t=new SpannableString(text);
+
+	protected TextView newBoldTextView(CharSequence text) {
+		SpannableString t = new SpannableString(text);
 		t.setSpan(new StyleSpan(Typeface.BOLD), 0, t.length(), 0);
 		return newTextView(t);
 	}
-	
-	protected TableRow newTableRow(){
-		TableRow row=new TableRow(getActivity());
-		
-		
+
+	protected TableRow newTableRow() {
+		TableRow row = new TableRow(getActivity());
+
 		return row;
 	}
-	
+
 	protected TextView newTextView(CharSequence text) {
 		TextView temp = new TextView(getActivity());
-		TableRow.LayoutParams trparams = new TableRow.LayoutParams(
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+		TableRow.LayoutParams trparams = new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 		trparams.setMargins(3, 3, 2, 11);
 		temp.setLayoutParams(trparams);
-		
+
 		if (displaySize == 2) {
-			temp.setTextSize(Constants.TEXTSIZESCHUELER
-					+ Constants.TEXTSIZEBIGGER);
+			temp.setTextSize(Constants.TEXTSIZESCHUELER + Constants.TEXTSIZEBIGGER);
 		} else {
 			temp.setTextSize(Constants.TEXTSIZESCHUELER);
 		}
@@ -86,27 +85,18 @@ public class AnzeigeFragment extends Fragment {
 		temp.setText(text);
 		return temp;
 	}
-	
-	protected TextView newTextViewCentered(CharSequence text){
+
+	protected TextView newTextViewCentered(CharSequence text) {
 		TextView t = newTextView(text);
 		t.setGravity(Gravity.CENTER_HORIZONTAL);
 		return t;
 	}
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) { // first saving my state,
-														// so the bundle wont be
-														// empty.
-		outState.putString("WORKAROUND_FOR_BUG_19917_KEY",
-				"WORKAROUND_FOR_BUG_19917_VALUE");
-		super.onSaveInstanceState(outState);
-	}
-	
-	
+
 	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	protected void retrieveScreenSize() {
-		
+
+		//@formatter:off
 		/*
 		 * Testing purpose
 		 * 

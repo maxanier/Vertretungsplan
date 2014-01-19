@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.webkit.WebView;
+
 /**
  * Infobox für Infotexte und Anleitungen
+ * 
  * @author Max Becker
- *
+ * 
  */
 public class InfoBox {
 	public enum Anleitungen {
@@ -41,6 +43,7 @@ public class InfoBox {
 		}
 
 	}
+
 	private static final String PREFS_NAME = "InfoBox";
 	private static final String TITLE = "Erklärung";
 
@@ -48,8 +51,7 @@ public class InfoBox {
 
 	public static void showAnleitungBox(Context context, Anleitungen anleitung) {
 
-		SharedPreferences settings = context
-				.getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
 		if (settings.getInt(anleitung.activity_name, 0) < anleitung.letzte_aenderung) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(context);
 			builder.setTitle(TITLE);

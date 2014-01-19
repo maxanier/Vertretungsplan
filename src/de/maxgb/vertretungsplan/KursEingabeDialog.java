@@ -10,8 +10,9 @@ import android.widget.EditText;
 
 /**
  * Dialog zur Eingabe eines Kursnamens
+ * 
  * @author Max Becker
- *
+ * 
  */
 public class KursEingabeDialog extends DialogFragment {
 
@@ -29,8 +30,7 @@ public class KursEingabeDialog extends DialogFragment {
 			mListener = (NoticeDialogListener) activity;
 		} catch (ClassCastException e) {
 			// Activity implementiert das Interface nicht
-			throw new ClassCastException(activity.toString()
-					+ " must implement NoticeDialogListener");
+			throw new ClassCastException(activity.toString() + " must implement NoticeDialogListener");
 		}
 	}
 
@@ -40,23 +40,20 @@ public class KursEingabeDialog extends DialogFragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		final EditText input = new EditText(getActivity());
 		builder.setView(input);
-		builder.setPositiveButton("Hinzufügen",
-				new DialogInterface.OnClickListener() {
+		builder.setPositiveButton("Hinzufügen", new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						mListener.onDialogPositiveClick(input.getText()
-								.toString());
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				mListener.onDialogPositiveClick(input.getText().toString());
 
-					}
-				}).setNegativeButton("Abbrechen",
-				new DialogInterface.OnClickListener() {
+			}
+		}).setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
 
-					}
-				});
+			}
+		});
 		return builder.create();
 	}
 }

@@ -25,17 +25,99 @@ import de.maxgb.vertretungsplan.util.Logger;
 public abstract class LehrerFragment extends VertretungsplanFragment {
 	private final String TAG = "LehrerFragment";
 
-	protected void anzeigen(ArrayList<LehrerVertretung> vertretungen,
-			String stand, ScrollView s) {
+	private TableLayout neuerTag(String tag, LinearLayout l) {
+		LayoutParams params = new LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+		TableRow.LayoutParams trparams = new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+		trparams.setMargins(3, 3, 2, 6);
+
+		if (l.getChildCount() != 1) {
+			TextView leer = new TextView(getActivity());
+			leer.setText("  ");
+			TableRow leereReihe = new TableRow(getActivity());
+			leereReihe.setLayoutParams(trparams);
+			leereReihe.addView(leer);
+			l.addView(leereReihe);
+		}
+
+		SpannableString spanString = new SpannableString(tag);
+		spanString.setSpan(new UnderlineSpan(), 0, spanString.length(), 0);
+		spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, spanString.length(), 0);
+		TextView tv1 = new TextView(getActivity());
+		tv1.setText(spanString);
+		tv1.setTextSize(Constants.TEXTSIZELEHRER + 2);
+		TableRow tr1 = new TableRow(getActivity());
+		// tr.setLayoutParams(trparams);
+		tr1.addView(tv1);
+		l.addView(tr1);
+
+		TableLayout layoutTable = new TableLayout(getActivity());
+		layoutTable.setLayoutParams(params);
+		layoutTable.setBackgroundColor(color.black);
+
+		TableRow tr2 = new TableRow(getActivity());
+		tr2.setLayoutParams(trparams);
+
+		// Definition der Spannabel Strings----------------------
+		SpannableString spanVertreter = new SpannableString("Ver. ");
+		spanVertreter.setSpan(new StyleSpan(Typeface.BOLD), 0, spanVertreter.length(), 0);
+
+		SpannableString spanArt = new SpannableString("Art ");
+		spanArt.setSpan(new StyleSpan(Typeface.BOLD), 0, spanArt.length(), 0);
+
+		SpannableString spanStunde = new SpannableString("St.");
+		spanStunde.setSpan(new StyleSpan(Typeface.BOLD), 0, spanStunde.length(), 0);
+
+		SpannableString spanKlasse = new SpannableString("Kl.");
+		spanKlasse.setSpan(new StyleSpan(Typeface.BOLD), 0, spanKlasse.length(), 0);
+
+		SpannableString spanZuVertretender = new SpannableString("statt");
+		spanZuVertretender.setSpan(new StyleSpan(Typeface.BOLD), 0, spanZuVertretender.length(), 0);
+
+		SpannableString spanFach = new SpannableString("Fach ");
+		spanFach.setSpan(new StyleSpan(Typeface.BOLD), 0, spanFach.length(), 0);
+
+		SpannableString spanRaum = new SpannableString("Raum ");
+		spanRaum.setSpan(new StyleSpan(Typeface.BOLD), 0, spanRaum.length(), 0);
+
+		SpannableString spanKlausur = new SpannableString("Kl. ");
+		spanKlausur.setSpan(new StyleSpan(Typeface.BOLD), 0, spanKlausur.length(), 0);
+
+		SpannableString spanBemerkung = new SpannableString("Bemerk. ");
+		spanBemerkung.setSpan(new StyleSpan(Typeface.BOLD), 0, spanBemerkung.length(), 0);
+
+		tr2.setLayoutParams(params);
+		tr2.setLayoutParams(params);
+		tr2.addView(newTextView(spanVertreter));
+		tr2.addView(newTextView(spanArt));
+		tr2.addView(newTextView(spanStunde));
+		tr2.addView(newTextView(spanKlasse));
+		tr2.addView(newTextView(spanZuVertretender));
+		tr2.addView(newTextView(spanFach));
+		tr2.addView(newTextView(spanRaum));
+
+		if (displaySize == -1) {
+			tr2.addView(newTextView(spanKlausur));
+			tr2.addView(newTextView(spanBemerkung));
+		} else if (displaySize == 0) {
+			tr2.addView(newTextView(spanKlausur));
+		}
+
+		tr2.setBackgroundColor(color.white);
+		layoutTable.addView(tr2);
+		return layoutTable;
+
+	}
+
+	protected void anzeigen(ArrayList<LehrerVertretung> vertretungen, String stand, ScrollView s) {
 		if (!screenSizeSet) {
 			retrieveScreenSize();
 		}
 		// Layout erstellen
-		LayoutParams params = new LinearLayout.LayoutParams(
-				android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+		LayoutParams params = new LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-		TableRow.LayoutParams trparams = new TableRow.LayoutParams(
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+		TableRow.LayoutParams trparams = new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 
 		if (vertretungen != null && vertretungen.size() > 0) {
@@ -48,20 +130,16 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 
 			// Stand anzeigen
 			SpannableString spanStand = new SpannableString(stand);
-			spanStand.setSpan(new StyleSpan(Typeface.ITALIC), 0,
-					spanStand.length(), 0);
+			spanStand.setSpan(new StyleSpan(Typeface.ITALIC), 0, spanStand.length(), 0);
 			TextView tv_stand = new TextView(getActivity());
-			tv_stand.setLayoutParams(new TableRow.LayoutParams(
-					android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+			tv_stand.setLayoutParams(new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
 					android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
-			tv_stand.setGravity(Gravity.CENTER_VERTICAL
-					| Gravity.CENTER_HORIZONTAL);
+			tv_stand.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 			tv_stand.setText(spanStand);
 			tv_stand.setTextSize(Constants.TEXTSIZELEHRER + 1);
 
 			TableRow tr_stand = new TableRow(getActivity());
-			tr_stand.setLayoutParams(new TableRow.LayoutParams(
-					android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+			tr_stand.setLayoutParams(new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
 					android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 			tr_stand.addView(tv_stand);
 
@@ -104,10 +182,8 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 						tr.setOnClickListener(new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								AlertDialog.Builder builder = new AlertDialog.Builder(
-										getActivity());
-								TableLayout table = new TableLayout(
-										getActivity());
+								AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+								TableLayout table = new TableLayout(getActivity());
 								TableRow row1 = new TableRow(getActivity());
 								TableRow row2 = new TableRow(getActivity());
 
@@ -148,10 +224,8 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 						tr.setOnClickListener(new View.OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								AlertDialog.Builder builder = new AlertDialog.Builder(
-										getActivity());
-								TableLayout table = new TableLayout(
-										getActivity());
+								AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+								TableLayout table = new TableLayout(getActivity());
 								TableRow row1 = new TableRow(getActivity());
 								if (!bemerkung.equals("")) {
 									row1.addView(newBigTextView("Bemerkung: "));
@@ -195,12 +269,10 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 			TableLayout table = new TableLayout(getActivity());
 			table.setGravity(Gravity.CENTER_HORIZONTAL);
 			SpannableString spanStand = new SpannableString(stand + ": ");
-			spanStand.setSpan(new StyleSpan(Typeface.ITALIC), 0,
-					spanStand.length(), 0);
+			spanStand.setSpan(new StyleSpan(Typeface.ITALIC), 0, spanStand.length(), 0);
 			TextView tv_stand = new TextView(getActivity());
 			tv_stand.setLayoutParams(trparams);
-			tv_stand.setGravity(Gravity.CENTER_VERTICAL
-					| Gravity.CENTER_HORIZONTAL);
+			tv_stand.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 			tv_stand.setText(spanStand);
 
 			TableRow tr_stand = new TableRow(getActivity());
@@ -212,14 +284,11 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 			TableRow leereReihe = new TableRow(getActivity());
 			leereReihe.addView(leer);
 
-			SpannableString spanNachricht = new SpannableString(
-					"Keine entsprechenden Vertretungen gefunden");
-			spanNachricht.setSpan(new StyleSpan(Typeface.ITALIC), 0,
-					spanNachricht.length(), 0);
+			SpannableString spanNachricht = new SpannableString("Keine entsprechenden Vertretungen gefunden");
+			spanNachricht.setSpan(new StyleSpan(Typeface.ITALIC), 0, spanNachricht.length(), 0);
 			TextView tv_nachricht = new TextView(getActivity());
 			tv_nachricht.setLayoutParams(trparams);
-			tv_nachricht.setGravity(Gravity.CENTER_VERTICAL
-					| Gravity.CENTER_HORIZONTAL);
+			tv_nachricht.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 			tv_nachricht.setText(spanNachricht);
 
 			TableRow tr_nachricht = new TableRow(getActivity());
@@ -236,111 +305,15 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 		}
 	}
 
-	private TableLayout neuerTag(String tag, LinearLayout l) {
-		LayoutParams params = new LinearLayout.LayoutParams(
-				android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-		TableRow.LayoutParams trparams = new TableRow.LayoutParams(
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-		trparams.setMargins(3, 3, 2, 6);
-
-		if (l.getChildCount() != 1) {
-			TextView leer = new TextView(getActivity());
-			leer.setText("  ");
-			TableRow leereReihe = new TableRow(getActivity());
-			leereReihe.setLayoutParams(trparams);
-			leereReihe.addView(leer);
-			l.addView(leereReihe);
-		}
-
-		SpannableString spanString = new SpannableString(tag);
-		spanString.setSpan(new UnderlineSpan(), 0, spanString.length(), 0);
-		spanString.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanString.length(), 0);
-		TextView tv1 = new TextView(getActivity());
-		tv1.setText(spanString);
-		tv1.setTextSize(Constants.TEXTSIZELEHRER + 2);
-		TableRow tr1 = new TableRow(getActivity());
-		// tr.setLayoutParams(trparams);
-		tr1.addView(tv1);
-		l.addView(tr1);
-
-		TableLayout layoutTable = new TableLayout(getActivity());
-		layoutTable.setLayoutParams(params);
-		layoutTable.setBackgroundColor(color.black);
-
-		TableRow tr2 = new TableRow(getActivity());
-		tr2.setLayoutParams(trparams);
-
-		// Definition der Spannabel Strings----------------------
-		SpannableString spanVertreter = new SpannableString("Ver. ");
-		spanVertreter.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanVertreter.length(), 0);
-
-		SpannableString spanArt = new SpannableString("Art ");
-		spanArt.setSpan(new StyleSpan(Typeface.BOLD), 0, spanArt.length(), 0);
-
-		SpannableString spanStunde = new SpannableString("St.");
-		spanStunde.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanStunde.length(), 0);
-
-		SpannableString spanKlasse = new SpannableString("Kl.");
-		spanKlasse.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanKlasse.length(), 0);
-
-		SpannableString spanZuVertretender = new SpannableString("statt");
-		spanZuVertretender.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanZuVertretender.length(), 0);
-
-		SpannableString spanFach = new SpannableString("Fach ");
-		spanFach.setSpan(new StyleSpan(Typeface.BOLD), 0, spanFach.length(), 0);
-
-		SpannableString spanRaum = new SpannableString("Raum ");
-		spanRaum.setSpan(new StyleSpan(Typeface.BOLD), 0, spanRaum.length(), 0);
-
-		SpannableString spanKlausur = new SpannableString("Kl. ");
-		spanKlausur.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanKlausur.length(), 0);
-
-		SpannableString spanBemerkung = new SpannableString("Bemerk. ");
-		spanBemerkung.setSpan(new StyleSpan(Typeface.BOLD), 0,
-				spanBemerkung.length(), 0);
-
-		tr2.setLayoutParams(params);
-		tr2.setLayoutParams(params);
-		tr2.addView(newTextView(spanVertreter));
-		tr2.addView(newTextView(spanArt));
-		tr2.addView(newTextView(spanStunde));
-		tr2.addView(newTextView(spanKlasse));
-		tr2.addView(newTextView(spanZuVertretender));
-		tr2.addView(newTextView(spanFach));
-		tr2.addView(newTextView(spanRaum));
-
-		if (displaySize == -1) {
-			tr2.addView(newTextView(spanKlausur));
-			tr2.addView(newTextView(spanBemerkung));
-		} else if (displaySize == 0) {
-			tr2.addView(newTextView(spanKlausur));
-		}
-
-		tr2.setBackgroundColor(color.white);
-		layoutTable.addView(tr2);
-		return layoutTable;
-
-	}
-	
 	@Override
 	protected TextView newTextView(CharSequence text) {
 		TextView temp = new TextView(getActivity());
-		TableRow.LayoutParams trparams = new TableRow.LayoutParams(
-				android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+		TableRow.LayoutParams trparams = new TableRow.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 		trparams.setMargins(3, 3, 2, 12);
 		temp.setLayoutParams(trparams);
 		if (displaySize == 2) {
-			temp.setTextSize(Constants.TEXTSIZELEHRER
-					+ Constants.TEXTSIZEBIGGER);
+			temp.setTextSize(Constants.TEXTSIZELEHRER + Constants.TEXTSIZEBIGGER);
 		} else {
 			temp.setTextSize(Constants.TEXTSIZELEHRER);
 		}
@@ -348,5 +321,4 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 		return temp;
 	}
 
-	
 }

@@ -29,20 +29,18 @@ import de.maxgb.vertretungsplan.util.InfoBox;
 import de.maxgb.vertretungsplan.util.Logger;
 
 /**
- * Optionsmenu
- * Dient zur Eingabe von Nutzername,Passwort, Stufe, Kursen und Typänderungen
+ * Optionsmenu Dient zur Eingabe von Nutzername,Passwort, Stufe, Kursen und Typänderungen
+ * 
  * @author Max Becker
- *
+ * 
  */
 public class OptionsActivity extends FragmentActivity {
 
-
-	
-	
 	/**
 	 * Select Type Dialog, allows the user to choose between Schueler,Lehrer ans Oberstufenschueler
+	 * 
 	 * @author Max Becker
-	 *
+	 * 
 	 */
 	@SuppressLint("ValidFragment")
 	private class SelectTypeDialogFragment extends DialogFragment {
@@ -51,61 +49,53 @@ public class OptionsActivity extends FragmentActivity {
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle(R.string.select_type).setItems(R.array.type_array,
-					new DialogInterface.OnClickListener() {
+			builder.setTitle(R.string.select_type).setItems(R.array.type_array, new DialogInterface.OnClickListener() {
 
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							SharedPreferences prefs = getSharedPreferences(
-									Constants.PREFS_NAME, 0);
-							de.maxgb.vertretungsplan.util.Logger.i(TAG, "Selected " + which);
-							switch (which) {
-							case 0:
-								prefs.edit()
-										.putBoolean(Constants.SCHUELER_KEY,
-												true)
-										.putBoolean(Constants.LEHRER_KEY, false)
-										.putBoolean(Constants.OBERSTUFE_KEY,
-												false).commit();
-								break;
-							case 1:
-								prefs.edit()
-										.putBoolean(Constants.SCHUELER_KEY,
-												true)
-										.putBoolean(Constants.LEHRER_KEY, false)
-										.putBoolean(Constants.OBERSTUFE_KEY,
-												true).commit();
-								break;
-							case 2:
-								de.maxgb.vertretungsplan.util.Logger.i(TAG,
-										"Lehrer selected: "
-												+ prefs.edit()
-														.putBoolean(
-																Constants.LEHRER_KEY,
-																true)
-														.putBoolean(
-																Constants.SCHUELER_KEY,
-																false).commit());
-								break;
-							default:
-								prefs.edit()
-										.putBoolean(Constants.SCHUELER_KEY,
-												true)
-										.putBoolean(Constants.LEHRER_KEY, false)
-										.commit();
-								break;
-							}
-							prefs.edit().putString(Constants.JSON_TABS_KEY,TabManager.convertToString(SelectTabsActivity.createStandardSelection(new ArrayList<TabSelector>(), prefs))).commit();//Creates a Standard TabSelection to make a Json string of it, which is saved as the tabselection json_string to reset the tabselection
-							requestVertretungsplanUpdate();
-							requestTabUpdate();
-							showLayout();
-						}
-					});
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
+					de.maxgb.vertretungsplan.util.Logger.i(TAG, "Selected " + which);
+					switch (which) {
+					case 0:
+						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
+								.putBoolean(Constants.OBERSTUFE_KEY, false).commit();
+						break;
+					case 1:
+						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
+								.putBoolean(Constants.OBERSTUFE_KEY, true).commit();
+						break;
+					case 2:
+						de.maxgb.vertretungsplan.util.Logger.i(
+								TAG,
+								"Lehrer selected: "
+										+ prefs.edit().putBoolean(Constants.LEHRER_KEY, true)
+												.putBoolean(Constants.SCHUELER_KEY, false).commit());
+						break;
+					default:
+						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
+								.commit();
+						break;
+					}
+					prefs.edit()
+							.putString(
+									Constants.JSON_TABS_KEY,
+									TabManager.convertToString(SelectTabsActivity.createStandardSelection(
+											new ArrayList<TabSelector>(), prefs))).commit();// Creates a Standard TabSelection to
+																							// make a Json string of it, which is
+																							// saved as the tabselection
+																							// json_string to reset the
+																							// tabselection
+					requestVertretungsplanUpdate();
+					requestTabUpdate();
+					showLayout();
+				}
+			});
 			return builder.create();
 
 		}
 
 	}
+
 	private final String TAG = "Options";
 	private TextView password_eingabe;
 	private TextView username_eingabe;
@@ -116,44 +106,22 @@ public class OptionsActivity extends FragmentActivity {
 	private TextView kuerzel_eingabe;
 
 	private Button button_kurse;
-	
+
 	private String oldPassword;
-	
+
 	private String oldUsername;
 	private boolean update_vertretungsplan;
 	private boolean update_tabs;
-	public final static int UPDATE_NOTHING=-1;
-	public final static int UPDATE_ALL=0;
-	public final static int UPDATE_VP=1;
-	
+	public final static int UPDATE_NOTHING = -1;
+	public final static int UPDATE_ALL = 0;
+	public final static int UPDATE_VP = 1;
 
-
-	public final static int UPDATE_TABS=2;
+	public final static int UPDATE_TABS = 2;
 
 	public void abbrechen(View v) {
 		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Abbrechen");
 		finish();
 	}
-	
-	
-	
-	/**
-	 * Alert Boc falls nicht alle Felder ausgefüllt sind
-	 */
-	private void alertBox() {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-			}
-		});
-
-		AlertDialog dialog = builder.create();
-		dialog.show();
-	}
-	
 
 	public void changeType(View v) {
 		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
@@ -165,57 +133,32 @@ public class OptionsActivity extends FragmentActivity {
 
 	public void chooseTabs(View v) {
 
-		Intent i=new Intent(this, SelectTabsActivity.class);
+		Intent i = new Intent(this, SelectTabsActivity.class);
 		startActivity(i);
 		requestTabUpdate();
 	}
 
 	@Override
-	public void finish(){
+	public void finish() {
 		Logger.i(TAG, "Finishing");
-		if(update_vertretungsplan&&update_tabs){
+		if (update_vertretungsplan && update_tabs) {
 			setResult(UPDATE_ALL);
-		}
-		else if(update_vertretungsplan){
+		} else if (update_vertretungsplan) {
 			setResult(UPDATE_VP);
-		}
-		else if(update_tabs){
+		} else if (update_tabs) {
 			setResult(UPDATE_TABS);
-		}
-		else{
+		} else {
 			setResult(UPDATE_NOTHING);
 		}
 		super.finish();
 	}
-	
+
 	public void kurswahlAnzeigen(View v) {
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			Intent i = new Intent(this, KurswahlActivity.class);
 			startActivity(i);
-			update_tabs=true;
+			update_tabs = true;
 		}
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Logger.init();
-		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
-		Logger.setDebugMode(prefs.getBoolean(Constants.DEBUG_KEY,false));
-		resetUpdateRequests();
-		if (!prefs.getBoolean(Constants.SCHUELER_KEY, false)
-				&& !prefs.getBoolean(Constants.LEHRER_KEY, false)) {
-			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
-			DialogFragment type_fragment = new SelectTypeDialogFragment();
-			type_fragment.show(getSupportFragmentManager(), "select_type");
-			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Finished Type Dialog");
-		} else {
-			showLayout();
-		}
-
-		// Show the Up button in the action bar.
-		setupActionBar();
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Options created");
 	}
 
 	@Override
@@ -225,61 +168,33 @@ public class OptionsActivity extends FragmentActivity {
 		return true;
 	}
 
-	private void requestTabUpdate(){
-		update_tabs=true;
-		Logger.i(TAG,"Tab Update requestet");
-	}
-
-	private void requestVertretungsplanUpdate(){
-		update_vertretungsplan=true;
-		Logger.i(TAG,"Vertretungsplan Update requestet");
-	}
-	
-	private void resetUpdateRequests(){
-		update_vertretungsplan=false;
-		update_tabs=false;
-		Logger.i(TAG,"Update Request resetet");
-	}
-	
-	public void sendLog(View v){
+	public void sendLog(View v) {
 		PackageInfo pInfo;
-		String version="X";
+		String version = "X";
 		try {
 			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 			version = pInfo.versionName;
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		//Send the email
+
+		// Send the email
 		Intent mailIntent = new Intent(Intent.ACTION_SEND);
 		mailIntent.setType("text/Message");
-		mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{Constants.LOG_REPORT_EMAIL});
-		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF+version);
-		mailIntent.putExtra(Intent.EXTRA_TEXT   , "");
+		mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { Constants.LOG_REPORT_EMAIL });
+		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF + version);
+		mailIntent.putExtra(Intent.EXTRA_TEXT, "");
 		Uri uri = Uri.fromFile(Logger.getLogFile());
-	    mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-	    
-	  //Send, if possible
-	    try {
-	       startActivity(Intent.createChooser(mailIntent, "Send mail..."));
-	    } catch (android.content.ActivityNotFoundException ex) {
-	        Toast.makeText(getApplicationContext(), 
-	                   "There are no email clients installed.", 
-	                   Toast.LENGTH_SHORT).show();
-	    }
-	}
-	
-	/**
-	 * Set up the {@link android.app.ActionBar}, if the API is available.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getActionBar().setDisplayHomeAsUpEnabled(false);
+		mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+
+		// Send, if possible
+		try {
+			startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	public void showLayout() {
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
 
@@ -288,8 +203,7 @@ public class OptionsActivity extends FragmentActivity {
 			setContentView(R.layout.activity_options_lehrer);
 			type_schueler = false;
 			kuerzel_eingabe = (TextView) findViewById(R.id.edit_kuerzel);
-			kuerzel_eingabe.setText(prefs.getString(
-					Constants.LEHRER_KUERZEL_KEY, ""));
+			kuerzel_eingabe.setText(prefs.getString(Constants.LEHRER_KUERZEL_KEY, ""));
 			InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.OPTIONSLEHRER);
 		} else {
 			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Loading Schueler LAyout");
@@ -302,18 +216,16 @@ public class OptionsActivity extends FragmentActivity {
 
 			if (!(android.os.Build.VERSION.SDK_INT >= 11) || !type_oberstufe) {
 				button_kurse.setVisibility(4);
-				InfoBox.showAnleitungBox(this,
-						InfoBox.Anleitungen.OPTIONSSCHUELEROHNEKURSE);
+				InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.OPTIONSSCHUELEROHNEKURSE);
 			} else {
 				button_kurse.setVisibility(0);
-				InfoBox.showAnleitungBox(this,
-						InfoBox.Anleitungen.OPTIONSSCHUELERMITKURSE);
+				InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.OPTIONSSCHUELERMITKURSE);
 			}
 		}
 		// Variablen für einzelne Elemente befüllen
 		username_eingabe = (TextView) findViewById(R.id.edit_username);
 		password_eingabe = (TextView) findViewById(R.id.edit_password);
-		checkbox_debug= (CheckBox) findViewById(R.id.checkBox_debug);
+		checkbox_debug = (CheckBox) findViewById(R.id.checkBox_debug);
 
 		// Einstellungen laden
 		oldUsername = prefs.getString(Constants.USERNAME_KEY, "");
@@ -324,11 +236,10 @@ public class OptionsActivity extends FragmentActivity {
 
 		de.maxgb.vertretungsplan.util.Logger.i(TAG, "LAyout loaded");
 	}
-	
+
 	public void speichern(View v) {
 		System.out.println("Speichervorgang");
-		String temp_username = username_eingabe.getText().toString().trim()
-				.toLowerCase();
+		String temp_username = username_eingabe.getText().toString().trim().toLowerCase();
 		String temp_password = password_eingabe.getText().toString().trim();
 		// Schueler
 		if (type_schueler) {
@@ -350,31 +261,27 @@ public class OptionsActivity extends FragmentActivity {
 				temp_klasse = "OIIId";
 			}
 
-			if (!temp_username.trim().isEmpty()
-					&& !temp_password.trim().isEmpty()
-					&& !temp_klasse.trim().isEmpty()) {
+			if (!temp_username.trim().isEmpty() && !temp_password.trim().isEmpty() && !temp_klasse.trim().isEmpty()) {
 				System.out.println("speichern");
-				SharedPreferences settings = getSharedPreferences(
-						Constants.PREFS_NAME, 0);
+				SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
 				SharedPreferences.Editor editor = settings.edit();
-				if (!temp_username.equals(oldUsername)
-						|| !temp_password.equals(oldPassword)) {
+				if (!temp_username.equals(oldUsername) || !temp_password.equals(oldPassword)) {
 					editor.putString(Constants.USERNAME_KEY, temp_username);
 					editor.putString(Constants.PASSWORD_KEY, temp_password);
 					editor.putString(Constants.STUFE_KEY, temp_klasse);
-					editor.putBoolean(Constants.DEBUG_KEY,checkbox_debug.isChecked());
+					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
 					de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen gespeichert");
 					requestVertretungsplanUpdate();// Update anfordern
 				} else {
 					editor.putString(Constants.STUFE_KEY, temp_klasse);
-					editor.putBoolean(Constants.DEBUG_KEY,checkbox_debug.isChecked());
+					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
 					de.maxgb.vertretungsplan.util.Logger.i(TAG,
 							"Einstellungen gespeichert. Nutzername und Passwort unverändert");
-					
+
 				}
-				
+
 				finish();
 			} else {
 				alertBox();
@@ -383,30 +290,26 @@ public class OptionsActivity extends FragmentActivity {
 		// Lehrer
 		else {
 			String temp_kuerzel = kuerzel_eingabe.getText().toString().trim();
-			if (!temp_username.trim().isEmpty()
-					&& !temp_password.trim().isEmpty()
-					&& !temp_kuerzel.trim().isEmpty()) {
+			if (!temp_username.trim().isEmpty() && !temp_password.trim().isEmpty() && !temp_kuerzel.trim().isEmpty()) {
 				System.out.println("speichern");
-				SharedPreferences settings = getSharedPreferences(
-						Constants.PREFS_NAME, 0);
+				SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
 				SharedPreferences.Editor editor = settings.edit();
 
-				if (!temp_username.equals(oldUsername)
-						|| !temp_password.equals(oldPassword)) {
+				if (!temp_username.equals(oldUsername) || !temp_password.equals(oldPassword)) {
 					editor.putString(Constants.USERNAME_KEY, temp_username);
 					editor.putString(Constants.PASSWORD_KEY, temp_password);
 					editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
-					editor.putBoolean(Constants.DEBUG_KEY,checkbox_debug.isChecked());
+					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
 					de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen gespeichert");
 					requestVertretungsplanUpdate();// Update anfordern
 				} else {
 					editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
-					editor.putBoolean(Constants.DEBUG_KEY,checkbox_debug.isChecked());
+					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
 					de.maxgb.vertretungsplan.util.Logger.i(TAG,
 							"Einstellungen gespeichert. Nutzername und Passwort unverändert");
-					
+
 				}
 				Logger.setDebugMode(checkbox_debug.isChecked());
 				finish();
@@ -415,162 +318,113 @@ public class OptionsActivity extends FragmentActivity {
 			}
 		}
 	}
-	
-	public void stundenplan(View c){
+
+	public void stundenplan(View c) {
 		Intent i = new Intent(this, StundenplanOptionsActivity.class);
 		startActivity(i);
 	}
-	
-	/*Unused since new TabMangment, replaced by SelectTabsActivity
-		Alter Dialog zur Auswahl der Tabs
-		
-	@SuppressLint("ValidFragment")
-	@SuppressWarnings("unused")
-	private class SelectTabsDialogFragment extends DialogFragment {
-		// Vergleiche http://developer.android.com/guide/topics/ui/dialogs.html
-		ArrayList<Integer> mSelectedItems;
 
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			ArrayList<String> tab_names = new ArrayList<String>();
-			ArrayList<Boolean> selected_tabs = new ArrayList<Boolean>();
-
-			final SharedPreferences prefs = getSharedPreferences(
-					Constants.PREFS_NAME, 0);
-			final SharedPreferences prefs_tabs = getSharedPreferences(
-					Constants.PREFS_TABS_NAME, 0);
-
-			final boolean schueler = prefs.getBoolean(Constants.SCHUELER_KEY,
-					false);
-			final boolean oberstufe = type_oberstufe;
-			final boolean lehrer = prefs
-					.getBoolean(Constants.LEHRER_KEY, false);
-			
-
-			if (schueler) {
-				tab_names.add("Alle Vertretungen");
-				selected_tabs.add(prefs_tabs.getBoolean(Constants.ALLE_TAB_KEY,
-						true));
-				tab_names.add("Vertretungen für die eigene Stufe");
-				selected_tabs.add(prefs_tabs.getBoolean(
-						Constants.STUFE_TAB_KEY, true));
-				if ((android.os.Build.VERSION.SDK_INT >= 11) && type_oberstufe) {
-					tab_names.add("Vertretungen für eigene Kurse");
-					selected_tabs.add(prefs_tabs.getBoolean(
-							Constants.EIGENE_KURSE_SCHUELER_TAB_KEY, false));
-				}
-			} else if (lehrer) {
-				tab_names.add("Alle Vertretungen");
-				selected_tabs.add(prefs_tabs.getBoolean(Constants.ALLE_TAB_KEY,
-						true));
-				tab_names.add("Meine Vertretungen");
-				selected_tabs.add(prefs_tabs.getBoolean(
-						Constants.EIGENE_LEHRER_TAB_KEY, true));
+	/**
+	 * Alert Boc falls nicht alle Felder ausgefüllt sind
+	 */
+	private void alertBox() {
+		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
 			}
+		});
 
-			Boolean[] temp = selected_tabs.toArray(new Boolean[0]);
-			boolean[] selected_tabs_array = new boolean[temp.length];
-			mSelectedItems = new ArrayList<Integer>(); // Where we track the
-														// selected items
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
 
-			for (int n = 0; n < temp.length; n++) {
-				selected_tabs_array[n] = temp[n];
-				if (temp[n] == true) {
-					mSelectedItems.add(n);
-				}
-			}
+	private void requestTabUpdate() {
+		update_tabs = true;
+		Logger.i(TAG, "Tab Update requestet");
+	}
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			// Set the dialog title
-			builder.setTitle(R.string.select_tabs)
-			// Specify the list array, the items to be selected by default (null
-			// for none),
-			// and the listener through which to receive callbacks when items
-			// are selected
-					.setMultiChoiceItems(tab_names.toArray(new String[0]),
-							selected_tabs_array,
-							new DialogInterface.OnMultiChoiceClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which, boolean isChecked) {
-									if (isChecked) {
-										// If the user checked the item, add it
-										// to the selected items
-										mSelectedItems.add(which);
-									} else if (mSelectedItems.contains(which)) {
-										// Else, if the item is already in the
-										// array, remove it
-										mSelectedItems.remove(Integer
-												.valueOf(which));
-									}
-								}
-							})
-					// Set the action buttons
-					.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int id) {
-									SharedPreferences.Editor editor = prefs_tabs
-											.edit();
-									if (schueler) {
-										if (mSelectedItems.contains(0)) {
-											editor.putBoolean(
-													Constants.ALLE_TAB_KEY,
-													true);
-										} else {
-											editor.putBoolean(
-													Constants.ALLE_TAB_KEY,
-													false);
-										}
-										if (mSelectedItems.contains(1)) {
-											editor.putBoolean(
-													Constants.STUFE_TAB_KEY,
-													true);
-										} else {
-											editor.putBoolean(
-													Constants.STUFE_TAB_KEY,
-													false);
-										}
-										if ((android.os.Build.VERSION.SDK_INT >= 11)
-												&& type_oberstufe) {
-											if (mSelectedItems.contains(2)) {
-												editor.putBoolean(
-														Constants.EIGENE_KURSE_SCHUELER_TAB_KEY,
-														true);
-											} else {
-												editor.putBoolean(
-														Constants.EIGENE_KURSE_SCHUELER_TAB_KEY,
-														false);
-											}
-										}
-									} else if (lehrer) {
-										if (mSelectedItems.contains(0)) {
-											editor.putBoolean(
-													Constants.ALLE_TAB_KEY,
-													true);
-										} else {
-											editor.putBoolean(
-													Constants.ALLE_TAB_KEY,
-													false);
-										}
-										if (mSelectedItems.contains(1)) {
-											editor.putBoolean(
-													Constants.EIGENE_LEHRER_TAB_KEY,
-													true);
-										} else {
-											editor.putBoolean(
-													Constants.EIGENE_LEHRER_TAB_KEY,
-													false);
-										}
-									}
-									editor.commit();
-								}
-							});
+	private void requestVertretungsplanUpdate() {
+		update_vertretungsplan = true;
+		Logger.i(TAG, "Vertretungsplan Update requestet");
+	}
 
-			return builder.create();
+	private void resetUpdateRequests() {
+		update_vertretungsplan = false;
+		update_tabs = false;
+		Logger.i(TAG, "Update Request resetet");
+	}
+
+	/**
+	 * Set up the {@link android.app.ActionBar}, if the API is available.
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setupActionBar() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			getActionBar().setDisplayHomeAsUpEnabled(false);
 		}
 	}
-	*/
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Logger.init();
+		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
+		Logger.setDebugMode(prefs.getBoolean(Constants.DEBUG_KEY, false));
+		resetUpdateRequests();
+		if (!prefs.getBoolean(Constants.SCHUELER_KEY, false) && !prefs.getBoolean(Constants.LEHRER_KEY, false)) {
+			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
+			DialogFragment type_fragment = new SelectTypeDialogFragment();
+			type_fragment.show(getSupportFragmentManager(), "select_type");
+			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Finished Type Dialog");
+		} else {
+			showLayout();
+		}
+
+		// Show the Up button in the action bar.
+		setupActionBar();
+		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Options created");
+	}
+
+	/*
+	 * Unused since new TabMangment, replaced by SelectTabsActivity Alter Dialog zur Auswahl der Tabs
+	 * @SuppressLint("ValidFragment")
+	 * @SuppressWarnings("unused") private class SelectTabsDialogFragment extends DialogFragment { // Vergleiche
+	 * http://developer.android.com/guide/topics/ui/dialogs.html ArrayList<Integer> mSelectedItems;
+	 * @Override public Dialog onCreateDialog(Bundle savedInstanceState) { ArrayList<String> tab_names = new ArrayList<String>();
+	 * ArrayList<Boolean> selected_tabs = new ArrayList<Boolean>(); final SharedPreferences prefs = getSharedPreferences(
+	 * Constants.PREFS_NAME, 0); final SharedPreferences prefs_tabs = getSharedPreferences( Constants.PREFS_TABS_NAME, 0); final
+	 * boolean schueler = prefs.getBoolean(Constants.SCHUELER_KEY, false); final boolean oberstufe = type_oberstufe; final boolean
+	 * lehrer = prefs .getBoolean(Constants.LEHRER_KEY, false); if (schueler) { tab_names.add("Alle Vertretungen");
+	 * selected_tabs.add(prefs_tabs.getBoolean(Constants.ALLE_TAB_KEY, true)); tab_names.add("Vertretungen für die eigene Stufe");
+	 * selected_tabs.add(prefs_tabs.getBoolean( Constants.STUFE_TAB_KEY, true)); if ((android.os.Build.VERSION.SDK_INT >= 11) &&
+	 * type_oberstufe) { tab_names.add("Vertretungen für eigene Kurse"); selected_tabs.add(prefs_tabs.getBoolean(
+	 * Constants.EIGENE_KURSE_SCHUELER_TAB_KEY, false)); } } else if (lehrer) { tab_names.add("Alle Vertretungen");
+	 * selected_tabs.add(prefs_tabs.getBoolean(Constants.ALLE_TAB_KEY, true)); tab_names.add("Meine Vertretungen");
+	 * selected_tabs.add(prefs_tabs.getBoolean( Constants.EIGENE_LEHRER_TAB_KEY, true)); } Boolean[] temp =
+	 * selected_tabs.toArray(new Boolean[0]); boolean[] selected_tabs_array = new boolean[temp.length]; mSelectedItems = new
+	 * ArrayList<Integer>(); // Where we track the // selected items for (int n = 0; n < temp.length; n++) {
+	 * selected_tabs_array[n] = temp[n]; if (temp[n] == true) { mSelectedItems.add(n); } } AlertDialog.Builder builder = new
+	 * AlertDialog.Builder(getActivity()); // Set the dialog title builder.setTitle(R.string.select_tabs) // Specify the list
+	 * array, the items to be selected by default (null // for none), // and the listener through which to receive callbacks when
+	 * items // are selected .setMultiChoiceItems(tab_names.toArray(new String[0]), selected_tabs_array, new
+	 * DialogInterface.OnMultiChoiceClickListener() {
+	 * @Override public void onClick(DialogInterface dialog, int which, boolean isChecked) { if (isChecked) { // If the user
+	 * checked the item, add it // to the selected items mSelectedItems.add(which); } else if (mSelectedItems.contains(which)) {
+	 * // Else, if the item is already in the // array, remove it mSelectedItems.remove(Integer .valueOf(which)); } } }) // Set
+	 * the action buttons .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	 * @Override public void onClick(DialogInterface dialog, int id) { SharedPreferences.Editor editor = prefs_tabs .edit(); if
+	 * (schueler) { if (mSelectedItems.contains(0)) { editor.putBoolean( Constants.ALLE_TAB_KEY, true); } else {
+	 * editor.putBoolean( Constants.ALLE_TAB_KEY, false); } if (mSelectedItems.contains(1)) { editor.putBoolean(
+	 * Constants.STUFE_TAB_KEY, true); } else { editor.putBoolean( Constants.STUFE_TAB_KEY, false); } if
+	 * ((android.os.Build.VERSION.SDK_INT >= 11) && type_oberstufe) { if (mSelectedItems.contains(2)) { editor.putBoolean(
+	 * Constants.EIGENE_KURSE_SCHUELER_TAB_KEY, true); } else { editor.putBoolean( Constants.EIGENE_KURSE_SCHUELER_TAB_KEY,
+	 * false); } } } else if (lehrer) { if (mSelectedItems.contains(0)) { editor.putBoolean( Constants.ALLE_TAB_KEY, true); } else
+	 * { editor.putBoolean( Constants.ALLE_TAB_KEY, false); } if (mSelectedItems.contains(1)) { editor.putBoolean(
+	 * Constants.EIGENE_LEHRER_TAB_KEY, true); } else { editor.putBoolean( Constants.EIGENE_LEHRER_TAB_KEY, false); } }
+	 * editor.commit(); } }); return builder.create(); } }
+	 */
 
 }

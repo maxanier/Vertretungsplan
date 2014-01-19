@@ -33,10 +33,10 @@ import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.Logger;
 
 /**
- * Async Download Task
- * Lädt den Vertretungsplan herunter
+ * Async Download Task Lädt den Vertretungsplan herunter
+ * 
  * @author Max Becker
- *
+ * 
  */
 public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 	private SharedPreferences pref;
@@ -52,12 +52,29 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		this.anzeige = anzeige;
 	}
 
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) anzeige.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting())
+			return true;
+		return false;
+	}
+
+	private void save(String s, String file) throws IOException {
+		Logger.i(TAG, "Speichern der Datei: " + file + " gestartet");
+		FileWriter o = new FileWriter(Environment.getExternalStorageDirectory().getPath() + "/vertretungsplan/" + file,
+				false);
+		BufferedWriter bw = new BufferedWriter(o);
+		bw.write(s);
+		bw.close();
+		o.close();
+		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
+
+	}
+
 	/*
 	 * Downloads the Plan in background
-	 * 
-	 * @return 0=Success,1=Missing login info,2=No Internetconnection,-1=Other
-	 * Exception
-	 * 
+	 * @return 0=Success,1=Missing login info,2=No Internetconnection,-1=Other Exception
 	 * @see android.os.AsyncTask#doInBackground(Params[])
 	 */
 	@Override
@@ -85,15 +102,12 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 
 		Logger.i(TAG, "Anfrage gestartet");
 		final HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams,
-				Constants.CONNECTION_TIMEOUT);
-		HttpConnectionParams.setSoTimeout(httpParams,
-				Constants.CONNECTION_TIMEOUT);
-		MyHttpsClient httpsclient = new MyHttpsClient(
-				anzeige.getApplicationContext(), httpParams); // neuer
-																// HttpsClient
-																// mit eigener
-																// Timeoutzeit
+		HttpConnectionParams.setConnectionTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
+		MyHttpsClient httpsclient = new MyHttpsClient(anzeige.getApplicationContext(), httpParams); // neuer
+																									// HttpsClient
+																									// mit eigener
+																									// Timeoutzeit
 
 		try {
 			String cookie = getLoginCookie(httpsclient);
@@ -107,12 +121,10 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		}
 	}
 
-	protected String getLoginCookie(MyHttpsClient client)
-			throws ClientProtocolException, IOException {
+	protected String getLoginCookie(MyHttpsClient client) throws ClientProtocolException, IOException {
 
 		Logger.i(TAG, "Abrufen der Loginseite gestartet");
-		HttpResponse response = client.execute(new HttpGet(
-				Constants.LOGIN_SEITE_URL)); // Abruf der Seite
+		HttpResponse response = client.execute(new HttpGet(Constants.LOGIN_SEITE_URL)); // Abruf der Seite
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) { // Erfolg
 																			// der
 																			// Anfrage
@@ -142,9 +154,8 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 			// "Cookies"
 			// System.out.println(index);
 			char[] chars = responseString.toCharArray();
-			String cookie = String.copyValueOf(chars, index
-					+ Constants.COOKIE_SUCH_STRING.length() + 1, 32);// Auslesen
-																		// des
+			String cookie = String.copyValueOf(chars, index + Constants.COOKIE_SUCH_STRING.length() + 1, 32);// Auslesen
+																												// des
 			// "Cookies"(LÃ¤nge:
 			// 32) und speichern
 			// in der globalen
@@ -156,8 +167,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		} else {
 			StatusLine statusLine = response.getStatusLine();
 			response.getEntity().getContent().close();
-			throw new IOException("Abfrage Fehlgeschlagen: "
-					+ statusLine.getReasonPhrase());// Fehlermeldung
+			throw new IOException("Abfrage Fehlgeschlagen: " + statusLine.getReasonPhrase());// Fehlermeldung
 			// werfen
 			// wenn
 			// Abfrage
@@ -165,17 +175,8 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		}
 	}
 
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) anzeige
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting())
-			return true;
-		return false;
-	}
-
-	protected void login(MyHttpsClient client, String cookie, String username,
-			String password) throws IOException, ClientProtocolException {
+	protected void login(MyHttpsClient client, String cookie, String username, String password) throws IOException,
+			ClientProtocolException {
 		Logger.i(TAG, "Loginvorgang gestartet");
 
 		// Erstellen des Postrequest
@@ -193,8 +194,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 															// Http-Post
 		// Siehe abrufen()
 		if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			Logger.i(TAG,
-					"Loginvorgang erfolgreich abgeschloï¿½en. Status aber unbekannt");
+			Logger.i(TAG, "Loginvorgang erfolgreich abgeschloï¿½en. Status aber unbekannt");
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			response.getEntity().writeTo(out);
 			out.close();
@@ -210,8 +210,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		} else {
 			StatusLine statusLine = response.getStatusLine();
 			response.getEntity().getContent().close();
-			throw new IOException("Login fehlsgeschlagen "
-					+ statusLine.getReasonPhrase());
+			throw new IOException("Login fehlsgeschlagen " + statusLine.getReasonPhrase());
 		}
 
 	}
@@ -222,38 +221,33 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		switch (result) {
 		case SUCCESS:
 			SharedPreferences.Editor editor = pref.edit();
-			editor.putLong(Constants.REFRESH_TIME_KEY,
-					System.currentTimeMillis());
+			editor.putLong(Constants.REFRESH_TIME_KEY, System.currentTimeMillis());
 			editor.commit();
-			anzeige.updateVertretungsplan();//TODO directly invoke update
+			anzeige.updateVertretungsplan();// TODO directly invoke update
 			break;
 		case MISSINGLOGININFO:
-			Toast.makeText(anzeige.getApplicationContext(),
-					"Kein Nutzername oder Passwort eingestellt",
+			Toast.makeText(anzeige.getApplicationContext(), "Kein Nutzername oder Passwort eingestellt",
 					Toast.LENGTH_SHORT).show();
 			anzeige.setRefreshActionButtonState(false);
 			break;
 		case NOCONNECTION:
-			Toast.makeText(anzeige.getApplicationContext(),
-					"Keine Internetverbindung", Toast.LENGTH_SHORT).show();
+			Toast.makeText(anzeige.getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
 			anzeige.setRefreshActionButtonState(false);
 			break;
 		case OTHEREXCEPTION:
-			Toast.makeText(anzeige.getApplicationContext(),
-					"Fehler beim Aktualisieren", Toast.LENGTH_SHORT).show();
+			Toast.makeText(anzeige.getApplicationContext(), "Fehler beim Aktualisieren", Toast.LENGTH_SHORT).show();
 			anzeige.setRefreshActionButtonState(false);
 			break;
 		}
 
 	}
 
-	protected void planSpeichern(MyHttpsClient client, boolean schuelerplan,
-			boolean lehrerplan) throws ClientProtocolException, IOException {
+	protected void planSpeichern(MyHttpsClient client, boolean schuelerplan, boolean lehrerplan)
+			throws ClientProtocolException, IOException {
 		Logger.i(TAG, "Abrufen...");
 		if (schuelerplan) {
 			Logger.i(TAG, "Abrufen des Schueler Plans gestartet");
-			HttpResponse response = client.execute(new HttpGet(
-					Constants.SCHUELER_PLAN_URL));// Planseite
+			HttpResponse response = client.execute(new HttpGet(Constants.SCHUELER_PLAN_URL));// Planseite
 			// abrufen
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				Logger.i(TAG, "Abrufen des Plans erfolgreich abgeschloï¿½en");
@@ -272,8 +266,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		}
 		if (lehrerplan) {
 			Logger.i(TAG, "Abrufen des Lehrer Plans gestartet");
-			HttpResponse response = client.execute(new HttpGet(
-					Constants.LEHRER_PLAN_URL));// Planseite
+			HttpResponse response = client.execute(new HttpGet(Constants.LEHRER_PLAN_URL));// Planseite
 			// abrufen
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				Logger.i(TAG, "Abrufen des Plans erfolgreich abgeschloï¿½en");
@@ -290,17 +283,5 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 				throw new IOException(statusLine.getReasonPhrase());
 			}
 		}
-	}
-
-	private void save(String s, String file) throws IOException {
-		Logger.i(TAG, "Speichern der Datei: " + file + " gestartet");
-		FileWriter o = new FileWriter(Environment.getExternalStorageDirectory()
-				.getPath() + "/vertretungsplan/" + file, false);
-		BufferedWriter bw = new BufferedWriter(o);
-		bw.write(s);
-		bw.close();
-		o.close();
-		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
-
 	}
 }
