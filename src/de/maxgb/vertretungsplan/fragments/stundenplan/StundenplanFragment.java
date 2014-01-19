@@ -33,6 +33,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	 * Stores the currently highlighted Lesson
 	 */
 	private int currentlyMarkedLesson=1;
+	
 	protected void anzeigen(ArrayList<Stunde[]> stundenplan,ScrollView s){
 		
 		TableLayout table = new TableLayout(getActivity());
@@ -325,6 +326,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	
 	@Override
 	public void onResume(){
+		super.onResume();
 		/*
 		 * Falls die als aktuell markierte Stunde nicht mehr der aktuellen entspricht, neu anzeigen
 		 */
