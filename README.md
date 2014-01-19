@@ -2,7 +2,7 @@ Vertretungsplan
 ===============
 
 
-Features:
+Features:\n
 -Anzeigen des Vertretungsplans
 -Stundenplan
 -Einstellen von Nutzername,Passwort und Stufe
