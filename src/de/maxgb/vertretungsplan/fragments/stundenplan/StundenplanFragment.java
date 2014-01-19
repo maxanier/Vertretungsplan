@@ -63,6 +63,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		
 		TableLayout table = new TableLayout(getActivity());
 		table.addView(newHeadline());
+		int currentLesson = getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY);
 		for(int i=0;i<(StundenplanManager.BEGINN_NACHMITTAG-1+StundenplanManager.ANZAHL_NACHMITTAG);i++){
 			View border=new View(getActivity());
 			border.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,1));
@@ -75,7 +76,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 			stunde.addView(newTextView(Integer.toString(i+1)));
 
 			for(int j=0;j<getVisibleDayCount();j++){
-				int day=((getDayOfWeek()-1+j)%7)+1;
+				int day=((getCurrentDayOfWeek()-1+j)%7)+1;
 				if(day!=Calendar.SUNDAY){
 					final Stunde st=stundenplan.get(day-1-1)[i];//day(1-7[So-Sa])-1(Sonntag fällt weg)-1(Liste beginnt bei 0)
 					
@@ -102,6 +103,16 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 					TableLayout kurs = new TableLayout(getActivity());
 					kurs.setGravity(Gravity.CENTER_HORIZONTAL);
 					
+					//Falls "Heute" aktuelle Stunde gelb hinterlegen
+					if(j==0){
+						//Falls die gerade behandelte Stunde der aktuellen entspricht
+						//Oder aktuell Nachmittag ist und gerade die Nachmittagsstunden behandelt werden
+						if(currentLesson==i+1||(currentLesson==-1&&i+1>=StundenplanManager.BEGINN_NACHMITTAG)){
+							//Den Hintergrund des Kurses gelb färben
+							kurs.setBackgroundColor(Color.YELLOW);
+						}
+
+					}
 					
 					
 
@@ -203,7 +214,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		headline.addView(newTextView(stunde));
 		
 		for(int i=0;i<getVisibleDayCount();i++){
-			int day=((getDayOfWeek()-1+i)%7)+1;
+			int day=((getCurrentDayOfWeek()-1+i)%7)+1;
 			if(day!=Calendar.SUNDAY){
 				SpannableString tag;
 				if(i==0){
@@ -227,7 +238,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 
 	
 	
-	protected int getDayOfWeek(){
+	protected int getCurrentDayOfWeek(){
 		Calendar calendar = Calendar.getInstance();
 		return calendar.get(Calendar.DAY_OF_WEEK); 
 	}
@@ -272,9 +283,44 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		throw new IllegalArgumentException("Kein bekannter Tag");
 	}
 	
-	protected int getCurrentStunde(){
-		Date current=Calendar.getInstance().getTime();
-		Date first=new Date();
+	/**
+	 * Liefert die aktuelle Schulstunde zurück, wobei z.B. um 5:00 Uhr bereits 1 zurückgeliefert wird und während der Pausen bereits die folgende Stunde.
+	 * Nachmittags(nach 14:00) wird -1 zurückgeliefert
+	 * @return Aktuelle Stunde
+	 */
+	protected int getCurrentLesson(boolean samstag){
+		float v=0;//Verschiebung in Stunden
+		if(samstag){
+			v=10/60;//Samstag alles 10 min spaeter
+		}
+		Calendar current=Calendar.getInstance();
+		int hour=current.get(Calendar.HOUR_OF_DAY);
+		int minute=current.get(Calendar.MINUTE);
+		float time = hour+minute/60;
+		if(time<(8+35/60+v)){
+			//Vor Ende der ersten Stunde
+			return 1;
+		}
+		else if(time<(9+25/60+v)){
+			//Vor Ende der zweiten Stunde
+			return 2;
+		}
+		else if(time<(10+25/60+v)){
+			return 3;
+		}
+		else if(time<(11+15/60+v)){
+			return 4;
+		}
+		else if(time<(12+15/60+v)){
+			return 5;
+		}
+		else if(time<(13+5/60+v)){
+			return 6;
+		}
+		else if(time<(14+v)){
+			return 7;
+		}
+		return -1;
 		
 		
 	}

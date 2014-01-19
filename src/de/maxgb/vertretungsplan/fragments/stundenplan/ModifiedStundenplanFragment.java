@@ -6,11 +6,13 @@ import java.util.Calendar;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
@@ -49,19 +51,31 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 	protected void anzeigen(ScrollView s) {
 		s.removeAllViews();
 		
+		//Vertretungen und Stundenplan holen
+		SharedPreferences pref=getActivity().getSharedPreferences(Constants.PREFS_NAME,0);
+		ArrayList<SchuelerVertretung> vertretungen=VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),pref.getBoolean(Constants.LEHRER_KEY, false)).getSchuelerVertretungen();
+		ArrayList<SchuelerVertretung> eigeneVertretungen=new ArrayList<SchuelerVertretung>();
+		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
+		
+		//Neues TableLayout für: 1. Experimentell Hinweis 2. Stand 3. StundenplanScrollView
 		TableLayout t = new TableLayout(getActivity());
+		//Experimentell Hinweis
 		TextView ex=newBigTextView("Experimentell");
 		ex.setTextColor(Color.RED);
 		t.addView(ex);
+		//Stand
+		TableRow stand=newTableRow();
+		stand.addView(newTextView(VertretungsplanManager.getCreatedInstance().getSchuelerStand()));
+		stand.setGravity(Gravity.CENTER_HORIZONTAL);
+		t.addView(stand);
+		
+		//Stundenplan, wobei s2 später gefüllt wird
 		ScrollView s2 = new ScrollView(getActivity());
 		t.addView(s2);
 		s.addView(t);
 		//TODO Remove Experimentell status
 		
-		SharedPreferences pref=getActivity().getSharedPreferences(Constants.PREFS_NAME,0);
-		ArrayList<SchuelerVertretung> vertretungen=VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),pref.getBoolean(Constants.LEHRER_KEY, false)).getSchuelerVertretungen();
-		ArrayList<SchuelerVertretung> eigeneVertretungen=new ArrayList<SchuelerVertretung>();
-		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
+
 		
 		if(stundenplan==null){
 			alert("Stundenplan noch nicht oder fehlerhaft heruntergeladen: "+StundenplanManager.getInstance().getLastResult());
