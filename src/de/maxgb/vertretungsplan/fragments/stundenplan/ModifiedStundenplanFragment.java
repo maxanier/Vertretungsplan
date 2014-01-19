@@ -1,6 +1,7 @@
 package de.maxgb.vertretungsplan.fragments.stundenplan;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -31,7 +32,7 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		SharedPreferences pref=getActivity().getSharedPreferences(Constants.PREFS_NAME,0);
 		ArrayList<SchuelerVertretung> vertretungen=VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),pref.getBoolean(Constants.LEHRER_KEY, false)).getSchuelerVertretungen();
 		ArrayList<SchuelerVertretung> eigeneVertretungen=new ArrayList<SchuelerVertretung>();
-		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
+		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getClonedStundenplan();
 		
 		//Neues TableLayout für: 1. Experimentell Hinweis 2. Stand 3. StundenplanScrollView
 		TableLayout t = new TableLayout(getActivity());

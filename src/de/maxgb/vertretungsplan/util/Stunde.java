@@ -5,7 +5,7 @@ import java.util.HashMap;
 import android.annotation.SuppressLint;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 
-public class Stunde {
+public class Stunde implements Cloneable{
 	@SuppressLint("DefaultLocale")
 	private static String getName(String kurs){
 		kurs=removeNumbers(kurs).toLowerCase();
@@ -133,4 +133,15 @@ public class Stunde {
 		art=newArt;
 		tag=newTag;
 	}
+	
+	/**
+	 * Clones the Stunde
+	 * Alle Vertretungsinfos wie oldKurs und Bemerkung gehen dabei verloren
+	 * @return Clone 
+	 */
+	public Stunde clone(){
+		return new Stunde(kurs,raum,stunde,uhrzeit);
+
+	}
+
 }

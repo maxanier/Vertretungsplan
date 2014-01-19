@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -190,6 +191,18 @@ public class StundenplanManager {
 	
 	public ArrayList<Stunde[]> getStundenplan(){
 		return woche;
+	}
+	
+	public ArrayList<Stunde[]> getClonedStundenplan(){
+		ArrayList<Stunde[]> clone = new ArrayList<Stunde[]>(woche.size());
+		for(Stunde[] item:woche){
+			Stunde[] clone2 = new Stunde[item.length];
+			for(int i=0;i<item.length;i++){
+				clone2[i]=item[i].clone();
+			}
+			clone.add(clone2);
+		}
+		return clone;
 	}
 	
 

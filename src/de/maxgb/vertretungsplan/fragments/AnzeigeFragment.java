@@ -166,7 +166,6 @@ public class AnzeigeFragment extends Fragment {
          }
          
          
-         Toast.makeText(getActivity(), "Screen width: "+width, Toast.LENGTH_LONG).show();
          if (width < Constants.very_smallWidth) {
                  displaySize = 1;
          } else if (width < Constants.smallWidth) {
