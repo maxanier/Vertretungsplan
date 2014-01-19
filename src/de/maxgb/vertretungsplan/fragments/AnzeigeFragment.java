@@ -1,23 +1,38 @@
 package de.maxgb.vertretungsplan.fragments;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.Logger;
 
 public class AnzeigeFragment extends Fragment {
 	private final String TAG = "AnzeigeFragment";
-	protected int displaySize = 0;// 0=normal,1=very small,2=small,-1=huge
+	/**
+	 * DiplaySize:
+	 * 0=Normal	//3 Tage
+	 * 1=VerySmall	//3 Tage
+	 * 2=Small	//3 Tage
+	 * -1=Big	//4 Tage
+	 * -2=Very Big //7 Tage
+	 */
+	protected int displaySize = 0;
 	protected boolean screenSizeSet = false;// Wurde die ScreenSize bereits
 											// aktualisiert
 	
@@ -87,17 +102,83 @@ public class AnzeigeFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 	
+	
+	@SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
 	protected void retrieveScreenSize() {
+		
+		/*
+		 * Testing purpose
+		 * 
+		//Show Screeninfo
+	    //Determine screen size
+	    if ((getResources().getConfiguration().screenLayout &      Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_LARGE) {     
+	        Toast.makeText(getActivity(), "Large screen",Toast.LENGTH_LONG).show();
+
+	    }
+	    else if ((getResources().getConfiguration().screenLayout &      Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_NORMAL) {     
+	        Toast.makeText(getActivity(), "Normal sized screen" , Toast.LENGTH_LONG).show();
+
+	    } 
+	    else if ((getResources().getConfiguration().screenLayout &      Configuration.SCREENLAYOUT_SIZE_MASK) == Configuration.SCREENLAYOUT_SIZE_SMALL) {     
+	        Toast.makeText(getActivity(), "Small sized screen" , Toast.LENGTH_LONG).show();
+	    }
+	    else {
+	        Toast.makeText(getActivity(), "Screen size is neither large, normal or small" , Toast.LENGTH_LONG).show();
+	    }
+
+
+
+
+	    //Determine density
+	    DisplayMetrics metrics = new DisplayMetrics();
+	    getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+	   
+	        int density = metrics.densityDpi;
+
+	        if (density==DisplayMetrics.DENSITY_HIGH) {
+	            Toast.makeText(getActivity(), "DENSITY_HIGH... Density is " + String.valueOf(density),  Toast.LENGTH_LONG).show();
+	        }
+	        else if (density==DisplayMetrics.DENSITY_MEDIUM) {
+	            Toast.makeText(getActivity(), "DENSITY_MEDIUM... Density is " + String.valueOf(density),  Toast.LENGTH_LONG).show();
+	        }
+	        else if (density==DisplayMetrics.DENSITY_LOW) {
+	            Toast.makeText(getActivity(), "DENSITY_LOW... Density is " + String.valueOf(density),  Toast.LENGTH_LONG).show();
+	        }
+	        else {
+	            Toast.makeText(getActivity(), "Density is neither HIGH, MEDIUM OR LOW.  Density is " + String.valueOf(density),  Toast.LENGTH_LONG).show();
+	        }
+	        
+	        
+	        */
+	        
          WindowManager wm = (WindowManager) getActivity().getSystemService(
                          Context.WINDOW_SERVICE);
-         Display display = wm.getDefaultDisplay();
-         int width = display.getWidth();
+         
+         int width;
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        	 Point p=new Point();
+        	 wm.getDefaultDisplay().getSize(p);
+        	 width = p.x;
+         }
+         else{
+        	 width=wm.getDefaultDisplay().getWidth();
+         }
+         
+         
+         Toast.makeText(getActivity(), "Screen width: "+width, Toast.LENGTH_LONG).show();
          if (width < Constants.very_smallWidth) {
                  displaySize = 1;
          } else if (width < Constants.smallWidth) {
                  displaySize = 2;
-         } else if (width > Constants.largeWidth) {
-                 displaySize = -1;
+         } else if (width < Constants.largeWidth) {
+                 displaySize = 0;
+         }
+         else if(width <Constants.ultra_lageWidth){
+        	 displaySize=-1;
+         }
+         else{
+        	 displaySize=-2;
          }
          Logger.i(TAG, "Screen Size: " + displaySize);
  }

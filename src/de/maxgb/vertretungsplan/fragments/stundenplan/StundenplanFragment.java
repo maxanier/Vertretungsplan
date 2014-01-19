@@ -243,8 +243,17 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	}
 	
 	protected int getVisibleDayCount(){
-		//TODO Abhängig von ScreenSize
-		return 4;
+		if(!screenSizeSet){
+			retrieveScreenSize();
+		}
+		switch(displaySize){
+		case 0:return 3;
+		case 1:return 3;
+		case 2:return 3;
+		case -1:return 4;
+		case -2:return 7;
+		default:return 3;
+		}
 	}
 	
 	protected int getWeekDayFromString(String s) throws IllegalArgumentException{
