@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
@@ -42,20 +43,20 @@ public class AnzeigeFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 	}
 	
-	protected void retrieveScreenSize() {
-		WindowManager wm = (WindowManager) getActivity().getSystemService(
-				Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		int width = display.getWidth();
-		if (width < Constants.very_smallWidth) {
-			displaySize = 1;
-		} else if (width < Constants.smallWidth) {
-			displaySize = 2;
-		} else if (width > Constants.largeWidth) {
-			displaySize = -1;
-		}
-		Logger.i(TAG, "Screen Size: " + displaySize);
-	}
+	 protected void retrieveScreenSize() {
+         WindowManager wm = (WindowManager) getActivity().getSystemService(
+                         Context.WINDOW_SERVICE);
+         Display display = wm.getDefaultDisplay();
+         int width = display.getWidth();
+         if (width < Constants.very_smallWidth) {
+                 displaySize = 1;
+         } else if (width < Constants.smallWidth) {
+                 displaySize = 2;
+         } else if (width > Constants.largeWidth) {
+                 displaySize = -1;
+         }
+         Logger.i(TAG, "Screen Size: " + displaySize);
+ }
 	
 	protected  void alert(String msg){
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

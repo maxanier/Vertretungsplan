@@ -1,8 +1,6 @@
 package de.maxgb.vertretungsplan.fragments.stundenplan;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -132,7 +130,7 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 
 	@Override
 	public void onVertretungsplanUpdate() {
-		onStundenplanUpdate();//View neu erstellen, genauso wie bei StundenplanUpdate
+		update();//Neu anzeigen
 		
 	}
 	

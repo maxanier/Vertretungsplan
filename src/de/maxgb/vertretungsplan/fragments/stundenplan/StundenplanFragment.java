@@ -29,6 +29,10 @@ import de.maxgb.vertretungsplan.util.Stunde;
 public abstract class StundenplanFragment extends AnzeigeFragment implements StundenplanManager.OnUpdateListener{
 	
 	private final String TAG="StundenplanFragment";
+	/**
+	 * Stores the currently highlighted Lesson
+	 */
+	private int currentlyMarkedLesson=1;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -52,9 +56,23 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	}
 	@Override
 	public void onStundenplanUpdate() {
+		update();
+		
+	}
+	
+	@Override
+	public void onResume(){
+		/*
+		 * Falls die als aktuell markierte Stunde nicht mehr der aktuellen entspricht, neu anzeigen
+		 */
+		if(currentlyMarkedLesson!=getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY)){
+			update();
+		}
+	}
+	
+	protected void update(){
 		ScrollView s=(ScrollView)this.getView().findViewById(R.id.standard_scroll_view);
 		anzeigen(s);
-		
 	}
 	
 	protected abstract void anzeigen(ScrollView s);
@@ -63,7 +81,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		
 		TableLayout table = new TableLayout(getActivity());
 		table.addView(newHeadline());
-		int currentLesson = getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY);
+		currentlyMarkedLesson = getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY);
 		for(int i=0;i<(StundenplanManager.BEGINN_NACHMITTAG-1+StundenplanManager.ANZAHL_NACHMITTAG);i++){
 			View border=new View(getActivity());
 			border.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,1));
@@ -107,7 +125,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 					if(j==0){
 						//Falls die gerade behandelte Stunde der aktuellen entspricht
 						//Oder aktuell Nachmittag ist und gerade die Nachmittagsstunden behandelt werden
-						if(currentLesson==i+1||(currentLesson==-1&&i+1>=StundenplanManager.BEGINN_NACHMITTAG)){
+						if(currentlyMarkedLesson==i+1||(currentlyMarkedLesson==-1&&i+1>=StundenplanManager.BEGINN_NACHMITTAG)){
 							//Den Hintergrund des Kurses gelb färben
 							kurs.setBackgroundColor(Color.YELLOW);
 						}
@@ -141,58 +159,58 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 						kurs.setOnClickListener(new OnClickListener(){
 	
 							@Override
-							public void onClick(View v) {
-								AlertDialog.Builder builder = new AlertDialog.Builder(
-										getActivity());
-								TableLayout t = new TableLayout(
-										getActivity());
-								TableRow labels = newTableRow();
-								TableRow stunde = newTableRow();
-								TableRow vertretung = newTableRow();
-								String tag=st.getTag();
-								try {
-									int day = getWeekDayFromString(tag);
-									tag=tag.replace(convertToDayString(day), "");
-								} catch (IllegalArgumentException e) {
-									
-								}
-								
-								labels.addView(newBoldTextView(tag));
-								labels.addView(newBoldTextView("Kurs "));
-								labels.addView(newBoldTextView("Raum "));
-								labels.addView(newBoldTextView("Uhrzeit "));
-								labels.addView(newBoldTextView("Art "));
-								labels.addView(newBoldTextView("Bemerk."));
-								stunde.addView(newTextView("Eigentlich "));
-								stunde.addView(newTextView(st.getOldKurs()));
-								stunde.addView(newTextView(st.getOldRaum()));
-								stunde.addView(newTextView(st.getUhrzeit()));
-								vertretung.addView(newTextView("Vertretung "));
-								vertretung.addView(newTextView(st.getKurs()));
-								vertretung.addView(newTextView(st.getRaum()));
-								vertretung.addView(newTextView(""));
-								vertretung.addView(newTextView(st.getArt()));
-								vertretung.addView(newTextView(st.getKlausur()+" "+st.getBemerkung()));
-								
-								t.addView(labels);
-								t.addView(stunde);
-								t.addView(vertretung);
-								LinearLayout layout=new LinearLayout(getActivity());
-								t.setGravity(Gravity.CENTER_HORIZONTAL);
-								layout.setGravity(Gravity.CENTER_HORIZONTAL);
-								layout.addView(t);
-								if (!(android.os.Build.VERSION.SDK_INT >= 11)) {
-									t.setBackgroundColor(Color.WHITE);
-									layout.setBackgroundColor(Color.WHITE);
+                            public void onClick(View v) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(
+                                                    getActivity());
+                                    TableLayout t = new TableLayout(
+                                                    getActivity());
+                                    TableRow labels = newTableRow();
+                                    TableRow stunde = newTableRow();
+                                    TableRow vertretung = newTableRow();
+                                    String tag=st.getTag();
+                                    try {
+                                            int day = getWeekDayFromString(tag);
+                                            tag=tag.replace(convertToDayString(day), "");
+                                    } catch (IllegalArgumentException e) {
+                                            
+                                    }
+                                    
+                                    labels.addView(newBoldTextView(tag));
+                                    labels.addView(newBoldTextView("Kurs "));
+                                    labels.addView(newBoldTextView("Raum "));
+                                    labels.addView(newBoldTextView("Uhrzeit "));
+                                    labels.addView(newBoldTextView("Art "));
+                                    labels.addView(newBoldTextView("Bemerk."));
+                                    stunde.addView(newTextView("Eigentlich "));
+                                    stunde.addView(newTextView(st.getOldKurs()));
+                                    stunde.addView(newTextView(st.getOldRaum()));
+                                    stunde.addView(newTextView(st.getUhrzeit()));
+                                    vertretung.addView(newTextView("Vertretung "));
+                                    vertretung.addView(newTextView(st.getKurs()));
+                                    vertretung.addView(newTextView(st.getRaum()));
+                                    vertretung.addView(newTextView(""));
+                                    vertretung.addView(newTextView(st.getArt()));
+                                    vertretung.addView(newTextView(st.getKlausur()+" "+st.getBemerkung()));
+                                    
+                                    t.addView(labels);
+                                    t.addView(stunde);
+                                    t.addView(vertretung);
+                                    LinearLayout layout=new LinearLayout(getActivity());
+                                    t.setGravity(Gravity.CENTER_HORIZONTAL);
+                                    layout.setGravity(Gravity.CENTER_HORIZONTAL);
+                                    layout.addView(t);
+                                    if (!(android.os.Build.VERSION.SDK_INT >= 11)) {
+                                            t.setBackgroundColor(Color.WHITE);
+                                            layout.setBackgroundColor(Color.WHITE);
 
-								}
-								builder.setView(layout);
-								builder.setPositiveButton("Ok", null);
-								builder.create().show();
-								
-							}
-							
-						});
+                                    }
+                                    builder.setView(layout);
+                                    builder.setPositiveButton("Ok", null);
+                                    builder.create().show();
+                                    
+                            }
+                            
+                    });
 					}
 					
 					stunde.addView(kurs);
