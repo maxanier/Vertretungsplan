@@ -2,7 +2,6 @@ package de.maxgb.vertretungsplan.fragments.stundenplan;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -15,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
@@ -33,50 +33,6 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	 * Stores the currently highlighted Lesson
 	 */
 	private int currentlyMarkedLesson=1;
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		
-		StundenplanManager.getInstance().registerOnUpdateListener(this);
-
-		View rootView = inflater.inflate(R.layout.fragment_scroll_view,
-				container, false);
-		super.onCreateView(inflater, container, savedInstanceState);
-		
-		ScrollView s=(ScrollView)rootView.findViewById(R.id.standard_scroll_view);
-		anzeigen(s);
-		
-		
-		return rootView;
-	}
-	@Override
-	public void onDestroy(){
-		StundenplanManager.getInstance().unregisterOnUpdateListener(this);
-		super.onDestroy();
-	}
-	@Override
-	public void onStundenplanUpdate() {
-		update();
-		
-	}
-	
-	@Override
-	public void onResume(){
-		/*
-		 * Falls die als aktuell markierte Stunde nicht mehr der aktuellen entspricht, neu anzeigen
-		 */
-		if(currentlyMarkedLesson!=getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY)){
-			update();
-		}
-	}
-	
-	protected void update(){
-		ScrollView s=(ScrollView)this.getView().findViewById(R.id.standard_scroll_view);
-		anzeigen(s);
-	}
-	
-	protected abstract void anzeigen(ScrollView s);
-	
 	protected void anzeigen(ArrayList<Stunde[]> stundenplan,ScrollView s){
 		
 		TableLayout table = new TableLayout(getActivity());
@@ -84,7 +40,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		currentlyMarkedLesson = getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY);
 		for(int i=0;i<(StundenplanManager.BEGINN_NACHMITTAG-1+StundenplanManager.ANZAHL_NACHMITTAG);i++){
 			View border=new View(getActivity());
-			border.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,1));
+			border.setLayoutParams(new TableRow.LayoutParams(LayoutParams.MATCH_PARENT,1));
 			border.setBackgroundColor(Color.GRAY);
 			table.addView(border);
 			
@@ -224,48 +180,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		
 		s.addView(table);
 	}
-	
-	private TableRow newHeadline(){
-		TableRow headline = newTableRow();
-		SpannableString stunde=new SpannableString("Stunde ");
-		stunde.setSpan(new StyleSpan(Typeface.BOLD),0,stunde.length(),0);
-		headline.addView(newTextView(stunde));
-		
-		for(int i=0;i<getVisibleDayCount();i++){
-			int day=((getCurrentDayOfWeek()-1+i)%7)+1;
-			if(day!=Calendar.SUNDAY){
-				SpannableString tag;
-				if(i==0){
-					tag=new SpannableString(" Heute ");
-					tag.setSpan(new StyleSpan(Typeface.BOLD),0,tag.length(),0);
-				}
-				else if(i==1){
-					tag=new SpannableString(" Morgen ");
-					tag.setSpan(new StyleSpan(Typeface.BOLD),0,tag.length(),0);
-				}
-				else{
-					tag=new SpannableString(" "+convertToDayString(day)+" ");
-					tag.setSpan(new StyleSpan(Typeface.BOLD),0,tag.length(),0);
-				}
-				headline.addView(newTextViewCentered(tag));
-			}
-		}
-		return headline;
-	}
-	
-
-	
-	
-	protected int getCurrentDayOfWeek(){
-		Calendar calendar = Calendar.getInstance();
-		return calendar.get(Calendar.DAY_OF_WEEK); 
-	}
-	
-	protected int getVisibleDayCount(){
-		//TODO Abhängig von ScreenSize
-		return 4;
-	}
-	
+	protected abstract void anzeigen(ScrollView s);
 	protected String convertToDayString(int i){
 		switch(i){
 		case Calendar.SUNDAY: return "Sonntag";
@@ -278,27 +193,10 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		default: return "";
 		}
 	}
-	protected int getWeekDayFromString(String s) throws IllegalArgumentException{
-		s=s.toLowerCase();
-		if(s.contains("montag")){
-			return Calendar.MONDAY;
-		}
-		if(s.contains("dienstag")){
-			return Calendar.TUESDAY;
-		}
-		if(s.contains("mittwoch")){
-			return Calendar.WEDNESDAY;
-		}
-		if(s.contains("donnerstag")){
-			return Calendar.THURSDAY;
-		}
-		if(s.contains("freitag")){
-			return Calendar.FRIDAY;
-		}
-		if(s.contains("samstag")){
-			return Calendar.SATURDAY;
-		}
-		throw new IllegalArgumentException("Kein bekannter Tag");
+	
+	protected int getCurrentDayOfWeek(){
+		Calendar calendar = Calendar.getInstance();
+		return calendar.get(Calendar.DAY_OF_WEEK); 
 	}
 	
 	/**
@@ -341,6 +239,108 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		return -1;
 		
 		
+	}
+	
+	protected int getVisibleDayCount(){
+		//TODO Abhängig von ScreenSize
+		return 4;
+	}
+	
+	protected int getWeekDayFromString(String s) throws IllegalArgumentException{
+		s=s.toLowerCase();
+		if(s.contains("montag")){
+			return Calendar.MONDAY;
+		}
+		if(s.contains("dienstag")){
+			return Calendar.TUESDAY;
+		}
+		if(s.contains("mittwoch")){
+			return Calendar.WEDNESDAY;
+		}
+		if(s.contains("donnerstag")){
+			return Calendar.THURSDAY;
+		}
+		if(s.contains("freitag")){
+			return Calendar.FRIDAY;
+		}
+		if(s.contains("samstag")){
+			return Calendar.SATURDAY;
+		}
+		throw new IllegalArgumentException("Kein bekannter Tag");
+	}
+	
+	private TableRow newHeadline(){
+		TableRow headline = newTableRow();
+		SpannableString stunde=new SpannableString("Stunde ");
+		stunde.setSpan(new StyleSpan(Typeface.BOLD),0,stunde.length(),0);
+		headline.addView(newTextView(stunde));
+		
+		for(int i=0;i<getVisibleDayCount();i++){
+			int day=((getCurrentDayOfWeek()-1+i)%7)+1;
+			if(day!=Calendar.SUNDAY){
+				SpannableString tag;
+				if(i==0){
+					tag=new SpannableString(" Heute ");
+					tag.setSpan(new StyleSpan(Typeface.BOLD),0,tag.length(),0);
+				}
+				else if(i==1){
+					tag=new SpannableString(" Morgen ");
+					tag.setSpan(new StyleSpan(Typeface.BOLD),0,tag.length(),0);
+				}
+				else{
+					tag=new SpannableString(" "+convertToDayString(day)+" ");
+					tag.setSpan(new StyleSpan(Typeface.BOLD),0,tag.length(),0);
+				}
+				headline.addView(newTextViewCentered(tag));
+			}
+		}
+		return headline;
+	}
+	
+
+	
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		
+		StundenplanManager.getInstance().registerOnUpdateListener(this);
+
+		View rootView = inflater.inflate(R.layout.fragment_scroll_view,
+				container, false);
+		super.onCreateView(inflater, container, savedInstanceState);
+		
+		ScrollView s=(ScrollView)rootView.findViewById(R.id.standard_scroll_view);
+		anzeigen(s);
+		
+		
+		return rootView;
+	}
+	
+	@Override
+	public void onDestroy(){
+		StundenplanManager.getInstance().unregisterOnUpdateListener(this);
+		super.onDestroy();
+	}
+	
+	@Override
+	public void onResume(){
+		/*
+		 * Falls die als aktuell markierte Stunde nicht mehr der aktuellen entspricht, neu anzeigen
+		 */
+		if(currentlyMarkedLesson!=getCurrentLesson(getCurrentDayOfWeek()==Calendar.SATURDAY)){
+			update();
+		}
+	}
+	@Override
+	public void onStundenplanUpdate() {
+		update();
+		
+	}
+	
+	protected void update(){
+		ScrollView s=(ScrollView)this.getView().findViewById(R.id.standard_scroll_view);
+		anzeigen(s);
 	}
 	
 	

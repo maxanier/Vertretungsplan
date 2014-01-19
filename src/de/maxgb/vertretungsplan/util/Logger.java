@@ -13,9 +13,26 @@ public class Logger {
 	private static boolean debug=false;
 	private static File logFile;
 	
-	private Logger(){
-
-		
+	public static void e(String tag,String msg){
+		Log.e(tag, msg);
+		log("ERROR "+tag+": "+msg);
+	}
+	public static void e(String tag,String msg,Throwable t){
+		Log.e(tag, msg, t);
+		log("ERROR "+tag+": "+msg+ "\nERROR-MESSAGE: "+t.getMessage());
+	}
+	
+	
+	public static boolean getDebugMode(){
+		return debug;
+	}
+	
+	public static File getLogFile(){
+		return logFile;
+	}
+	public static void i(String tag,String msg){
+		Log.i(tag,msg);
+		log("INFO "+tag+": "+msg);
 	}
 	public static void init(){
 		if(logFile==null){
@@ -30,32 +47,6 @@ public class Logger {
 			log("\n Neustart \n");
 		}
 	}
-	
-	
-	public static  void setDebugMode(boolean mode){
-		debug=mode;
-	}
-	
-	public static boolean getDebugMode(){
-		return debug;
-	}
-	public static void i(String tag,String msg){
-		Log.i(tag,msg);
-		log("INFO "+tag+": "+msg);
-	}
-	public static void w(String tag,String msg){
-		Log.w(tag,msg);
-		log("WARNING "+tag+": "+msg);
-	}
-	public static void e(String tag,String msg){
-		Log.e(tag, msg);
-		log("ERROR "+tag+": "+msg);
-	}
-	public static void e(String tag,String msg,Throwable t){
-		Log.e(tag, msg, t);
-		log("ERROR "+tag+": "+msg+ "\nERROR-MESSAGE: "+t.getMessage());
-	}
-	
 	private static void log(String msg){
 		if(debug){
 			try {
@@ -70,8 +61,17 @@ public class Logger {
 			}
 		}
 	}
-	public static File getLogFile(){
-		return logFile;
+	public static  void setDebugMode(boolean mode){
+		debug=mode;
+	}
+	
+	public static void w(String tag,String msg){
+		Log.w(tag,msg);
+		log("WARNING "+tag+": "+msg);
+	}
+	private Logger(){
+
+		
 	}
 	
 

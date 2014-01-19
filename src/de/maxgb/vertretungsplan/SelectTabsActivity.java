@@ -28,11 +28,69 @@ import de.maxgb.vertretungsplan.util.Logger;
 
 public class SelectTabsActivity extends ListActivity {
 	
+	private class TabSelectorAdapter extends ArrayAdapter<TabSelector>{
+    	private List<TabSelector> objects;
+    	public TabSelectorAdapter(Context context, int resource,int textViewResourceId,List<TabSelector> objects){
+    		super(context,resource,textViewResourceId,objects);
+    		this.objects=objects;
+    	}
+    	
+    	@Override
+    	public View getView(int position,View convertView,ViewGroup parent){
+    		View row=convertView;
+    		if(row==null){
+    			LayoutInflater inflater=getLayoutInflater();
+    			row=inflater.inflate(R.layout.list_item_checkable, parent,false);
+    		}
+    		
+    		CheckedTextView checkedTextView = (CheckedTextView)row.findViewById(R.id.select_tabs_item_text);
+    		checkedTextView.setText(tabManager.getTabDescription(objects.get(position)));
+    		((ListView)parent).setItemChecked(position,objects.get(position).isEnabled());
+    		
+    		return row;
+    	}
+    	
+    	public void toogleChecked(int position){
+    		objects.get(position).toogleEnabled();
+    	}
+    }
+	public static ArrayList<TabSelector> createStandardSelection(ArrayList<TabSelector>tabs,SharedPreferences pref){
+    	Logger.i(TAG, "Erstelle neue Tabauswahl");
+    	
+		boolean schueler = pref.getBoolean(Constants.SCHUELER_KEY, false);
+		boolean lehrer = pref.getBoolean(Constants.LEHRER_KEY, false);
+		boolean oberstufe = pref.getBoolean(Constants.OBERSTUFE_KEY, false);
+		boolean stundenplan=true;
+		//boolean stundenplan = pref.getBoolean(Constants.SP_GEKAUFT, false);
+		//TODO Anpassen
+		
+		if(schueler){
+			tabs.add(new TabSelector("AllesSchuelerFragment.class",true));
+			tabs.add(new TabSelector("StufeSchuelerFragment.class",true));
+			if((android.os.Build.VERSION.SDK_INT>=11)&&oberstufe){
+				tabs.add(new TabSelector("KurseSchuelerFragment.class",false));
+			}
+			if(stundenplan){
+				tabs.add(new TabSelector("NormalStundenplanFragment.class",false));
+				tabs.add(new TabSelector("ModifiedStundenplanFragment.class",false));
+			}
+			
+		}
+		else if(lehrer){
+			tabs.add(new TabSelector("AllesLehrerFragment.class",true));
+			tabs.add(new TabSelector("EigeneLehrerFragment.class",true));
+		}
+		return tabs;
+    }
 	private TabSelectorAdapter adapter;
-	private TabManager tabManager;
+	
+    private TabManager tabManager;
+    
+
+    
 	private final static String TAG="SelectTabsActivity";
 	
-    private DragSortListView.DropListener onDrop =
+	private DragSortListView.DropListener onDrop =
             new DragSortListView.DropListener() {
                 @Override
                 public void drop(int from, int to) {
@@ -45,9 +103,12 @@ public class SelectTabsActivity extends ListActivity {
                     }
                 }
             };
-    
-
-    
+	
+	@Override
+    public DragSortListView getListView() {
+        return (DragSortListView) super.getListView();
+    }
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -85,14 +146,15 @@ public class SelectTabsActivity extends ListActivity {
 
 	}
 	
-	@Override
+	
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.select_tabs, menu);
 	    return true;
 	}
-	
-	@Override
+    
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
@@ -107,8 +169,8 @@ public class SelectTabsActivity extends ListActivity {
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	@Override
+    
+    @Override
 	protected void onPause(){
 		super.onPause();
 		
@@ -122,67 +184,5 @@ public class SelectTabsActivity extends ListActivity {
 		editor.putString(Constants.JSON_TABS_KEY,TabManager.convertToString(tabs));//Save the current selection via the TabManger in SharedPreferences
 		editor.commit();
 	}
-	
-	
-    @Override
-    public DragSortListView getListView() {
-        return (DragSortListView) super.getListView();
-    }
-    
-    private class TabSelectorAdapter extends ArrayAdapter<TabSelector>{
-    	private List<TabSelector> objects;
-    	public TabSelectorAdapter(Context context, int resource,int textViewResourceId,List<TabSelector> objects){
-    		super(context,resource,textViewResourceId,objects);
-    		this.objects=objects;
-    	}
-    	
-    	@Override
-    	public View getView(int position,View convertView,ViewGroup parent){
-    		View row=convertView;
-    		if(row==null){
-    			LayoutInflater inflater=getLayoutInflater();
-    			row=inflater.inflate(R.layout.list_item_checkable, parent,false);
-    		}
-    		
-    		CheckedTextView checkedTextView = (CheckedTextView)row.findViewById(R.id.select_tabs_item_text);
-    		checkedTextView.setText(tabManager.getTabDescription(objects.get(position)));
-    		((ListView)parent).setItemChecked(position,objects.get(position).isEnabled());
-    		
-    		return row;
-    	}
-    	
-    	public void toogleChecked(int position){
-    		objects.get(position).toogleEnabled();
-    	}
-    }
-    
-    public static ArrayList<TabSelector> createStandardSelection(ArrayList<TabSelector>tabs,SharedPreferences pref){
-    	Logger.i(TAG, "Erstelle neue Tabauswahl");
-    	
-		boolean schueler = pref.getBoolean(Constants.SCHUELER_KEY, false);
-		boolean lehrer = pref.getBoolean(Constants.LEHRER_KEY, false);
-		boolean oberstufe = pref.getBoolean(Constants.OBERSTUFE_KEY, false);
-		boolean stundenplan=true;
-		//boolean stundenplan = pref.getBoolean(Constants.SP_GEKAUFT, false);
-		//TODO Anpassen
-		
-		if(schueler){
-			tabs.add(new TabSelector("AllesSchuelerFragment.class",true));
-			tabs.add(new TabSelector("StufeSchuelerFragment.class",true));
-			if((android.os.Build.VERSION.SDK_INT>=11)&&oberstufe){
-				tabs.add(new TabSelector("KurseSchuelerFragment.class",false));
-			}
-			if(stundenplan){
-				tabs.add(new TabSelector("NormalStundenplanFragment.class",false));
-				tabs.add(new TabSelector("ModifiedStundenplanFragment.class",false));
-			}
-			
-		}
-		else if(lehrer){
-			tabs.add(new TabSelector("AllesLehrerFragment.class",true));
-			tabs.add(new TabSelector("EigeneLehrerFragment.class",true));
-		}
-		return tabs;
-    }
 
 }

@@ -18,6 +18,8 @@ import de.maxgb.vertretungsplan.util.Logger;
 public abstract class VertretungsplanFragment extends AnzeigeFragment implements OnUpdateListener{
 	private final String TAG="VertretungsplanFragment";
 	
+	protected abstract void anzeigen(ScrollView s);
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 		return rootView;
 	}
 	
+	
+	
 	@Override
 	public void onDestroy(){
 		try {
@@ -50,16 +54,12 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 		super.onDestroy();
 	}
 	
-	
-	
 	@Override
 	public void onVertretungsplanUpdate() {
 		ScrollView s = (ScrollView)this.getView().findViewById(R.id.standard_scroll_view);
 		anzeigen(s);
 		
 	}
-	
-	protected abstract void anzeigen(ScrollView s);
 
 	
 

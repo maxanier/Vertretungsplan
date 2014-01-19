@@ -2,7 +2,6 @@ package de.maxgb.vertretungsplan.util;
 
 import java.util.HashMap;
 
-
 import android.os.Environment;
 
 /**

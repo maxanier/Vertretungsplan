@@ -11,57 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.AsyncTask;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.Stunde;
 
-import android.os.AsyncTask;
-
 
 public class StundenplanManager {
-	private static StundenplanManager instance;
-	private final String TAG="StundenplanManager";
-	private int id;
-	private int lastResult=0;
-	public static final int BEGINN_NACHMITTAG=8;
-	public static final int ANZAHL_SAMSTAG=4;
-	public static final int ANZAHL_NACHMITTAG=2;
-	private ArrayList<Stunde[]> woche;
-	private HashMap<String,String> kursnamen;
-	public static synchronized StundenplanManager getInstance(){
-		if(instance == null){
-			instance=new StundenplanManager();
-		}
-		return instance;
-	}
-	
-	private StundenplanManager(){
-		kursnamen=Constants.getKursnamen();
-		auswerten();
-	}
-	
-	//Listener-------------
-	private ArrayList<OnUpdateListener> listener=new ArrayList<OnUpdateListener>();
-	public interface OnUpdateListener{
-		public void onStundenplanUpdate();
-	}
-	
-	public void registerOnUpdateListener(OnUpdateListener listener){
-		this.listener.add(listener);
-	}
-	public void unregisterOnUpdateListener(OnUpdateListener listener){
-		this.listener.remove(listener);
-	}
-	
-	public void notifyListener(){
-		for(int i=0;i<listener.size();i++){
-			if(listener.get(i)!=null){
-				listener.get(i).onStundenplanUpdate();
-			}
-		}
-	}
-	
-	
 	//------------------------
 	private class AuswertenTask extends AsyncTask<Void, Void, Void> {
 
@@ -79,7 +35,33 @@ public class StundenplanManager {
 			
 		}
 	}
+	public interface OnUpdateListener{
+		public void onStundenplanUpdate();
+	}
+	private static StundenplanManager instance;
+	private final String TAG="StundenplanManager";
+	private int id;
+	private int lastResult=0;
+	public static final int BEGINN_NACHMITTAG=8;
+	public static final int ANZAHL_SAMSTAG=4;
+	public static final int ANZAHL_NACHMITTAG=2;
+	public static synchronized StundenplanManager getInstance(){
+		if(instance == null){
+			instance=new StundenplanManager();
+		}
+		return instance;
+	}
 	
+	private ArrayList<Stunde[]> woche;
+	
+	private HashMap<String,String> kursnamen;
+	//Listener-------------
+	private ArrayList<OnUpdateListener> listener=new ArrayList<OnUpdateListener>();
+	
+	private StundenplanManager(){
+		kursnamen=Constants.getKursnamen();
+		auswerten();
+	}
 	public void asyncAuswerten() {
 		AuswertenTask task = new AuswertenTask();
 		task.execute();
@@ -95,10 +77,29 @@ public class StundenplanManager {
 		}
 		
 	}
+	
+	
 	public void auswertenWithNotify(){
 		auswerten();
 		notifyListener();
 	}
+	
+	private Stunde[] convertJSONArrayToStundenArray(JSONArray tag) throws JSONException{
+		Stunde[] result=new Stunde[BEGINN_NACHMITTAG-1+ANZAHL_NACHMITTAG];
+		
+		for(int i=0;i<BEGINN_NACHMITTAG-1+ANZAHL_NACHMITTAG;i++){
+			JSONArray stunde=tag.getJSONArray(i);
+			
+			if(i>=BEGINN_NACHMITTAG-1){
+				result[i]=new Stunde(stunde.getString(0),stunde.getString(1),i+1,stunde.getString(2));
+			}
+			else{
+				result[i]=new Stunde(stunde.getString(0),stunde.getString(1),i+1);
+			}
+		}
+		return result;
+	}
+	
 	/**
 	 * Wertet die Stundenplandatei aus
 	 * @return Fehlercode -1 bei Erfolg,1 Datei existiert nicht, 2 Datei kann nicht gelesen werden,3 Fehler beim Lesen,4 Fehler beim Parsen
@@ -173,28 +174,9 @@ public class StundenplanManager {
 		woche=w;
 		return -1;
 	}
-	
-	private Stunde[] convertJSONArrayToStundenArray(JSONArray tag) throws JSONException{
-		Stunde[] result=new Stunde[BEGINN_NACHMITTAG-1+ANZAHL_NACHMITTAG];
-		
-		for(int i=0;i<BEGINN_NACHMITTAG-1+ANZAHL_NACHMITTAG;i++){
-			JSONArray stunde=tag.getJSONArray(i);
-			
-			if(i>=BEGINN_NACHMITTAG-1){
-				result[i]=new Stunde(stunde.getString(0),stunde.getString(1),i+1,stunde.getString(2));
-			}
-			else{
-				result[i]=new Stunde(stunde.getString(0),stunde.getString(1),i+1);
-			}
-		}
-		return result;
+	public HashMap<String, String> getKursnamen() {
+		return kursnamen;
 	}
-	
-
-	public ArrayList<Stunde[]> getStundenplan(){
-		return woche;
-	}
-	
 	public String getLastResult(){
 		switch(lastResult){
 		case -1: return "Erfolgreich ausgewertet";
@@ -205,8 +187,25 @@ public class StundenplanManager {
 		default: return "Noch nicht ausgewertet";
 		}
 	}
+	
+	public ArrayList<Stunde[]> getStundenplan(){
+		return woche;
+	}
+	
 
-	public HashMap<String, String> getKursnamen() {
-		return kursnamen;
+	public void notifyListener(){
+		for(int i=0;i<listener.size();i++){
+			if(listener.get(i)!=null){
+				listener.get(i).onStundenplanUpdate();
+			}
+		}
+	}
+	
+	public void registerOnUpdateListener(OnUpdateListener listener){
+		this.listener.add(listener);
+	}
+
+	public void unregisterOnUpdateListener(OnUpdateListener listener){
+		this.listener.remove(listener);
 	}
 }

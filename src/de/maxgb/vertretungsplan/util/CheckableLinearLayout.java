@@ -15,14 +15,14 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        child = (Checkable) getChildAt(CHECKABLE_CHILD_INDEX);
+    public boolean isChecked() {
+        return child.isChecked();
     }
 
     @Override
-    public boolean isChecked() {
-        return child.isChecked();
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        child = (Checkable) getChildAt(CHECKABLE_CHILD_INDEX);
     }
 
     @Override

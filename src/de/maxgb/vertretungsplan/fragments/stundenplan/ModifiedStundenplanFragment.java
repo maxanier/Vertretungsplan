@@ -1,6 +1,7 @@
 package de.maxgb.vertretungsplan.fragments.stundenplan;
 
 import java.util.ArrayList;
+
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,29 +23,6 @@ import de.maxgb.vertretungsplan.util.Stunde;
 public class ModifiedStundenplanFragment extends StundenplanFragment implements VertretungsplanManager.OnUpdateListener{
 	
 	private final String TAG="ModifiedStundenplanFragment";
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		try{
-		VertretungsplanManager.getCreatedInstance().registerOnUpdateListener(this);
-		}
-		catch(NullPointerException e){
-			Logger.w(TAG,"Could not register listener, since VertretungsplanManager was not instatiated yet");
-		}
-		return super.onCreateView(inflater, container, savedInstanceState);
-	}
-	
-	@Override
-	public void onDestroy(){
-		try{
-			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateListener(this);
-		}
-		catch(NullPointerException e){
-			//Sowieso schon gelöscht
-		}
-		super.onDestroy();
-	}
-	
 	@Override
 	protected void anzeigen(ScrollView s) {
 		s.removeAllViews();
@@ -126,6 +104,29 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		}
 		super.anzeigen(stundenplan, s2);
 		
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		try{
+		VertretungsplanManager.getCreatedInstance().registerOnUpdateListener(this);
+		}
+		catch(NullPointerException e){
+			Logger.w(TAG,"Could not register listener, since VertretungsplanManager was not instatiated yet");
+		}
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+	
+	@Override
+	public void onDestroy(){
+		try{
+			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateListener(this);
+		}
+		catch(NullPointerException e){
+			//Sowieso schon gelöscht
+		}
+		super.onDestroy();
 	}
 
 	@Override

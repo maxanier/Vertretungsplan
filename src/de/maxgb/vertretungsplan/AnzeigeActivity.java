@@ -42,6 +42,21 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 	SectionsPagerAdapter mSectionsPagerAdapter;
 
 
+	public void fehler(Exception e) {
+
+		Logger.e(TAG, "Fehler", e);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(e.getMessage()).setTitle("Fehler");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+			}
+		});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Logger.i(TAG, "Receiving result " + resultCode);
@@ -124,6 +139,17 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
+	protected void onDestroy(){
+		
+		try {
+			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateFinishedListener(this);
+		} catch (NullPointerException e) {
+
+		}
+		super.onDestroy();
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_refresh:
@@ -171,7 +197,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		// When the given tab is selected, switch to the corresponding page in
@@ -180,23 +206,54 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 
 	}
 
+
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 
 	}
-	
-	@Override
-	protected void onDestroy(){
-		
-		try {
-			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateFinishedListener(this);
-		} catch (NullPointerException e) {
 
+
+	
+	/**
+	 * Implements OptionsActivity.OnUpdateFinishedListener
+	 * Setzt den Status des Refresh-Icons auf false, wenn ein Update abgeschlossen ist
+	 */
+	@Override
+	public void onVertretungsplanUpdateFinished(boolean update) {
+		Logger.i(TAG, "Received OnVertretungsplanUpdateFinished Notification");
+		setRefreshActionButtonState(false);
+		if(update){
+			Toast.makeText(this, "Aktualisiert", Toast.LENGTH_SHORT).show();
 		}
-		super.onDestroy();
+		else{
+			Toast.makeText(this, "Keine Änderung", Toast.LENGTH_SHORT).show();
+		}
+		
 	}
 
+	/**
+	 * Setzt Status des Refresh-Icons
+	 * @param refreshing active or inactive
+	 * @see http://www.michenux.net/android-refresh-item-action-bar-circular-progressbar-578.html
+	 */
+	public void setRefreshActionButtonState(final boolean refreshing) {
+
+		if (optionsMenu != null) {
+			final MenuItem refreshItem = optionsMenu
+					.findItem(R.id.action_refresh);
+			if (refreshItem != null) {
+				if (refreshing) {
+					refreshItem.setActionView(R.layout.progressbar);
+					refreshItem.expandActionView();
+				} else {
+					refreshItem.setActionView(null);
+				}
+			}
+		}
+	}
+	
+	//Sonstige
 
 	//Update Methoden
 	public void updateAll() {
@@ -205,8 +262,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 				Constants.PREFS_NAME, 0), this);
 		task.execute();
 	}
-
-
 	
 	public void updateTabs(){
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -232,7 +287,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 		}
 		setRefreshActionButtonState(false);
 	}
-
 	public void updateVertretungsplan() {
 		setRefreshActionButtonState(true);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
@@ -240,60 +294,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements
 				pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).asyncAuswerten();
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.ANZEIGEINFO);
-	}
-	
-	//Sonstige
-
-	public void fehler(Exception e) {
-
-		Logger.e(TAG, "Fehler", e);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(e.getMessage()).setTitle("Fehler");
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-			}
-		});
-
-		AlertDialog dialog = builder.create();
-		dialog.show();
-	}
-	
-	/**
-	 * Setzt Status des Refresh-Icons
-	 * @param refreshing active or inactive
-	 * @see http://www.michenux.net/android-refresh-item-action-bar-circular-progressbar-578.html
-	 */
-	public void setRefreshActionButtonState(final boolean refreshing) {
-
-		if (optionsMenu != null) {
-			final MenuItem refreshItem = optionsMenu
-					.findItem(R.id.action_refresh);
-			if (refreshItem != null) {
-				if (refreshing) {
-					refreshItem.setActionView(R.layout.progressbar);
-					refreshItem.expandActionView();
-				} else {
-					refreshItem.setActionView(null);
-				}
-			}
-		}
-	}
-	/**
-	 * Implements OptionsActivity.OnUpdateFinishedListener
-	 * Setzt den Status des Refresh-Icons auf false, wenn ein Update abgeschlossen ist
-	 */
-	@Override
-	public void onVertretungsplanUpdateFinished(boolean update) {
-		Logger.i(TAG, "Received OnVertretungsplanUpdateFinished Notification");
-		setRefreshActionButtonState(false);
-		if(update){
-			Toast.makeText(this, "Aktualisiert", Toast.LENGTH_SHORT).show();
-		}
-		else{
-			Toast.makeText(this, "Keine Änderung", Toast.LENGTH_SHORT).show();
-		}
-		
 	}
 	
 }

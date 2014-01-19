@@ -12,12 +12,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.os.AsyncTask;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.LehrerVertretung;
 import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.SchuelerVertretung;
-
-import android.os.AsyncTask;
 
 /**
  * Singleton Klasse zur Auswertung des Vertretungsplans und zur Speicherung der Vertretungen
@@ -44,10 +43,18 @@ public class VertretungsplanManager {
 	}
 	
 
+	public interface OnUpdateFinishedListener{
+		public void onVertretungsplanUpdateFinished(boolean update);//Wenn update==false Keine Änderung
+	}
+	//Listener-------------
+	public interface OnUpdateListener{
+		public void onVertretungsplanUpdate();
+	}
 	private static VertretungsplanManager instance;
-	private ArrayList<OnUpdateListener> update_listener;
-	private ArrayList<OnUpdateFinishedListener> update_finished_listener;
 	
+	public static VertretungsplanManager getCreatedInstance(){
+		return instance;
+	}
 	public static synchronized VertretungsplanManager getInstance(boolean schueler,
 			boolean lehrer) {
 		
@@ -60,21 +67,21 @@ public class VertretungsplanManager {
 		}
 		return instance;
 	}
-	public static VertretungsplanManager getCreatedInstance(){
-		return instance;
-	}
+	private ArrayList<OnUpdateListener> update_listener;
+	private ArrayList<OnUpdateFinishedListener> update_finished_listener;
 	private final String TAG = "VertretungsplanManager";
 	private String schuelerStand = "";
 	private String lehrerStand = "";
 	private ArrayList<SchuelerVertretung> schuelerVertretungen;
 	private ArrayList<LehrerVertretung> lehrerVertretungen;
+
 	private long schuelerDateiLastModified;
+
 	private long lehrerDateiLastModified;
 
 	private boolean schueler;
-
+	
 	private boolean lehrer;
-
 	private VertretungsplanManager(boolean schueler, boolean lehrer) {
 		this.schueler = schueler;
 		this.lehrer = lehrer;
@@ -83,51 +90,11 @@ public class VertretungsplanManager {
 		auswerten();
 	}
 	
-	//Listener-------------
-	public interface OnUpdateListener{
-		public void onVertretungsplanUpdate();
-	}
-	public interface OnUpdateFinishedListener{
-		public void onVertretungsplanUpdateFinished(boolean update);//Wenn update==false Keine Änderung
-	}
-	
-	public void registerOnUpdateListener(OnUpdateListener listener){
-		this.update_listener.add(listener);
-	}
-	public void unregisterOnUpdateListener(OnUpdateListener listener){
-		this.update_listener.remove(listener);
-	}
-	
-	private void notifyUpdateListener(){
-		for(int i=0;i<update_listener.size();i++){
-			if(update_listener.get(i)!=null){
-				update_listener.get(i).onVertretungsplanUpdate();
-			}
-		}
-	}
-	
-	public void registerOnUpdateFinishedListener(OnUpdateFinishedListener listener){
-		this.update_finished_listener.add(listener);
-	}
-	public void unregisterOnUpdateFinishedListener(OnUpdateFinishedListener listener){
-		this.update_finished_listener.remove(listener);
-	}
-	
-	private void notifyUpdateFinishedListener(boolean update){
-		for(int i=0;i<update_finished_listener.size();i++){
-			if(update_finished_listener.get(i)!=null){
-				update_finished_listener.get(i).onVertretungsplanUpdateFinished(update);
-			}
-		}
-	}
-	
-	
 	//------------------------
 	public void asyncAuswerten() {
 		AuswertenTask task = new AuswertenTask();
 		task.execute();
 	}
-
 	public boolean auswerten() {
 		boolean modified = false;
 		if (schueler) {
@@ -154,7 +121,7 @@ public class VertretungsplanManager {
 		}
 		return modified;
 	}
-
+	
 	private boolean auswertenLehrer(File f) {
 		Document doc = getDoc(f);
 		if (doc == null) {
@@ -330,7 +297,7 @@ public class VertretungsplanManager {
 		return true;
 
 	}
-
+	
 	private boolean auswertenSchueler(File f) {
 		Document doc = getDoc(f);
 		if (doc == null) {
@@ -474,7 +441,6 @@ public class VertretungsplanManager {
 		schuelerVertretungen = vertretungen;
 		return true;
 	}
-
 	private Document getDoc(File file) {
 		// Erstellen eines DocBuilder und parsen der PlanWebsite in ein
 		// Document
@@ -493,11 +459,12 @@ public class VertretungsplanManager {
 			return null;
 		}
 	}
-
+	
 	public String getLehrerStand() {
 		return lehrerStand;
 	}
-
+	
+	
 	public ArrayList<LehrerVertretung> getLehrerVertretungen() {
 		if (lehrerVertretungen == null) {
 			return (new ArrayList<LehrerVertretung>());
@@ -514,6 +481,30 @@ public class VertretungsplanManager {
 			return (new ArrayList<SchuelerVertretung>());
 		}
 		return schuelerVertretungen;
+	}
+
+	private void notifyUpdateFinishedListener(boolean update){
+		for(int i=0;i<update_finished_listener.size();i++){
+			if(update_finished_listener.get(i)!=null){
+				update_finished_listener.get(i).onVertretungsplanUpdateFinished(update);
+			}
+		}
+	}
+
+	private void notifyUpdateListener(){
+		for(int i=0;i<update_listener.size();i++){
+			if(update_listener.get(i)!=null){
+				update_listener.get(i).onVertretungsplanUpdate();
+			}
+		}
+	}
+
+	public void registerOnUpdateFinishedListener(OnUpdateFinishedListener listener){
+		this.update_finished_listener.add(listener);
+	}
+
+	public void registerOnUpdateListener(OnUpdateListener listener){
+		this.update_listener.add(listener);
 	}
 
 	private String standHerausfinden(Document doc) {
@@ -544,5 +535,13 @@ public class VertretungsplanManager {
 		} catch (Exception e) {
 			return "Login-Info vlt. falsch";
 		}
+	}
+
+	public void unregisterOnUpdateFinishedListener(OnUpdateFinishedListener listener){
+		this.update_finished_listener.remove(listener);
+	}
+
+	public void unregisterOnUpdateListener(OnUpdateListener listener){
+		this.update_listener.remove(listener);
 	}
 }

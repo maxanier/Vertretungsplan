@@ -45,78 +45,7 @@ import de.maxgb.vertretungsplan.util.Logger;
  */
 public class StundenplanOptionsActivity extends Activity {
 
-	private final String TAG = "Stundenplan_options";
-	private ProgressDialog progressDialog;
-	private EditText edit_id;
-	private CheckBox checkBox_kurse_with_namen;
-	private boolean old_kurse_mit_namen;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		// Load Layout
-		setContentView(R.layout.activity_stundenplan_options);
-		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
-		edit_id = (EditText) findViewById(R.id.edit_stundenplan_id);
-		checkBox_kurse_with_namen = (CheckBox) findViewById(R.id.checkBox_stundenplan_with_name);
-		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID, 0)));
-		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false));
-		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false);
-		if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
-			checkBox_kurse_with_namen.setVisibility(View.INVISIBLE);
-			checkBox_kurse_with_namen.setEnabled(false);
-
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.stundenplan_options, menu);
-		return true;
-	}
-
-	public void fertig(View v) {
-		SharedPreferences.Editor editor = getSharedPreferences(Constants.PREFS_NAME, 0).edit();
-		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
-		try {
-			editor.putInt(Constants.SP_ID, Integer.parseInt(edit_id.getText().toString()));
-		} catch (NumberFormatException e) {
-			Logger.w(TAG, "Id Feld fehlerhaft oder leer");
-		}
-		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
-		editor.commit();
-		if (old_kurse_mit_namen != checkBox_kurse_with_namen.isChecked()) {
-			StundenplanManager.getInstance().notifyListener();
-		}
-		finish();
-	}
-
-	public void sp_herunterladen(View v) {
-		DownloadPlanTask task = new DownloadPlanTask();
-		try {
-			task.execute(Integer.parseInt(edit_id.getText().toString()));
-		} catch (NumberFormatException e) {
-			alert("Bitte eine ID(nur aus Zahlen bestehend) eingeben");
-		}
-	}
-
 	private class DownloadPlanTask extends AsyncTask<Integer, Void, String> {
-		@Override
-		protected void onPreExecute() {
-			if (!isOnline()) {
-				alert("Keine Internetverbindung");
-			}
-			Log.i(TAG, "Show ProgressDialog");
-			progressDialog = new ProgressDialog(StundenplanOptionsActivity.this);
-			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			progressDialog.setTitle("Saving");
-			progressDialog.setCancelable(false);
-			progressDialog.setIndeterminate(false);
-			progressDialog.show();
-		}
-
 		/**
 		 * Downloads stundenplan
 		 * 
@@ -187,7 +116,27 @@ public class StundenplanOptionsActivity extends Activity {
 			progressDialog = null;
 
 		}
+
+		@Override
+		protected void onPreExecute() {
+			if (!isOnline()) {
+				alert("Keine Internetverbindung");
+			}
+			Log.i(TAG, "Show ProgressDialog");
+			progressDialog = new ProgressDialog(StundenplanOptionsActivity.this);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			progressDialog.setTitle("Saving");
+			progressDialog.setCancelable(false);
+			progressDialog.setIndeterminate(false);
+			progressDialog.show();
+		}
 	}
+	private final String TAG = "Stundenplan_options";
+	private ProgressDialog progressDialog;
+	private EditText edit_id;
+	private CheckBox checkBox_kurse_with_namen;
+
+	private boolean old_kurse_mit_namen;
 
 	// ------------------------------------------------------------------------
 	private void alert(String msg) {
@@ -197,12 +146,54 @@ public class StundenplanOptionsActivity extends Activity {
 		builder.create().show();
 	}
 
+	public void fertig(View v) {
+		SharedPreferences.Editor editor = getSharedPreferences(Constants.PREFS_NAME, 0).edit();
+		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
+		try {
+			editor.putInt(Constants.SP_ID, Integer.parseInt(edit_id.getText().toString()));
+		} catch (NumberFormatException e) {
+			Logger.w(TAG, "Id Feld fehlerhaft oder leer");
+		}
+		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
+		editor.commit();
+		if (old_kurse_mit_namen != checkBox_kurse_with_namen.isChecked()) {
+			StundenplanManager.getInstance().notifyListener();
+		}
+		finish();
+	}
+
 	private boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		if (netInfo != null && netInfo.isConnectedOrConnecting())
 			return true;
 		return false;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		// Load Layout
+		setContentView(R.layout.activity_stundenplan_options);
+		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
+		edit_id = (EditText) findViewById(R.id.edit_stundenplan_id);
+		checkBox_kurse_with_namen = (CheckBox) findViewById(R.id.checkBox_stundenplan_with_name);
+		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID, 0)));
+		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false));
+		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false);
+		if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
+			checkBox_kurse_with_namen.setVisibility(View.INVISIBLE);
+			checkBox_kurse_with_namen.setEnabled(false);
+
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.stundenplan_options, menu);
+		return true;
 	}
 
 	public void save(String s, String file) throws IOException {
@@ -215,5 +206,14 @@ public class StundenplanOptionsActivity extends Activity {
 		o.close();
 		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschlo�en");
 
+	}
+
+	public void sp_herunterladen(View v) {
+		DownloadPlanTask task = new DownloadPlanTask();
+		try {
+			task.execute(Integer.parseInt(edit_id.getText().toString()));
+		} catch (NumberFormatException e) {
+			alert("Bitte eine ID(nur aus Zahlen bestehend) eingeben");
+		}
 	}
 }

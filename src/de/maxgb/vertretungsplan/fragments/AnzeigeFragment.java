@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
@@ -22,6 +21,13 @@ public class AnzeigeFragment extends Fragment {
 	protected boolean screenSizeSet = false;// Wurde die ScreenSize bereits
 											// aktualisiert
 	
+	protected  void alert(String msg){
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(msg);
+		builder.setPositiveButton("Ok", null);
+		builder.create().show();
+	}
+
 	protected TextView newBigTextView(CharSequence text) {
 		TextView temp = new TextView(getActivity());
 		TableRow.LayoutParams trparams = new TableRow.LayoutParams(
@@ -33,36 +39,18 @@ public class AnzeigeFragment extends Fragment {
 		temp.setText(text);
 		return temp;
 	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) { // first saving my state,
-														// so the bundle wont be
-														// empty.
-		outState.putString("WORKAROUND_FOR_BUG_19917_KEY",
-				"WORKAROUND_FOR_BUG_19917_VALUE");
-		super.onSaveInstanceState(outState);
+	
+	 protected TextView newBoldTextView(CharSequence text){
+		SpannableString t=new SpannableString(text);
+		t.setSpan(new StyleSpan(Typeface.BOLD), 0, t.length(), 0);
+		return newTextView(t);
 	}
 	
-	 protected void retrieveScreenSize() {
-         WindowManager wm = (WindowManager) getActivity().getSystemService(
-                         Context.WINDOW_SERVICE);
-         Display display = wm.getDefaultDisplay();
-         int width = display.getWidth();
-         if (width < Constants.very_smallWidth) {
-                 displaySize = 1;
-         } else if (width < Constants.smallWidth) {
-                 displaySize = 2;
-         } else if (width > Constants.largeWidth) {
-                 displaySize = -1;
-         }
-         Logger.i(TAG, "Screen Size: " + displaySize);
- }
-	
-	protected  void alert(String msg){
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setMessage(msg);
-		builder.setPositiveButton("Ok", null);
-		builder.create().show();
+	protected TableRow newTableRow(){
+		TableRow row=new TableRow(getActivity());
+		
+		
+		return row;
 	}
 	
 	protected TextView newTextView(CharSequence text) {
@@ -90,18 +78,29 @@ public class AnzeigeFragment extends Fragment {
 		return t;
 	}
 	
-	protected TextView newBoldTextView(CharSequence text){
-		SpannableString t=new SpannableString(text);
-		t.setSpan(new StyleSpan(Typeface.BOLD), 0, t.length(), 0);
-		return newTextView(t);
+	@Override
+	public void onSaveInstanceState(Bundle outState) { // first saving my state,
+														// so the bundle wont be
+														// empty.
+		outState.putString("WORKAROUND_FOR_BUG_19917_KEY",
+				"WORKAROUND_FOR_BUG_19917_VALUE");
+		super.onSaveInstanceState(outState);
 	}
 	
-	protected TableRow newTableRow(){
-		TableRow row=new TableRow(getActivity());
-		
-		
-		return row;
-	}
+	protected void retrieveScreenSize() {
+         WindowManager wm = (WindowManager) getActivity().getSystemService(
+                         Context.WINDOW_SERVICE);
+         Display display = wm.getDefaultDisplay();
+         int width = display.getWidth();
+         if (width < Constants.very_smallWidth) {
+                 displaySize = 1;
+         } else if (width < Constants.smallWidth) {
+                 displaySize = 2;
+         } else if (width > Constants.largeWidth) {
+                 displaySize = -1;
+         }
+         Logger.i(TAG, "Screen Size: " + displaySize);
+ }
 	
 	
 }

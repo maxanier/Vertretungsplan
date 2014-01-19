@@ -39,6 +39,73 @@ public class OptionsActivity extends FragmentActivity {
 
 	
 	
+	/**
+	 * Select Type Dialog, allows the user to choose between Schueler,Lehrer ans Oberstufenschueler
+	 * @author Max Becker
+	 *
+	 */
+	@SuppressLint("ValidFragment")
+	private class SelectTypeDialogFragment extends DialogFragment {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle(R.string.select_type).setItems(R.array.type_array,
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							SharedPreferences prefs = getSharedPreferences(
+									Constants.PREFS_NAME, 0);
+							de.maxgb.vertretungsplan.util.Logger.i(TAG, "Selected " + which);
+							switch (which) {
+							case 0:
+								prefs.edit()
+										.putBoolean(Constants.SCHUELER_KEY,
+												true)
+										.putBoolean(Constants.LEHRER_KEY, false)
+										.putBoolean(Constants.OBERSTUFE_KEY,
+												false).commit();
+								break;
+							case 1:
+								prefs.edit()
+										.putBoolean(Constants.SCHUELER_KEY,
+												true)
+										.putBoolean(Constants.LEHRER_KEY, false)
+										.putBoolean(Constants.OBERSTUFE_KEY,
+												true).commit();
+								break;
+							case 2:
+								de.maxgb.vertretungsplan.util.Logger.i(TAG,
+										"Lehrer selected: "
+												+ prefs.edit()
+														.putBoolean(
+																Constants.LEHRER_KEY,
+																true)
+														.putBoolean(
+																Constants.SCHUELER_KEY,
+																false).commit());
+								break;
+							default:
+								prefs.edit()
+										.putBoolean(Constants.SCHUELER_KEY,
+												true)
+										.putBoolean(Constants.LEHRER_KEY, false)
+										.commit();
+								break;
+							}
+							prefs.edit().putString(Constants.JSON_TABS_KEY,TabManager.convertToString(SelectTabsActivity.createStandardSelection(new ArrayList<TabSelector>(), prefs))).commit();//Creates a Standard TabSelection to make a Json string of it, which is saved as the tabselection json_string to reset the tabselection
+							requestVertretungsplanUpdate();
+							requestTabUpdate();
+							showLayout();
+						}
+					});
+			return builder.create();
+
+		}
+
+	}
 	private final String TAG = "Options";
 	private TextView password_eingabe;
 	private TextView username_eingabe;
@@ -47,20 +114,87 @@ public class OptionsActivity extends FragmentActivity {
 	private boolean type_oberstufe;
 	private TextView stufe_eingabe;
 	private TextView kuerzel_eingabe;
-	private Button button_kurse;
 
+	private Button button_kurse;
+	
 	private String oldPassword;
 	
 	private String oldUsername;
-	
 	private boolean update_vertretungsplan;
 	private boolean update_tabs;
 	public final static int UPDATE_NOTHING=-1;
 	public final static int UPDATE_ALL=0;
 	public final static int UPDATE_VP=1;
-	public final static int UPDATE_TABS=2;
 	
 
+
+	public final static int UPDATE_TABS=2;
+
+	public void abbrechen(View v) {
+		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Abbrechen");
+		finish();
+	}
+	
+	
+	
+	/**
+	 * Alert Boc falls nicht alle Felder ausgefüllt sind
+	 */
+	private void alertBox() {
+		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+			}
+		});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+	
+
+	public void changeType(View v) {
+		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
+		DialogFragment type_fragment = new SelectTypeDialogFragment();
+		type_fragment.show(getSupportFragmentManager(), "select_type");
+		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Finished Type Dialog");
+
+	}
+
+	public void chooseTabs(View v) {
+
+		Intent i=new Intent(this, SelectTabsActivity.class);
+		startActivity(i);
+		requestTabUpdate();
+	}
+
+	@Override
+	public void finish(){
+		Logger.i(TAG, "Finishing");
+		if(update_vertretungsplan&&update_tabs){
+			setResult(UPDATE_ALL);
+		}
+		else if(update_vertretungsplan){
+			setResult(UPDATE_VP);
+		}
+		else if(update_tabs){
+			setResult(UPDATE_TABS);
+		}
+		else{
+			setResult(UPDATE_NOTHING);
+		}
+		super.finish();
+	}
+	
+	public void kurswahlAnzeigen(View v) {
+		if (android.os.Build.VERSION.SDK_INT >= 11) {
+			Intent i = new Intent(this, KurswahlActivity.class);
+			startActivity(i);
+			update_tabs=true;
+		}
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -90,28 +224,52 @@ public class OptionsActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.options, menu);
 		return true;
 	}
-	
-	
-	
-	@Override
-	public void finish(){
-		Logger.i(TAG, "Finishing");
-		if(update_vertretungsplan&&update_tabs){
-			setResult(UPDATE_ALL);
-		}
-		else if(update_vertretungsplan){
-			setResult(UPDATE_VP);
-		}
-		else if(update_tabs){
-			setResult(UPDATE_TABS);
-		}
-		else{
-			setResult(UPDATE_NOTHING);
-		}
-		super.finish();
+
+	private void requestTabUpdate(){
+		update_tabs=true;
+		Logger.i(TAG,"Tab Update requestet");
+	}
+
+	private void requestVertretungsplanUpdate(){
+		update_vertretungsplan=true;
+		Logger.i(TAG,"Vertretungsplan Update requestet");
 	}
 	
-
+	private void resetUpdateRequests(){
+		update_vertretungsplan=false;
+		update_tabs=false;
+		Logger.i(TAG,"Update Request resetet");
+	}
+	
+	public void sendLog(View v){
+		PackageInfo pInfo;
+		String version="X";
+		try {
+			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			version = pInfo.versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		//Send the email
+		Intent mailIntent = new Intent(Intent.ACTION_SEND);
+		mailIntent.setType("text/Message");
+		mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{Constants.LOG_REPORT_EMAIL});
+		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF+version);
+		mailIntent.putExtra(Intent.EXTRA_TEXT   , "");
+		Uri uri = Uri.fromFile(Logger.getLogFile());
+	    mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+	    
+	  //Send, if possible
+	    try {
+	       startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+	    } catch (android.content.ActivityNotFoundException ex) {
+	        Toast.makeText(getApplicationContext(), 
+	                   "There are no email clients installed.", 
+	                   Toast.LENGTH_SHORT).show();
+	    }
+	}
+	
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
@@ -121,7 +279,7 @@ public class OptionsActivity extends FragmentActivity {
 			getActionBar().setDisplayHomeAsUpEnabled(false);
 		}
 	}
-
+	
 	public void showLayout() {
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
 
@@ -166,7 +324,7 @@ public class OptionsActivity extends FragmentActivity {
 
 		de.maxgb.vertretungsplan.util.Logger.i(TAG, "LAyout loaded");
 	}
-
+	
 	public void speichern(View v) {
 		System.out.println("Speichervorgang");
 		String temp_username = username_eingabe.getText().toString().trim()
@@ -258,167 +416,9 @@ public class OptionsActivity extends FragmentActivity {
 		}
 	}
 	
-	public void abbrechen(View v) {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Abbrechen");
-		finish();
-	}
-
-	/**
-	 * Alert Boc falls nicht alle Felder ausgefüllt sind
-	 */
-	private void alertBox() {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-			}
-		});
-
-		AlertDialog dialog = builder.create();
-		dialog.show();
-	}
-
-	public void changeType(View v) {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
-		DialogFragment type_fragment = new SelectTypeDialogFragment();
-		type_fragment.show(getSupportFragmentManager(), "select_type");
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Finished Type Dialog");
-
-	}
-
-	public void chooseTabs(View v) {
-
-		Intent i=new Intent(this, SelectTabsActivity.class);
-		startActivity(i);
-		requestTabUpdate();
-	}
-
-	public void kurswahlAnzeigen(View v) {
-		if (android.os.Build.VERSION.SDK_INT >= 11) {
-			Intent i = new Intent(this, KurswahlActivity.class);
-			startActivity(i);
-			update_tabs=true;
-		}
-	}
-	
 	public void stundenplan(View c){
 		Intent i = new Intent(this, StundenplanOptionsActivity.class);
 		startActivity(i);
-	}
-	
-	public void sendLog(View v){
-		PackageInfo pInfo;
-		String version="X";
-		try {
-			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-			version = pInfo.versionName;
-		} catch (NameNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		//Send the email
-		Intent mailIntent = new Intent(Intent.ACTION_SEND);
-		mailIntent.setType("text/Message");
-		mailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{Constants.LOG_REPORT_EMAIL});
-		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF+version);
-		mailIntent.putExtra(Intent.EXTRA_TEXT   , "");
-		Uri uri = Uri.fromFile(Logger.getLogFile());
-	    mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-	    
-	  //Send, if possible
-	    try {
-	       startActivity(Intent.createChooser(mailIntent, "Send mail..."));
-	    } catch (android.content.ActivityNotFoundException ex) {
-	        Toast.makeText(getApplicationContext(), 
-	                   "There are no email clients installed.", 
-	                   Toast.LENGTH_SHORT).show();
-	    }
-	}
-	
-	/**
-	 * Select Type Dialog, allows the user to choose between Schueler,Lehrer ans Oberstufenschueler
-	 * @author Max Becker
-	 *
-	 */
-	@SuppressLint("ValidFragment")
-	private class SelectTypeDialogFragment extends DialogFragment {
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle(R.string.select_type).setItems(R.array.type_array,
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							SharedPreferences prefs = getSharedPreferences(
-									Constants.PREFS_NAME, 0);
-							de.maxgb.vertretungsplan.util.Logger.i(TAG, "Selected " + which);
-							switch (which) {
-							case 0:
-								prefs.edit()
-										.putBoolean(Constants.SCHUELER_KEY,
-												true)
-										.putBoolean(Constants.LEHRER_KEY, false)
-										.putBoolean(Constants.OBERSTUFE_KEY,
-												false).commit();
-								break;
-							case 1:
-								prefs.edit()
-										.putBoolean(Constants.SCHUELER_KEY,
-												true)
-										.putBoolean(Constants.LEHRER_KEY, false)
-										.putBoolean(Constants.OBERSTUFE_KEY,
-												true).commit();
-								break;
-							case 2:
-								de.maxgb.vertretungsplan.util.Logger.i(TAG,
-										"Lehrer selected: "
-												+ prefs.edit()
-														.putBoolean(
-																Constants.LEHRER_KEY,
-																true)
-														.putBoolean(
-																Constants.SCHUELER_KEY,
-																false).commit());
-								break;
-							default:
-								prefs.edit()
-										.putBoolean(Constants.SCHUELER_KEY,
-												true)
-										.putBoolean(Constants.LEHRER_KEY, false)
-										.commit();
-								break;
-							}
-							prefs.edit().putString(Constants.JSON_TABS_KEY,TabManager.convertToString(SelectTabsActivity.createStandardSelection(new ArrayList<TabSelector>(), prefs))).commit();//Creates a Standard TabSelection to make a Json string of it, which is saved as the tabselection json_string to reset the tabselection
-							requestVertretungsplanUpdate();
-							requestTabUpdate();
-							showLayout();
-						}
-					});
-			return builder.create();
-
-		}
-
-	}
-	
-	private void requestVertretungsplanUpdate(){
-		update_vertretungsplan=true;
-		Logger.i(TAG,"Vertretungsplan Update requestet");
-	}
-	
-	private void requestTabUpdate(){
-		update_tabs=true;
-		Logger.i(TAG,"Tab Update requestet");
-	}
-	
-	private void resetUpdateRequests(){
-		update_vertretungsplan=false;
-		update_tabs=false;
-		Logger.i(TAG,"Update Request resetet");
 	}
 	
 	/*Unused since new TabMangment, replaced by SelectTabsActivity
