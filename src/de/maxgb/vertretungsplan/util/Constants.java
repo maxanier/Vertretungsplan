@@ -99,5 +99,17 @@ public class Constants {
 		map.put("ph", "Physik");
 		return map;
 	}
+	
+	/**
+	 * Liefert eine HashMap mit der Vertretungsart als Keys und dem dazugehörigen String der als Fach angezeigt werden soll zurück
+	 * @return HashMap<Vertretungsart,Fach>
+	 */
+	public static final HashMap<String,String> getReplacementForSPVP(){
+		HashMap<String,String> map = new HashMap<String,String>();
+		map.put("Entfall","");
+		map.put("Vtr.","Vertretung");
+		map.put("Freis.","Freis.");
+		return map;
+	}
 
 }

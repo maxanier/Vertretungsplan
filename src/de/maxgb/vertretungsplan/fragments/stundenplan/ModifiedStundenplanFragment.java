@@ -1,7 +1,7 @@
 package de.maxgb.vertretungsplan.fragments.stundenplan;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -112,11 +112,20 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 				int stunde = Integer.parseInt(v.stunde);
 				Stunde st = tag[stunde - 1];
 				Logger.i(TAG, "Entsprechende Stunde: " + st.toString() + " am: " + this.convertToDayString(day));
+				
+				//Je nach Art unterschiedliche Fächer anzeigen
+				String fach = Constants.getReplacementForSPVP().get(v.art);
+				if(fach==null){
+					fach=v.fach;
+				}
+				
 				if (!oberstufe) {
-					st.vertreteten(v.fach, v.raum, v.bemerkung, v.klausur, v.art, v.tag);
+					
+					
+					st.vertreteten(fach, v.raum, v.bemerkung, v.klausur, v.art, v.tag);
 				} else {
 					if (st.getKurs().trim().equals(v.fach.trim())) {
-						st.vertreteten(v.fach, v.raum, v.bemerkung, v.klausur, v.art, v.tag);
+						st.vertreteten(fach, v.raum, v.bemerkung, v.klausur, v.art, v.tag);
 						Logger.i(TAG, "Vertretende Stunde gefunden: " + st.toString());
 					}
 				}
