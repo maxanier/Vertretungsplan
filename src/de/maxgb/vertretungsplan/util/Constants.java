@@ -97,6 +97,8 @@ public class Constants {
 		map.put("cn", "Chinesisch");
 		map.put("z-cn", "Chinesisch");
 		map.put("ph", "Physik");
+		map.put("vtr.","Vertretung");
+		map.put("freis.", "Freisetzung");
 		return map;
 	}
 	
@@ -107,7 +109,7 @@ public class Constants {
 	public static final HashMap<String,String> getReplacementForSPVP(){
 		HashMap<String,String> map = new HashMap<String,String>();
 		map.put("Entfall","");
-		map.put("Vtr.","Vertretung");
+		map.put("Vtr.","Vtr.");
 		map.put("Freis.","Freis.");
 		return map;
 	}
