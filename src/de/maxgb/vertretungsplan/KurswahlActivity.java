@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,9 +19,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
 import de.maxgb.vertretungsplan.util.Logger;
+import de.maxgb.vertretungsplan.util.Stunde;
 
 /**
  * Kurswahlactivity zum Hinzufügen/Entfernen eigener Kurse Erst ab API 11 genutzt
@@ -134,5 +137,38 @@ public class KurswahlActivity extends FragmentActivity implements KursEingabeDia
 		});
 		setupActionBar();
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.KURSWAHL);
+	}
+	
+	/**
+	 * Liest alle unterschiedlichen Kurse aus dem Stundenplan aus und fügt sie zur ListView hinzu
+	 * @param v 
+	 */
+	public void kurseAusSPAuslesen(View v){
+		ArrayList<Stunde[]> stundenplan=StundenplanManager.getInstance().getStundenplan();
+		ArrayList<String> kurse=new ArrayList<String>();
+		if(stundenplan==null){
+			alert("Stundenplan noch nicht heruntergeladen");
+			return;
+		}
+		for(int i=0;i<stundenplan.size();i++){
+			Stunde[] tag = stundenplan.get(i);
+			for(int j=0;j<tag.length;j++){
+				if(!tag[j].getKurs().equals("")&&!kurse.contains(tag[j].getKurs())){
+					kurse.add(tag[j].getKurs());
+				}
+			}
+			
+		}
+		Logger.i(TAG, "Kurse aus SP ausgelesen: "+kurse.toString());
+		
+		kurse_liste.addAll(kurse);
+		((ArrayAdapter) liste.getAdapter()).notifyDataSetChanged();
+	}
+	
+	private void alert(String msg) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(msg);
+		builder.setPositiveButton("Ok", null);
+		builder.create().show();
 	}
 }
