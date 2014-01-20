@@ -255,13 +255,10 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
 		updateTabs();
+		
+		
 
-		if (System.currentTimeMillis() - pref.getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
-			Logger.i(TAG, "Last refresh is to old -> Refreshing");
-			setRefreshActionButtonState(true);
-			DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this);
-			task.execute();
-		}
+		
 
 	}
 
@@ -274,6 +271,18 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 
 		}
 		super.onDestroy();
+	}
+	
+	public void onResume(){
+		super.onResume();
+		
+		//Check if Stundenplan is too old
+		if (System.currentTimeMillis() - getSharedPreferences(Constants.PREFS_NAME,0).getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
+			Logger.i(TAG, "Last refresh is to old -> Refreshing");
+			setRefreshActionButtonState(true);
+			DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this);
+			task.execute();
+		}
 	}
 
 }
