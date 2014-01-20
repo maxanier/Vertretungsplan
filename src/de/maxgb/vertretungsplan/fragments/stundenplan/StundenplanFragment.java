@@ -24,6 +24,7 @@ import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.fragments.AnzeigeFragment;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
+import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.Stunde;
 
 public abstract class StundenplanFragment extends AnzeigeFragment implements StundenplanManager.OnUpdateListener {
@@ -109,8 +110,14 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 			table.addView(border);
 
 			TableRow stunde = newTableRow();
-
-			stunde.addView(newTextView(Integer.toString(i + 1)));
+			
+			//Vormittags die Stunde in die erste Spalte schreiben, Nachmittags ein leeres TextView (da die Stunden nicht mehr definiert sind)
+			if(i+1>=StundenplanManager.BEGINN_NACHMITTAG){
+				stunde.addView(newTextView(""));
+			}
+			else{
+				stunde.addView(newTextView(Integer.toString(i + 1)));
+			}
 
 			for (int j = 0; j < getVisibleDayCount(); j++) {
 				int day = ((getCurrentDayOfWeek() - 1 + j) % 7) + 1;
@@ -164,6 +171,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 
 						vz.setLayoutParams(params);
 						vz.setTextSize(Constants.TEXTSIZESCHUELER - Constants.TEXTSIZESMALLER);
+						vz.setGravity(Gravity.CENTER_HORIZONTAL);
 
 						kurs.addView(vz);
 					}
@@ -274,29 +282,30 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	 * @return Aktuelle Stunde
 	 */
 	protected int getCurrentLesson(boolean samstag) {
-		float v = 0;// Verschiebung in Stunden
+		int v = 0;// Verschiebung in Minuten
 		if (samstag) {
-			v = 10 / 60;// Samstag alles 10 min spaeter
+			v = 10;// Samstag alles 10 min spaeter
 		}
 		Calendar current = Calendar.getInstance();
 		int hour = current.get(Calendar.HOUR_OF_DAY);
 		int minute = current.get(Calendar.MINUTE);
-		float time = hour + minute / 60;
-		if (time < (8 + 35 / 60 + v)) {
+		int time = hour*60 + minute;
+		Logger.i(TAG, "Current time is: "+hour+":"+minute+" -> m: "+time);
+		if (time < (8*60 + 35 + v)) {
 			// Vor Ende der ersten Stunde
 			return 1;
-		} else if (time < (9 + 25 / 60 + v)) {
+		} else if (time < (9*60 + 25+ v)) {
 			// Vor Ende der zweiten Stunde
 			return 2;
-		} else if (time < (10 + 25 / 60 + v)) {
+		} else if (time < (10 *60+ 25+ v)) {
 			return 3;
-		} else if (time < (11 + 15 / 60 + v)) {
+		} else if (time < (11 *60+ 15+ v)) {
 			return 4;
-		} else if (time < (12 + 15 / 60 + v)) {
+		} else if (time < (12 *60+ 15 + v)) {
 			return 5;
-		} else if (time < (13 + 5 / 60 + v)) {
+		} else if (time < (13 *60+ 5 + v)) {
 			return 6;
-		} else if (time < (14 + v)) {
+		} else if (time < (14 *60+ v)) {
 			return 7;
 		}
 		return -1;
