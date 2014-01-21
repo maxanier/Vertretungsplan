@@ -390,43 +390,6 @@ public class OptionsActivity extends FragmentActivity {
 		de.maxgb.android.util.Logger.i(TAG, "Options created");
 	}
 
-	/*
-	 * Unused since new TabMangment, replaced by SelectTabsActivity Alter Dialog zur Auswahl der Tabs
-	 * @SuppressLint("ValidFragment")
-	 * @SuppressWarnings("unused") private class SelectTabsDialogFragment extends DialogFragment { // Vergleiche
-	 * http://developer.android.com/guide/topics/ui/dialogs.html ArrayList<Integer> mSelectedItems;
-	 * @Override public Dialog onCreateDialog(Bundle savedInstanceState) { ArrayList<String> tab_names = new ArrayList<String>();
-	 * ArrayList<Boolean> selected_tabs = new ArrayList<Boolean>(); final SharedPreferences prefs = getSharedPreferences(
-	 * Constants.PREFS_NAME, 0); final SharedPreferences prefs_tabs = getSharedPreferences( Constants.PREFS_TABS_NAME, 0); final
-	 * boolean schueler = prefs.getBoolean(Constants.SCHUELER_KEY, false); final boolean oberstufe = type_oberstufe; final boolean
-	 * lehrer = prefs .getBoolean(Constants.LEHRER_KEY, false); if (schueler) { tab_names.add("Alle Vertretungen");
-	 * selected_tabs.add(prefs_tabs.getBoolean(Constants.ALLE_TAB_KEY, true)); tab_names.add("Vertretungen für die eigene Stufe");
-	 * selected_tabs.add(prefs_tabs.getBoolean( Constants.STUFE_TAB_KEY, true)); if ((android.os.Build.VERSION.SDK_INT >= 11) &&
-	 * type_oberstufe) { tab_names.add("Vertretungen für eigene Kurse"); selected_tabs.add(prefs_tabs.getBoolean(
-	 * Constants.EIGENE_KURSE_SCHUELER_TAB_KEY, false)); } } else if (lehrer) { tab_names.add("Alle Vertretungen");
-	 * selected_tabs.add(prefs_tabs.getBoolean(Constants.ALLE_TAB_KEY, true)); tab_names.add("Meine Vertretungen");
-	 * selected_tabs.add(prefs_tabs.getBoolean( Constants.EIGENE_LEHRER_TAB_KEY, true)); } Boolean[] temp =
-	 * selected_tabs.toArray(new Boolean[0]); boolean[] selected_tabs_array = new boolean[temp.length]; mSelectedItems = new
-	 * ArrayList<Integer>(); // Where we track the // selected items for (int n = 0; n < temp.length; n++) {
-	 * selected_tabs_array[n] = temp[n]; if (temp[n] == true) { mSelectedItems.add(n); } } AlertDialog.Builder builder = new
-	 * AlertDialog.Builder(getActivity()); // Set the dialog title builder.setTitle(R.string.select_tabs) // Specify the list
-	 * array, the items to be selected by default (null // for none), // and the listener through which to receive callbacks when
-	 * items // are selected .setMultiChoiceItems(tab_names.toArray(new String[0]), selected_tabs_array, new
-	 * DialogInterface.OnMultiChoiceClickListener() {
-	 * @Override public void onClick(DialogInterface dialog, int which, boolean isChecked) { if (isChecked) { // If the user
-	 * checked the item, add it // to the selected items mSelectedItems.add(which); } else if (mSelectedItems.contains(which)) {
-	 * // Else, if the item is already in the // array, remove it mSelectedItems.remove(Integer .valueOf(which)); } } }) // Set
-	 * the action buttons .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	 * @Override public void onClick(DialogInterface dialog, int id) { SharedPreferences.Editor editor = prefs_tabs .edit(); if
-	 * (schueler) { if (mSelectedItems.contains(0)) { editor.putBoolean( Constants.ALLE_TAB_KEY, true); } else {
-	 * editor.putBoolean( Constants.ALLE_TAB_KEY, false); } if (mSelectedItems.contains(1)) { editor.putBoolean(
-	 * Constants.STUFE_TAB_KEY, true); } else { editor.putBoolean( Constants.STUFE_TAB_KEY, false); } if
-	 * ((android.os.Build.VERSION.SDK_INT >= 11) && type_oberstufe) { if (mSelectedItems.contains(2)) { editor.putBoolean(
-	 * Constants.EIGENE_KURSE_SCHUELER_TAB_KEY, true); } else { editor.putBoolean( Constants.EIGENE_KURSE_SCHUELER_TAB_KEY,
-	 * false); } } } else if (lehrer) { if (mSelectedItems.contains(0)) { editor.putBoolean( Constants.ALLE_TAB_KEY, true); } else
-	 * { editor.putBoolean( Constants.ALLE_TAB_KEY, false); } if (mSelectedItems.contains(1)) { editor.putBoolean(
-	 * Constants.EIGENE_LEHRER_TAB_KEY, true); } else { editor.putBoolean( Constants.EIGENE_LEHRER_TAB_KEY, false); } }
-	 * editor.commit(); } }); return builder.create(); } }
-	 */
+	
 
 }
