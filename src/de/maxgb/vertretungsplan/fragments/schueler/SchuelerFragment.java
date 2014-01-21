@@ -17,8 +17,8 @@ import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.fragments.VertretungsplanFragment;
-import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 
 public abstract class SchuelerFragment extends VertretungsplanFragment {

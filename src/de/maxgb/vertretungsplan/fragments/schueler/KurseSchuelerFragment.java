@@ -6,9 +6,9 @@ import java.util.Set;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.widget.ScrollView;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 
 public class KurseSchuelerFragment extends SchuelerFragment {

@@ -3,6 +3,7 @@ package de.maxgb.vertretungsplan.util;
 import java.util.HashMap;
 
 import android.annotation.SuppressLint;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 
 public class Stunde implements Cloneable {

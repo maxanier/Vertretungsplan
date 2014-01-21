@@ -33,9 +33,9 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 
 /**
  * Options Activity zum Konfigurieren der Stundenplanfunktion

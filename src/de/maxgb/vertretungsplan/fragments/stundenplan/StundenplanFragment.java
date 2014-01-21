@@ -20,11 +20,11 @@ import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.fragments.AnzeigeFragment;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.Stunde;
 
 public abstract class StundenplanFragment extends AnzeigeFragment implements StundenplanManager.OnUpdateListener {

@@ -15,11 +15,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.com.DownloadTask;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
-import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.SectionsPagerAdapter;
 
 /**
@@ -221,7 +221,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_anzeige);
 
-		Logger.init();
+		Logger.init(Constants.PLAN_DIRECTORY);
 
 		actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);

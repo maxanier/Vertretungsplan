@@ -28,9 +28,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.widget.Toast;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.AnzeigeActivity;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 
 /**
  * Async Download Task Lädt den Vertretungsplan herunter

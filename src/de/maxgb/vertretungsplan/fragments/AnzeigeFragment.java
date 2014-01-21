@@ -19,8 +19,8 @@ import android.view.WindowManager;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 
 public class AnzeigeFragment extends Fragment {
 	private final String TAG = "AnzeigeFragment";

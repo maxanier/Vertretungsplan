@@ -21,10 +21,10 @@ import android.widget.ListView;
 
 import com.mobeta.android.dslv.DragSortListView;
 
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 
 public class SelectTabsActivity extends ListActivity {
 

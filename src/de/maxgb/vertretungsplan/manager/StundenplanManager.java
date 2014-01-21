@@ -13,8 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.Stunde;
 
 public class StundenplanManager {

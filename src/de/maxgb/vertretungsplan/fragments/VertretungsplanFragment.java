@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager.OnUpdateListener;
-import de.maxgb.vertretungsplan.util.Logger;
 
 /**
  * Standard Fragment für Vertretungen

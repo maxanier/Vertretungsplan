@@ -22,11 +22,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
-import de.maxgb.vertretungsplan.util.Logger;
 
 /**
  * Optionsmenu Dient zur Eingabe von Nutzername,Passwort, Stufe, Kursen und Typänderungen
@@ -54,7 +54,7 @@ public class OptionsActivity extends FragmentActivity {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
-					de.maxgb.vertretungsplan.util.Logger.i(TAG, "Selected " + which);
+					de.maxgb.android.util.Logger.i(TAG, "Selected " + which);
 					switch (which) {
 					case 0:
 						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
@@ -65,7 +65,7 @@ public class OptionsActivity extends FragmentActivity {
 								.putBoolean(Constants.OBERSTUFE_KEY, true).commit();
 						break;
 					case 2:
-						de.maxgb.vertretungsplan.util.Logger.i(
+						de.maxgb.android.util.Logger.i(
 								TAG,
 								"Lehrer selected: "
 										+ prefs.edit().putBoolean(Constants.LEHRER_KEY, true)
@@ -119,15 +119,15 @@ public class OptionsActivity extends FragmentActivity {
 	public final static int UPDATE_TABS = 2;
 
 	public void abbrechen(View v) {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Abbrechen");
+		de.maxgb.android.util.Logger.i(TAG, "Abbrechen");
 		finish();
 	}
 
 	public void changeType(View v) {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
+		de.maxgb.android.util.Logger.i(TAG, "Created Type Dialog");
 		DialogFragment type_fragment = new SelectTypeDialogFragment();
 		type_fragment.show(getSupportFragmentManager(), "select_type");
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Finished Type Dialog");
+		de.maxgb.android.util.Logger.i(TAG, "Finished Type Dialog");
 
 	}
 
@@ -201,14 +201,14 @@ public class OptionsActivity extends FragmentActivity {
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
 
 		if (prefs.getBoolean(Constants.LEHRER_KEY, false)) {
-			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Loading Lehrer Layout");
+			de.maxgb.android.util.Logger.i(TAG, "Loading Lehrer Layout");
 			setContentView(R.layout.activity_options_lehrer);
 			type_schueler = false;
 			kuerzel_eingabe = (TextView) findViewById(R.id.edit_kuerzel);
 			kuerzel_eingabe.setText(prefs.getString(Constants.LEHRER_KUERZEL_KEY, ""));
 			InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.OPTIONSLEHRER);
 		} else {
-			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Loading Schueler LAyout");
+			de.maxgb.android.util.Logger.i(TAG, "Loading Schueler LAyout");
 			setContentView(R.layout.activity_options_schueler);
 			type_schueler = true;
 			type_oberstufe = prefs.getBoolean(Constants.OBERSTUFE_KEY, false);
@@ -236,7 +236,7 @@ public class OptionsActivity extends FragmentActivity {
 		username_eingabe.setText(oldUsername);
 		password_eingabe.setText(oldPassword);
 
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "LAyout loaded");
+		de.maxgb.android.util.Logger.i(TAG, "LAyout loaded");
 	}
 
 	public void speichern(View v) {
@@ -273,13 +273,13 @@ public class OptionsActivity extends FragmentActivity {
 					editor.putString(Constants.STUFE_KEY, temp_klasse);
 					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
-					de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen gespeichert");
+					de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert");
 					requestVertretungsplanUpdate();// Update anfordern
 				} else {
 					editor.putString(Constants.STUFE_KEY, temp_klasse);
 					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
-					de.maxgb.vertretungsplan.util.Logger.i(TAG,
+					de.maxgb.android.util.Logger.i(TAG,
 							"Einstellungen gespeichert. Nutzername und Passwort unverändert");
 
 				}
@@ -303,13 +303,13 @@ public class OptionsActivity extends FragmentActivity {
 					editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
 					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
-					de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen gespeichert");
+					de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert");
 					requestVertretungsplanUpdate();// Update anfordern
 				} else {
 					editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
 					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
 					editor.commit();
-					de.maxgb.vertretungsplan.util.Logger.i(TAG,
+					de.maxgb.android.util.Logger.i(TAG,
 							"Einstellungen gespeichert. Nutzername und Passwort unverändert");
 
 				}
@@ -330,7 +330,7 @@ public class OptionsActivity extends FragmentActivity {
 	 * Alert Boc falls nicht alle Felder ausgefüllt sind
 	 */
 	private void alertBox() {
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
+		de.maxgb.android.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -372,22 +372,22 @@ public class OptionsActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Logger.init();
+		Logger.init(Constants.PLAN_DIRECTORY);
 		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
 		Logger.setDebugMode(prefs.getBoolean(Constants.DEBUG_KEY, false));
 		resetUpdateRequests();
 		if (!prefs.getBoolean(Constants.SCHUELER_KEY, false) && !prefs.getBoolean(Constants.LEHRER_KEY, false)) {
-			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Created Type Dialog");
+			de.maxgb.android.util.Logger.i(TAG, "Created Type Dialog");
 			DialogFragment type_fragment = new SelectTypeDialogFragment();
 			type_fragment.show(getSupportFragmentManager(), "select_type");
-			de.maxgb.vertretungsplan.util.Logger.i(TAG, "Finished Type Dialog");
+			de.maxgb.android.util.Logger.i(TAG, "Finished Type Dialog");
 		} else {
 			showLayout();
 		}
 
 		// Show the Up button in the action bar.
 		setupActionBar();
-		de.maxgb.vertretungsplan.util.Logger.i(TAG, "Options created");
+		de.maxgb.android.util.Logger.i(TAG, "Options created");
 	}
 
 	/*

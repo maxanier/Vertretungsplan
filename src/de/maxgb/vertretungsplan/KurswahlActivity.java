@@ -19,10 +19,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
-import de.maxgb.vertretungsplan.util.Logger;
 import de.maxgb.vertretungsplan.util.Stunde;
 
 /**
@@ -95,7 +95,7 @@ public class KurswahlActivity extends FragmentActivity implements KursEingabeDia
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_kurswahl);
-		Logger.init();
+		Logger.init(Constants.PLAN_DIRECTORY);
 
 		// Settings laden sofern mindestens SDK 11, sonst beenden
 		SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);

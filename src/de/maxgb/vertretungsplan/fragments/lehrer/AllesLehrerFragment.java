@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import android.content.SharedPreferences;
 import android.widget.ScrollView;
+import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.LehrerVertretung;
-import de.maxgb.vertretungsplan.util.Logger;
 
 public class AllesLehrerFragment extends LehrerFragment {
 	private final String TAG = "AllesLehrerFragment";
