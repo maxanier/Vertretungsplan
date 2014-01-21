@@ -30,6 +30,7 @@ import android.os.Environment;
 import android.widget.Toast;
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.AnzeigeActivity;
+import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 
 /**
@@ -41,19 +42,27 @@ import de.maxgb.vertretungsplan.util.Constants;
 public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 	private SharedPreferences pref;
 	private final String TAG = "DownloadTask";
-	private AnzeigeActivity anzeige;
+	private DownloadFinishedListener listener;
+	private Context context;
 	private final int SUCCESS = 0;
 	private final int MISSINGLOGININFO = 1;
 	private final int NOCONNECTION = 2;
 	private final int OTHEREXCEPTION = -1;
 
-	public DownloadTask(SharedPreferences pref, AnzeigeActivity anzeige) {
+	public DownloadTask(SharedPreferences pref, DownloadFinishedListener listener, Context context) {
 		this.pref = pref;
-		this.anzeige = anzeige;
+		this.listener = listener;
+		this.context = context;
+	}
+
+	public interface DownloadFinishedListener {
+		public void onDownloadSuccesfullyFinished();
+
+		public void onDownloadFailed(String errortext);
 	}
 
 	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) anzeige.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
 		if (netInfo != null && netInfo.isConnectedOrConnecting())
 			return true;
@@ -104,7 +113,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		final HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
 		HttpConnectionParams.setSoTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
-		MyHttpsClient httpsclient = new MyHttpsClient(anzeige.getApplicationContext(), httpParams); // neuer
+		MyHttpsClient httpsclient = new MyHttpsClient(context.getApplicationContext(), httpParams); // neuer
 																									// HttpsClient
 																									// mit eigener
 																									// Timeoutzeit
@@ -223,20 +232,16 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 			SharedPreferences.Editor editor = pref.edit();
 			editor.putLong(Constants.REFRESH_TIME_KEY, System.currentTimeMillis());
 			editor.commit();
-			anzeige.updateVertretungsplan();// TODO directly invoke update
+			listener.onDownloadSuccesfullyFinished();
 			break;
 		case MISSINGLOGININFO:
-			Toast.makeText(anzeige.getApplicationContext(), "Kein Nutzername oder Passwort eingestellt",
-					Toast.LENGTH_SHORT).show();
-			anzeige.setRefreshActionButtonState(false);
+			listener.onDownloadFailed("Kein Nutzername oder Passwort eingestellt");
 			break;
 		case NOCONNECTION:
-			Toast.makeText(anzeige.getApplicationContext(), "Keine Internetverbindung", Toast.LENGTH_SHORT).show();
-			anzeige.setRefreshActionButtonState(false);
+			listener.onDownloadFailed("Keine Internetverbindung");
 			break;
 		case OTHEREXCEPTION:
-			Toast.makeText(anzeige.getApplicationContext(), "Fehler beim Aktualisieren", Toast.LENGTH_SHORT).show();
-			anzeige.setRefreshActionButtonState(false);
+			listener.onDownloadFailed("Fehler beim Aktualisieren");
 			break;
 		}
 

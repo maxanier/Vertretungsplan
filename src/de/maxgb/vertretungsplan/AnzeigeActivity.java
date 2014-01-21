@@ -30,7 +30,7 @@ import de.maxgb.vertretungsplan.util.SectionsPagerAdapter;
  * 
  */
 public class AnzeigeActivity extends SherlockFragmentActivity implements ActionBar.TabListener,
-		VertretungsplanManager.OnUpdateFinishedListener {
+		VertretungsplanManager.OnUpdateFinishedListener, DownloadTask.DownloadFinishedListener {
 
 	private static final String STATE_SELECTED_NAVIGATION_TAB = "selected_navigation_tab";
 	private static final String TAG = "Anzeige";
@@ -163,7 +163,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 	// Update Methoden
 	public void updateAll() {
 		setRefreshActionButtonState(true);
-		DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this);
+		DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this, this);
 		task.execute();
 	}
 
@@ -190,7 +190,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		setRefreshActionButtonState(false);
 	}
 
-	public void updateVertretungsplan() {
+	public void updateVertretungsplanAuswertung() {
 		setRefreshActionButtonState(true);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
@@ -255,10 +255,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
 		updateTabs();
-		
-		
-
-		
 
 	}
 
@@ -272,17 +268,29 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		}
 		super.onDestroy();
 	}
-	
-	public void onResume(){
+
+	public void onResume() {
 		super.onResume();
-		
-		//Check if Stundenplan is too old
-		if (System.currentTimeMillis() - getSharedPreferences(Constants.PREFS_NAME,0).getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
+
+		// Check if Stundenplan is too old
+		if (System.currentTimeMillis()
+				- getSharedPreferences(Constants.PREFS_NAME, 0).getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
 			Logger.i(TAG, "Last refresh is to old -> Refreshing");
-			setRefreshActionButtonState(true);
-			DownloadTask task = new DownloadTask(getSharedPreferences(Constants.PREFS_NAME, 0), this);
-			task.execute();
+			updateAll();
 		}
+	}
+
+	@Override
+	public void onDownloadSuccesfullyFinished() {
+		updateVertretungsplanAuswertung();
+
+	}
+
+	@Override
+	public void onDownloadFailed(String errortext) {
+		Toast.makeText(this, errortext, Toast.LENGTH_SHORT).show();
+		setRefreshActionButtonState(false);
+
 	}
 
 }
