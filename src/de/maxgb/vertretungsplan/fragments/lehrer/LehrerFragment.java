@@ -111,9 +111,7 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 	}
 
 	protected void anzeigen(ArrayList<LehrerVertretung> vertretungen, String stand, ScrollView s) {
-		if (!screenSizeSet) {
-			retrieveScreenSize();
-		}
+
 		// Layout erstellen
 		LayoutParams params = new LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);

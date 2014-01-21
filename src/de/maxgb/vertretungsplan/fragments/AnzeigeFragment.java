@@ -169,6 +169,7 @@ public class AnzeigeFragment extends Fragment {
          else{
         	 displaySize=-2;
          }
+         screenSizeSet=true;
          Logger.i(TAG, "Screen Size: " + displaySize);
  }
 	
