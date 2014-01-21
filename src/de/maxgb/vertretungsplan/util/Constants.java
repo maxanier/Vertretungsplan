@@ -113,5 +113,22 @@ public class Constants {
 		map.put("Freis.","Freis.");
 		return map;
 	}
+	
+	/**
+	 * Liefert eine HashMap mit der Vertretungsplanart, wie sie auf der Webseite zu finden ist, als Key die stattdessen anzuzeigende kürzere Version zurück
+	 * @return HashMap<Eigentlich Veretungsart,Neue Vertretungsart>
+	 */
+	public static final HashMap<String,String> getReplacementForArt(){
+		HashMap<String,String> map = new HashMap<String,String>();
+		map.put("Sondereins.", "Sonder.");
+		map.put("Raum-Vtr.", "R-Vtr");
+		map.put("Vertretung", "Vtr.");
+		map.put("Pausenaufsicht","Aufs.");
+		map.put("Betreuung", "Betreu.");
+		map.put("Freisetzung", "Freis.");
+		map.put("Verlegung", "Verlegt");
+		
+		return map;
+	}
 
 }
