@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
 import android.text.format.DateFormat;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ public class Logger {
 
 	private static boolean debug = false;
 	private static File logFile;
+	private static File logFile2;
 
 	public static void e(String tag, String msg) {
 		Log.e(tag, msg);
@@ -30,16 +32,24 @@ public class Logger {
 	public static File getLogFile() {
 		return logFile;
 	}
+	
+	public static File getOldLogFile(){
+		return logFile2;
+	}
 
 	public static void i(String tag, String msg) {
 		Log.i(tag, msg);
 		log("INFO " + tag + ": " + msg);
 	}
 
-	public static void init() {
-		if (logFile == null) {
+	public static void init(){
+		if(logFile==null){
 			(new File(Constants.PLAN_DIRECTORY)).mkdir();
-			logFile = new File(Constants.PLAN_DIRECTORY + Constants.LOG_FILE_NAME);
+			logFile=new File(Constants.PLAN_DIRECTORY+Constants.LOG_FILE_NAME);
+			logFile2=new File(Constants.PLAN_DIRECTORY+Constants.LOG_FILE_NAME_2);
+			logFile2.delete();
+			logFile.renameTo(logFile2);
+			logFile=new File(Constants.PLAN_DIRECTORY+Constants.LOG_FILE_NAME);
 			try {
 				logFile.createNewFile();
 			} catch (IOException e) {

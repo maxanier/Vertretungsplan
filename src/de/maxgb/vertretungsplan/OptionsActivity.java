@@ -186,6 +186,8 @@ public class OptionsActivity extends FragmentActivity {
 		mailIntent.putExtra(Intent.EXTRA_TEXT, "");
 		Uri uri = Uri.fromFile(Logger.getLogFile());
 		mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+		Uri uri2 = Uri.fromFile(Logger.getOldLogFile());
+		mailIntent.putExtra(Intent.EXTRA_STREAM, uri2);
 
 		// Send, if possible
 		try {
