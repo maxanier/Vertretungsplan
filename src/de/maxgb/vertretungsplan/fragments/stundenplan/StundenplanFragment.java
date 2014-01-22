@@ -44,7 +44,8 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		super.onCreateView(inflater, container, savedInstanceState);
 
 		ScrollView s = (ScrollView) rootView.findViewById(R.id.standard_scroll_view);
-		anzeigen(s);
+
+			anzeigen(s);
 
 		return rootView;
 	}

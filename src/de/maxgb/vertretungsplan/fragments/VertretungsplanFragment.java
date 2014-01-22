@@ -1,5 +1,8 @@
 package de.maxgb.vertretungsplan.fragments;
 
+import java.io.File;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,7 @@ import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager.OnUpdateListener;
+import de.maxgb.vertretungsplan.util.Constants;
 
 /**
  * Standard Fragment für Vertretungen
@@ -34,7 +38,21 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 		View rootView = inflater.inflate(R.layout.fragment_scroll_view, container, false);
 
 		ScrollView s = (ScrollView) rootView.findViewById(R.id.standard_scroll_view);
-		anzeigen(s);
+		
+		if(new File(Constants.PLAN_DIRECTORY + Constants.SCHUELER_PLAN_FILE_NAME).exists()||new File(Constants.PLAN_DIRECTORY + Constants.LEHRER_PLAN_FILE_NAME).exists()){
+			anzeigen(s);
+		}
+		else{
+			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME,0);
+			if(pref.getString(Constants.USERNAME_KEY, null)==null||(pref.getString(Constants.KURSE_KEY,null)==null&&pref.getString(Constants.LEHRER_KUERZEL_KEY,null)==null)){
+				s.addView(newTextViewCentered("Bitte aktualisiere den Vertretungsplan. Gebe dafür deinen Nutzernamen, dein Passwort und deine Stufe in den Optionen ein"));
+			}
+			else{
+				s.addView(newTextViewCentered("Bitte aktuallieiere den Vertretungsplan"));
+			}
+			
+		}
+		
 		return rootView;
 	}
 

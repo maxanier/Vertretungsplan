@@ -72,8 +72,8 @@ public class StundenplanManager {
 	}
 
 	public void auswerten() {
-		int result = dateiAuswerten();
-		if (result == -1) {
+		lastResult = dateiAuswerten();
+		if (lastResult == -1) {
 
 		} else {
 			woche = null;

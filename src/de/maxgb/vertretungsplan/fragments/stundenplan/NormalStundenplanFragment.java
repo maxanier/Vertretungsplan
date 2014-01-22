@@ -13,7 +13,7 @@ public class NormalStundenplanFragment extends StundenplanFragment {
 		s.removeAllViews();
 		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
 		if (stundenplan == null) {
-			alert(StundenplanManager.getInstance().getLastResult());// TODO
+			s.addView(newTextViewCentered("Stundenplan noch nicht heruntergeladen bitte öffne das entsprechende Optionsmenu: ("+StundenplanManager.getInstance().getLastResult()+")"));
 			return;
 		}
 		super.anzeigen(stundenplan, s);

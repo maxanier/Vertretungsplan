@@ -64,6 +64,20 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		ArrayList<SchuelerVertretung> eigeneVertretungen = new ArrayList<SchuelerVertretung>();
 		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getClonedStundenplan();
 
+		if (stundenplan == null) {
+			s.addView(newTextViewCentered("Stundenplan noch nicht heruntergeladen bitte öffne das entsprechende Optionsmenu: ("+StundenplanManager.getInstance().getLastResult()+")"));
+			return;
+		}
+		if (vertretungen == null) {
+			if(pref.getString(Constants.USERNAME_KEY, null)==null||(pref.getString(Constants.KURSE_KEY,null)==null&&pref.getString(Constants.LEHRER_KUERZEL_KEY,null)==null)){
+				s.addView(newTextViewCentered("Bitte aktualisiere den Vertretungsplan. Gebe dafür deinen Nutzernamen, dein Passwort und deine Stufe in den Optionen ein"));
+			}
+			else{
+				s.addView(newTextViewCentered("Bitte aktuallieiere den Vertretungsplan"));
+			}
+			return;
+		}
+		
 		// Neues TableLayout für: 1. Experimentell Hinweis 2. Stand 3. StundenplanScrollView
 		TableLayout t = new TableLayout(getActivity());
 		// Experimentell Hinweis
@@ -82,15 +96,7 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		s.addView(t);
 		// TODO Remove Experimentell status
 
-		if (stundenplan == null) {
-			alert("Stundenplan noch nicht oder fehlerhaft heruntergeladen: "
-					+ StundenplanManager.getInstance().getLastResult());
-			return;
-		}
-		if (vertretungen == null) {
-			alert("Vertretungen noch nicht heruntergeladen");
-			return;
-		}
+
 		String stufe = pref.getString(Constants.STUFE_KEY, "");
 		boolean oberstufe = pref.getBoolean(Constants.OBERSTUFE_KEY, false);
 
