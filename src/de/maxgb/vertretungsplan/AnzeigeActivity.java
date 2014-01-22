@@ -221,15 +221,22 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_anzeige);
-
+		
+		//Logger mit App Verzeichnis initialisieren
 		Logger.init(Constants.PLAN_DIRECTORY);
 
 		actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
+		
+		//Überprüfen ob Debugmode für den Logger aktiviert ist
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		Logger.setDebugMode(pref.getBoolean(Constants.DEBUG_KEY, false));
+		
+		//Falls BetaVersion automatisch Debugmode activieren
+		if(Constants.IS_BETA){
+			Logger.setDebugMode(true);
+		}
 		
 		//Falls notwendig Updates durchführen und Changelog speichern
 		String changelog=Updater.update(pref, this);
