@@ -260,13 +260,13 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 
 	@Override
 	protected void onStop() {
-
+		super.onStop();
 		try {
 			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateFinishedListener(this);
 		} catch (NullPointerException e) {
 
 		}
-		super.onStop();
+		
 	}
 
 	public void onResume() {

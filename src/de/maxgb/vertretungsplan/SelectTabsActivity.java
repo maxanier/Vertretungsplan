@@ -169,9 +169,8 @@ public class SelectTabsActivity extends ListActivity {
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-
+	protected void onStop() {
+		super.onStop();
 		ArrayList<TabSelector> tabs = new ArrayList<TabSelector>();
 		for (int i = 0; i < adapter.getCount(); i++) {
 
@@ -182,6 +181,7 @@ public class SelectTabsActivity extends ListActivity {
 		editor.putString(Constants.JSON_TABS_KEY, TabManager.convertToString(tabs));// Save the current selection via the
 																					// TabManger in SharedPreferences
 		editor.commit();
+		
 	}
 
 }

@@ -40,12 +40,13 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 
 	@Override
 	public void onStop() {
+		super.onStop();
 		try {
 			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateListener(this);
 		} catch (NullPointerException e) {
 			// Manager was already deleted, then no need to unregister
 		}
-		super.onDestroy();
+		
 	}
 
 	@Override
