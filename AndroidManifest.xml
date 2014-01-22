@@ -53,6 +53,10 @@
             android:name="de.maxgb.vertretungsplan.SelectTabsActivity"
             android:label="@string/title_activity_select_tabs" >
         </activity>
+        <activity
+            android:name="de.maxgb.vertretungsplan.NormalUebersichtActivity"
+            android:label="@string/title_activity_normal_uebersicht" >
+        </activity>
     </application>
 
 </manifest>

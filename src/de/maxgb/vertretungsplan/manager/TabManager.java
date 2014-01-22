@@ -14,6 +14,7 @@ import de.maxgb.vertretungsplan.fragments.schueler.KurseSchuelerFragment;
 import de.maxgb.vertretungsplan.fragments.schueler.StufeSchuelerFragment;
 import de.maxgb.vertretungsplan.fragments.stundenplan.ModifiedStundenplanFragment;
 import de.maxgb.vertretungsplan.fragments.stundenplan.NormalStundenplanFragment;
+import de.maxgb.vertretungsplan.fragments.stundenplan.NormalUebersichtFragment;
 
 public class TabManager {
 

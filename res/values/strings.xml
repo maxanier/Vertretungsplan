@@ -15,5 +15,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="stundenplan_erstellung">&quot;Bitte besuche (vorzugsweise am Pc) die Seite \&quot;sp.maxgb.de\&quot;, dort kannst du deinen Stundenplan bequem erstellen. Du bekommst dann einen Code generiert, welchen du hier einfügen musst. &quot;</string>
     <string name="title_activity_select_tabs">SelectTabsActivity</string>
+    <string name="title_activity_normal_uebersicht">Stundenplan Übersicht</string>
 
 </resources>

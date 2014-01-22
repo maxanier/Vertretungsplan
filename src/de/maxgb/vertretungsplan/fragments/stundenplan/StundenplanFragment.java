@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -15,12 +16,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import de.maxgb.android.util.Logger;
+import de.maxgb.vertretungsplan.NormalUebersichtActivity;
 import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.fragments.AnzeigeFragment;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
@@ -76,7 +79,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 
 	}
 
-	private TableRow newHeadline() {
+	protected TableRow newHeadline() {
 		TableRow headline = newTableRow();
 		SpannableString stunde = new SpannableString("Stunde ");
 		stunde.setSpan(new StyleSpan(Typeface.BOLD), 0, stunde.length(), 0);
@@ -361,6 +364,28 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	protected void update() {
 		ScrollView s = (ScrollView) this.getView().findViewById(R.id.standard_scroll_view);
 		anzeigen(s);
+	}
+	
+	/**
+	 * Fügt dem übergeben TableLayout ein Button hinzu, der zur NormalUebersichtActivity führt
+	 * @param t Layout
+	 */
+	protected void addUebersichtButton(TableLayout t){
+		Button uebersicht=new Button(getActivity());
+		uebersicht.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getActivity(), NormalUebersichtActivity.class);
+				startActivity(i);
+				
+			}
+			
+		});
+		uebersicht.setText("Übersicht");
+		uebersicht.setHeight(15);
+		
+		t.addView(uebersicht);
 	}
 
 }

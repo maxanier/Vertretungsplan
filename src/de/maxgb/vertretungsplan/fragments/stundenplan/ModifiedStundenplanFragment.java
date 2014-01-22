@@ -93,7 +93,9 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		// Stundenplan, wobei s2 später gefüllt wird
 		ScrollView s2 = new ScrollView(getActivity());
 		t.addView(s2);
+		addUebersichtButton(t);
 		s.addView(t);
+		
 		// TODO Remove Experimentell status
 
 
