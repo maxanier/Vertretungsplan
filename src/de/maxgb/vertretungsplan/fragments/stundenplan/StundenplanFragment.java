@@ -41,12 +41,14 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		StundenplanManager.getInstance().registerOnUpdateListener(this);
 
 		View rootView = inflater.inflate(R.layout.fragment_scroll_view, container, false);
-		super.onCreateView(inflater, container, savedInstanceState);
+		
+		Logger.i(TAG, "Creating StundenplanFragmentsView");
 
 		ScrollView s = (ScrollView) rootView.findViewById(R.id.standard_scroll_view);
 
-			anzeigen(s);
-
+		anzeigen(s);
+		
+		
 		return rootView;
 	}
 
@@ -292,7 +294,6 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		int hour = current.get(Calendar.HOUR_OF_DAY);
 		int minute = current.get(Calendar.MINUTE);
 		int time = hour*60 + minute;
-		Logger.i(TAG, "Current time is: "+hour+":"+minute+" -> m: "+time);
 		if (time < (8*60 + 35 + v)) {
 			// Vor Ende der ersten Stunde
 			return 1;

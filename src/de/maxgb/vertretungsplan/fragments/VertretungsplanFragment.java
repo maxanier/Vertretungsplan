@@ -36,7 +36,8 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 		}
 
 		View rootView = inflater.inflate(R.layout.fragment_scroll_view, container, false);
-
+		
+		Logger.i(TAG, "Creating VertretungsplanFragmentView");
 		ScrollView s = (ScrollView) rootView.findViewById(R.id.standard_scroll_view);
 		
 		if(new File(Constants.PLAN_DIRECTORY + Constants.SCHUELER_PLAN_FILE_NAME).exists()||new File(Constants.PLAN_DIRECTORY + Constants.LEHRER_PLAN_FILE_NAME).exists()){

@@ -1,10 +1,8 @@
 package de.maxgb.vertretungsplan.fragments;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -12,17 +10,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.util.Constants;
 
 public class AnzeigeFragment extends Fragment {
+	
 	private final String TAG = "AnzeigeFragment";
 	/**
 	 * DiplaySize: 0=Normal //3 Tage 1=VerySmall //3 Tage 2=Small //3 Tage -1=Big //4 Tage -2=Very Big //7 Tage
