@@ -41,7 +41,10 @@ public class InfoBox {
 				"Anzeige_Features",
 				24,
 				"<html><body>Schon die neuen Features genutzt?<p>Die angezeigten Tabs lassen sich jetzt beliebig auswählen und anordnen. Lasse  zum Beispiel deinen Stundenplan mit integrierter Vertretung vorne und die Vertretungen für alle ganz hinten oder gar nicht anzeigen<p>Habe deinen Stundenplan immer dabei und sehe immer was du gleich wo hast(Schüler exklusiv)? Es sind zwei Varianten verfügbar: Mit Vertretungen und ohne Vertretungen</body></html>",
-				6);
+				6), STUNDENPLAN_INFO(
+				"Stundenplan_Options",
+				24,
+				"<html><body>So bekommst du deinen Stundenplan in die App:<br>Besuche (am besten am PC) die seite sp.maxgb.de, dort kannst du deinen Stundenplan erstellen. Es wird eine ID generiert, die du dann hier eingeben und den Plan herunterladen kannst. Dann musste du nur noch in den Anzeige Tabs Optionen die passenden Tabs auswählen und schon hast du deinen Stundenplan immer dabei.");
 
 		public String activity_name;
 		public int letzte_aenderung;
@@ -52,7 +55,8 @@ public class InfoBox {
 		 * Anleitung
 		 * 
 		 * @param name
-		 *            Name zum Speichern der Aufrufe, am besten den namen der zugehörigen Activity, darf aber nicht mehrfach der gleiche sein
+		 *            Name zum Speichern der Aufrufe, am besten den namen der zugehörigen Activity, darf aber nicht mehrfach der
+		 *            gleiche sein
 		 * @param letzte_aenderung
 		 *            Letzte Aktualisierung der Activity
 		 * @param text
@@ -68,7 +72,8 @@ public class InfoBox {
 		 * Anleitung
 		 * 
 		 * @param name
-		 *            Name zum Speichern der Aufrufe, am besten den namen der zugehörigen Activity, darf aber nicht mehrfach der gleiche sein
+		 *            Name zum Speichern der Aufrufe, am besten den namen der zugehörigen Activity, darf aber nicht mehrfach der
+		 *            gleiche sein
 		 * @param letzte_aenderung
 		 *            Letzte Aktualisierung der Activity
 		 * @param text

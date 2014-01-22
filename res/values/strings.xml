@@ -13,7 +13,7 @@
     <string name="stand_error">Login Info eventuell falsch</string>
     <string name="title_activity_stundenplan_options">Stundenplan</string>
     <string name="hello_world">Hello world!</string>
-    <string name="stundenplan_erstellung">"Bitte besuche (vorzugsweise am Pc) die Seite \"sp.maxgb.de\", dort kannst du deinen Stundenplan erstellen. Du erhälst dann einen Code, welchen du hier einfügen musst. "</string>
+    <string name="stundenplan_erstellung">&quot;Bitte besuche (vorzugsweise am Pc) die Seite \&quot;sp.maxgb.de\&quot;, dort kannst du deinen Stundenplan bequem erstellen. Du bekommst dann einen Code generiert, welchen du hier einfügen musst. &quot;</string>
     <string name="title_activity_select_tabs">SelectTabsActivity</string>
 
 </resources>

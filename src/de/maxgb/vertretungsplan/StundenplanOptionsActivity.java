@@ -39,6 +39,7 @@ import com.actionbarsherlock.view.MenuItem;
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
+import de.maxgb.vertretungsplan.util.InfoBox;
 
 /**
  * Options Activity zum Konfigurieren der Stundenplanfunktion
@@ -231,6 +232,8 @@ public class StundenplanOptionsActivity extends SherlockActivity {
 			checkBox_kurse_with_namen.setEnabled(false);
 
 		}
+		
+		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.STUNDENPLAN_INFO);
 	}
 
 	@Override
