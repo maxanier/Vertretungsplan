@@ -87,15 +87,22 @@ public class StundenplanManager {
 	}
 
 	public ArrayList<Stunde[]> getClonedStundenplan() {
-		ArrayList<Stunde[]> clone = new ArrayList<Stunde[]>(woche.size());
-		for (Stunde[] item : woche) {
-			Stunde[] clone2 = new Stunde[item.length];
-			for (int i = 0; i < item.length; i++) {
-				clone2[i] = item[i].clone();
+		ArrayList<Stunde[]> clone;
+		try {
+			clone = new ArrayList<Stunde[]>(woche.size());
+
+			for (Stunde[] item : woche) {
+				Stunde[] clone2 = new Stunde[item.length];
+				for (int i = 0; i < item.length; i++) {
+					clone2[i] = item[i].clone();
+				}
+				clone.add(clone2);
 			}
-			clone.add(clone2);
+			return clone;
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return null;
 		}
-		return clone;
 	}
 
 	public HashMap<String, String> getKursnamen() {
