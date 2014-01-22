@@ -129,7 +129,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 					// Fach
 					String f;
 					if (getActivity().getSharedPreferences(Constants.PREFS_NAME, 0).getBoolean(
-							Constants.SP_KURSE_MIT_NAMEN, false)) {
+							Constants.SP_KURSE_MIT_NAMEN_KEY, false)) {
 						f = st.getName();
 					} else {
 						f = st.getKurs();

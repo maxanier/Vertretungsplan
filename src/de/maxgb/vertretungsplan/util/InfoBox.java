@@ -47,7 +47,7 @@ public class InfoBox {
 	private static final String PREFS_NAME = "InfoBox";
 	private static final String TITLE = "Erklärung";
 
-	public static final int ANLEITUNG_KURSWAHL_AENDERUNG = 14;
+
 
 	public static void showAnleitungBox(Context context, Anleitungen anleitung) {
 

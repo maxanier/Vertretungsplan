@@ -72,7 +72,7 @@ public class SelectTabsActivity extends SherlockListActivity {
 			}
 			if (stundenplan) {
 				tabs.add(new TabSelector("NormalStundenplanFragment.class", false));
-				tabs.add(new TabSelector("ModifiedStundenplanFragment.class", false));
+				tabs.add(new TabSelector("ModifiedStundenplanFragment.class", true));
 			}
 
 		} else if (lehrer) {

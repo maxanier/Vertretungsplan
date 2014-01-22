@@ -9,7 +9,7 @@
     <string name="refresh">Aktualisieren</string>
     <string name="select_type">Bitte wählen Sie einen Typ</string>
     <string name="select_tabs">Wählen Sie aus, welche Tabs angezeigt werden sollen</string>
-    <string name="info_text">Aufgrund einer kompletten Überarbeitung dieser App, ist es nötig Nutzername, Passwort und leider auch die eigenen Kurse(Android 3.0+) neu einzustellen. \n\nDafür können jetzt auch die anzuzeigenden Tabs ausgewählt werden, sodass zum Beispiel nur Vertretungen für eigene Kurse und für die eigene Stufe angezeigt werden.</string>
+    <string name="info_text">Bitte Nutzernamen,Passwort und Stufe/Kürzel unter Optionen eintragen und anzuzeigende Tabs auswählen</string>
     <string name="stand_error">Login Info eventuell falsch</string>
     <string name="title_activity_stundenplan_options">Stundenplan</string>
     <string name="hello_world">Hello world!</string>

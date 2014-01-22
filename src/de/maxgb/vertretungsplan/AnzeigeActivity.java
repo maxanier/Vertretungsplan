@@ -21,6 +21,7 @@ import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
 import de.maxgb.vertretungsplan.util.SectionsPagerAdapter;
+import de.maxgb.vertretungsplan.util.Updater;
 
 /**
  * Hauptklasse, mit einer SherlockActionbar Dient zum Fragmentmanagment und zur Verarbeitung von Nutzereingaben
@@ -229,9 +230,11 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		Logger.setDebugMode(pref.getBoolean(Constants.DEBUG_KEY, false));
-
-		// Create the adapter that will return a fragment for each of the three
-		// primary sections of the app.
+		
+		//Falls notwendig Updates durchführen und Changelog speichern
+		String changelog=Updater.update(pref, this);
+		
+		// SectionPagerAdapter erstellen, der die ausgewählten Fragments liefern kann
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), pref.getString(
 				Constants.JSON_TABS_KEY, ""));
 
@@ -239,9 +242,8 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
-		// When swiping between different sections, select the corresponding
-		// tab. We can also use ActionBar.Tab#select() to do this if we have
-		// a reference to the Tab.
+		// When swiping between different pages, select the corresponding
+		// tab. 
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
@@ -254,7 +256,14 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		// Register Listener
 		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
+		
+		//Tabs anzeigen
 		updateTabs();
+		
+		//Falls Changelog vorhanden diesen anzeigen
+		if(changelog!=null){
+			InfoBox.showInfoBox(this, "Changelog", changelog);
+		}
 
 	}
 

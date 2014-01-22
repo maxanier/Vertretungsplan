@@ -199,13 +199,13 @@ public class StundenplanOptionsActivity extends SherlockActivity {
 	private void speichern() {
 		Logger.i(TAG, "Speichere Stundenplanoptions");
 		SharedPreferences.Editor editor = getSharedPreferences(Constants.PREFS_NAME, 0).edit();
-		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
+		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN_KEY, checkBox_kurse_with_namen.isChecked());
 		try {
-			editor.putInt(Constants.SP_ID, Integer.parseInt(edit_id.getText().toString()));
+			editor.putInt(Constants.SP_ID_KEY, Integer.parseInt(edit_id.getText().toString()));
 		} catch (NumberFormatException e) {
 			Logger.w(TAG, "Id Feld fehlerhaft oder leer");
 		}
-		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
+		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN_KEY, checkBox_kurse_with_namen.isChecked());
 		editor.commit();
 		if (old_kurse_mit_namen != checkBox_kurse_with_namen.isChecked()) {
 			StundenplanManager.getInstance().notifyListener();
@@ -223,9 +223,9 @@ public class StundenplanOptionsActivity extends SherlockActivity {
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		edit_id = (EditText) findViewById(R.id.edit_stundenplan_id);
 		checkBox_kurse_with_namen = (CheckBox) findViewById(R.id.checkBox_stundenplan_with_name);
-		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID, 0)));
-		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false));
-		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN, false);
+		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID_KEY, 0)));
+		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN_KEY, false));
+		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN_KEY, false);
 		if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
 			checkBox_kurse_with_namen.setVisibility(View.INVISIBLE);
 			checkBox_kurse_with_namen.setEnabled(false);

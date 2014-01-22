@@ -11,8 +11,11 @@ import android.os.Environment;
  * 
  */
 public class Constants {
-	public static final String PREFS_TABS_NAME = "Tabs";
 	public static final String PREFS_NAME = "Settings";
+	//Versions
+	public static final String LAST_UPDATED_KEY="last_updated";
+	public static final boolean IS_BETA=true;//TODO Change for release
+	
 	// Keys----------------------------------------------------
 	public static final String SCHUELER_KEY = "Schueler";
 	public static final String LEHRER_KEY = "Lehrer";
@@ -28,9 +31,8 @@ public class Constants {
 	public static final String KURSE_KEY = "kurse";
 	public static final String OBERSTUFE_KEY = "oberstufe";
 	public static final String DEBUG_KEY = "debugmode";
-	public static final String SP_GEKAUFT = "sp_gekauft";
-	public static final String SP_KURSE_MIT_NAMEN = "sp_kurse_mit_nummern";
-	public static final String SP_ID = "sp_id";
+	public static final String SP_KURSE_MIT_NAMEN_KEY = "sp_kurse_mit_nummern";
+	public static final String SP_ID_KEY = "sp_id";
 	public static final String JSON_TABS_KEY = "json_tabs";
 
 	// --------------------------------------------------------
