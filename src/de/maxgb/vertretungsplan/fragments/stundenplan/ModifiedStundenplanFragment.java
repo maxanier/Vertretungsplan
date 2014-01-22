@@ -36,8 +36,8 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
+	public void onDestroy() {
+		super.onDestroy();
 		try {
 			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateListener(this);
 		} catch (NullPointerException e) {

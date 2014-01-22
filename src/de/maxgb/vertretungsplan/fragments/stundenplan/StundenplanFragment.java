@@ -50,8 +50,8 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	}
 
 	@Override
-	public void onStop() {
-		super.onStop();
+	public void onDestroy() {
+		super.onDestroy();
 		StundenplanManager.getInstance().unregisterOnUpdateListener(this);
 		
 	}
