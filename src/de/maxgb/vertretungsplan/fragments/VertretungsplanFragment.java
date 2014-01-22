@@ -39,7 +39,7 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 	}
 
 	@Override
-	public void onDestroy() {
+	public void onStop() {
 		try {
 			VertretungsplanManager.getCreatedInstance().unregisterOnUpdateListener(this);
 		} catch (NullPointerException e) {
