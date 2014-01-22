@@ -44,14 +44,13 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		StundenplanManager.getInstance().registerOnUpdateListener(this);
 
 		View rootView = inflater.inflate(R.layout.fragment_scroll_view, container, false);
-		
+
 		Logger.i(TAG, "Creating StundenplanFragmentsView");
 
 		ScrollView s = (ScrollView) rootView.findViewById(R.id.standard_scroll_view);
 
 		anzeigen(s);
-		
-		
+
 		return rootView;
 	}
 
@@ -59,7 +58,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	public void onDestroy() {
 		super.onDestroy();
 		StundenplanManager.getInstance().unregisterOnUpdateListener(this);
-		
+
 	}
 
 	@Override
@@ -117,12 +116,12 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 			table.addView(border);
 
 			TableRow stunde = newTableRow();
-			
-			//Vormittags die Stunde in die erste Spalte schreiben, Nachmittags ein leeres TextView (da die Stunden nicht mehr definiert sind)
-			if(i+1>=StundenplanManager.BEGINN_NACHMITTAG){
+
+			// Vormittags die Stunde in die erste Spalte schreiben, Nachmittags ein leeres TextView (da die Stunden nicht mehr
+			// definiert sind)
+			if (i + 1 >= StundenplanManager.BEGINN_NACHMITTAG) {
 				stunde.addView(newTextView(""));
-			}
-			else{
+			} else {
 				stunde.addView(newTextView(Integer.toString(i + 1)));
 			}
 
@@ -296,22 +295,22 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		Calendar current = Calendar.getInstance();
 		int hour = current.get(Calendar.HOUR_OF_DAY);
 		int minute = current.get(Calendar.MINUTE);
-		int time = hour*60 + minute;
-		if (time < (8*60 + 35 + v)) {
+		int time = hour * 60 + minute;
+		if (time < (8 * 60 + 35 + v)) {
 			// Vor Ende der ersten Stunde
 			return 1;
-		} else if (time < (9*60 + 25+ v)) {
+		} else if (time < (9 * 60 + 25 + v)) {
 			// Vor Ende der zweiten Stunde
 			return 2;
-		} else if (time < (10 *60+ 25+ v)) {
+		} else if (time < (10 * 60 + 25 + v)) {
 			return 3;
-		} else if (time < (11 *60+ 15+ v)) {
+		} else if (time < (11 * 60 + 15 + v)) {
 			return 4;
-		} else if (time < (12 *60+ 15 + v)) {
+		} else if (time < (12 * 60 + 15 + v)) {
 			return 5;
-		} else if (time < (13 *60+ 5 + v)) {
+		} else if (time < (13 * 60 + 5 + v)) {
 			return 6;
-		} else if (time < (14 *60+ v)) {
+		} else if (time < (14 * 60 + v)) {
 			return 7;
 		}
 		return -1;
@@ -365,26 +364,28 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		ScrollView s = (ScrollView) this.getView().findViewById(R.id.standard_scroll_view);
 		anzeigen(s);
 	}
-	
+
 	/**
 	 * Fügt dem übergeben TableLayout ein Button hinzu, der zur NormalUebersichtActivity führt
-	 * @param t Layout
+	 * 
+	 * @param t
+	 *            Layout
 	 */
-	protected void addUebersichtButton(TableLayout t){
-		Button uebersicht=new Button(getActivity());
-		uebersicht.setOnClickListener(new OnClickListener(){
+	protected void addUebersichtButton(TableLayout t) {
+		Button uebersicht = new Button(getActivity());
+		uebersicht.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(getActivity(), NormalUebersichtActivity.class);
 				startActivity(i);
-				
+
 			}
-			
+
 		});
 		uebersicht.setText("Übersicht");
 		uebersicht.setHeight(15);
-		
+
 		t.addView(uebersicht);
 	}
 

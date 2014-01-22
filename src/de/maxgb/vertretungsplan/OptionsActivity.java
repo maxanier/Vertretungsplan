@@ -254,6 +254,7 @@ public class OptionsActivity extends SherlockFragmentActivity {
 		Intent i = new Intent(this, StundenplanOptionsActivity.class);
 		startActivity(i);
 	}
+
 	//@formatter:off
 	/**
 	 * Alert Boc falls nicht alle Felder ausgefüllt sind

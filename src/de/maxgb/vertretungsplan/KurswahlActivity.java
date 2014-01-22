@@ -138,33 +138,34 @@ public class KurswahlActivity extends FragmentActivity implements KursEingabeDia
 		setupActionBar();
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.KURSWAHL);
 	}
-	
+
 	/**
 	 * Liest alle unterschiedlichen Kurse aus dem Stundenplan aus und fügt sie zur ListView hinzu
-	 * @param v 
+	 * 
+	 * @param v
 	 */
-	public void kurseAusSPAuslesen(View v){
-		ArrayList<Stunde[]> stundenplan=StundenplanManager.getInstance().getStundenplan();
-		ArrayList<String> kurse=new ArrayList<String>();
-		if(stundenplan==null){
+	public void kurseAusSPAuslesen(View v) {
+		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
+		ArrayList<String> kurse = new ArrayList<String>();
+		if (stundenplan == null) {
 			alert("Stundenplan noch nicht heruntergeladen");
 			return;
 		}
-		for(int i=0;i<stundenplan.size();i++){
+		for (int i = 0; i < stundenplan.size(); i++) {
 			Stunde[] tag = stundenplan.get(i);
-			for(int j=0;j<tag.length;j++){
-				if(!tag[j].getKurs().equals("")&&!kurse.contains(tag[j].getKurs())){
+			for (int j = 0; j < tag.length; j++) {
+				if (!tag[j].getKurs().equals("") && !kurse.contains(tag[j].getKurs())) {
 					kurse.add(tag[j].getKurs());
 				}
 			}
-			
+
 		}
-		Logger.i(TAG, "Kurse aus SP ausgelesen: "+kurse.toString());
-		
+		Logger.i(TAG, "Kurse aus SP ausgelesen: " + kurse.toString());
+
 		kurse_liste.addAll(kurse);
 		((ArrayAdapter) liste.getAdapter()).notifyDataSetChanged();
 	}
-	
+
 	private void alert(String msg) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(msg);

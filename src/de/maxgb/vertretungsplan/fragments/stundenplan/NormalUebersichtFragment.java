@@ -11,8 +11,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 public class NormalUebersichtFragment extends NormalStundenplanFragment {
-	
-	
+
 	/*
 	 * In der Headline soll nur Wochentage und nicht "Heute" oder "Morgen" angezeigt werden
 	 * @see de.maxgb.vertretungsplan.fragments.stundenplan.StundenplanFragment#newHeadline()
@@ -31,12 +30,13 @@ public class NormalUebersichtFragment extends NormalStundenplanFragment {
 
 				tag = new SpannableString(" " + convertToDayString(day) + " ");
 				tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
-				
+
 				headline.addView(newTextViewCentered(tag));
 			}
 		}
 		return headline;
 	}
+
 	/*
 	 * Die Übersicht soll Montags beginnen
 	 * @see de.maxgb.vertretungsplan.fragments.stundenplan.StundenplanFragment#getCurrentDayOfWeek()
@@ -51,24 +51,25 @@ public class NormalUebersichtFragment extends NormalStundenplanFragment {
 	 * @see de.maxgb.vertretungsplan.fragments.stundenplan.StundenplanFragment#getVisibleDayCount()
 	 */
 	@Override
-	protected int getVisibleDayCount(){
+	protected int getVisibleDayCount() {
 		return 7;
 	}
 
 	/*
 	 * In der Übersicht wird kein Übersichtsbutton benötigt
-	 * @see de.maxgb.vertretungsplan.fragments.stundenplan.NormalStundenplanFragment#addUebersichtButton(android.widget.TableLayout)
+	 * @see
+	 * de.maxgb.vertretungsplan.fragments.stundenplan.NormalStundenplanFragment#addUebersichtButton(android.widget.TableLayout)
 	 */
 	@Override
-	protected void addUebersichtButton(TableLayout t){
+	protected void addUebersichtButton(TableLayout t) {
 	}
-	
+
 	/*
 	 * Es soll keine Stunde markiert werden
 	 * @see de.maxgb.vertretungsplan.fragments.stundenplan.StundenplanFragment#getCurrentLesson(boolean)
 	 */
 	@Override
-	protected int getCurrentLesson(boolean samstag){
+	protected int getCurrentLesson(boolean samstag) {
 		return -2;
 	}
 }

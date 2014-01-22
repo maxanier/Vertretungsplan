@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import de.maxgb.vertretungsplan.R;
 
 /**
- * Infoformations Fragment, falls kein anderes Fragment angezeigt wird
- * Sollte eigentlich nie angezeigt werden
+ * Infoformations Fragment, falls kein anderes Fragment angezeigt wird Sollte eigentlich nie angezeigt werden
+ * 
  * @author Max Becker
  * 
  */

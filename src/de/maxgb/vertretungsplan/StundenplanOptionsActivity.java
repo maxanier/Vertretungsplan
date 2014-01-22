@@ -232,7 +232,7 @@ public class StundenplanOptionsActivity extends SherlockActivity {
 			checkBox_kurse_with_namen.setEnabled(false);
 
 		}
-		
+
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.STUNDENPLAN_INFO);
 	}
 

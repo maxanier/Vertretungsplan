@@ -12,10 +12,10 @@ import android.os.Environment;
  */
 public class Constants {
 	public static final String PREFS_NAME = "Settings";
-	//Versions
-	public static final String LAST_UPDATED_KEY="last_updated";
-	public static final boolean IS_BETA=true;//TODO Change for release
-	
+	// Versions
+	public static final String LAST_UPDATED_KEY = "last_updated";
+	public static final boolean IS_BETA = true;// TODO Change for release
+
 	// Keys----------------------------------------------------
 	public static final String SCHUELER_KEY = "Schueler";
 	public static final String LEHRER_KEY = "Lehrer";
@@ -100,37 +100,40 @@ public class Constants {
 		map.put("cn", "Chinesisch");
 		map.put("z-cn", "Chinesisch");
 		map.put("ph", "Physik");
-		map.put("vtr.","Vertretung");
+		map.put("vtr.", "Vertretung");
 		map.put("freis.", "Freisetzung");
 		return map;
 	}
-	
+
 	/**
 	 * Liefert eine HashMap mit der Vertretungsart als Keys und dem dazugehörigen String der als Fach angezeigt werden soll zurück
+	 * 
 	 * @return HashMap<Vertretungsart,Fach>
 	 */
-	public static final HashMap<String,String> getReplacementForSPVP(){
-		HashMap<String,String> map = new HashMap<String,String>();
-		map.put("Entfall","");
-		map.put("Vtr.","Vtr.");
-		map.put("Freis.","Freis.");
+	public static final HashMap<String, String> getReplacementForSPVP() {
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("Entfall", "");
+		map.put("Vtr.", "Vtr.");
+		map.put("Freis.", "Freis.");
 		return map;
 	}
-	
+
 	/**
-	 * Liefert eine HashMap mit der Vertretungsplanart, wie sie auf der Webseite zu finden ist, als Key die stattdessen anzuzeigende kürzere Version zurück
+	 * Liefert eine HashMap mit der Vertretungsplanart, wie sie auf der Webseite zu finden ist, als Key die stattdessen
+	 * anzuzeigende kürzere Version zurück
+	 * 
 	 * @return HashMap<Eigentlich Veretungsart,Neue Vertretungsart>
 	 */
-	public static final HashMap<String,String> getReplacementForArt(){
-		HashMap<String,String> map = new HashMap<String,String>();
+	public static final HashMap<String, String> getReplacementForArt() {
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("Sondereins.", "Sonder.");
 		map.put("Raum-Vtr.", "R-Vtr");
 		map.put("Vertretung", "Vtr.");
-		map.put("Pausenaufsicht","Aufs.");
+		map.put("Pausenaufsicht", "Aufs.");
 		map.put("Betreuung", "Betreu.");
 		map.put("Freisetzung", "Freis.");
 		map.put("Verlegung", "Verlegt");
-		
+
 		return map;
 	}
 

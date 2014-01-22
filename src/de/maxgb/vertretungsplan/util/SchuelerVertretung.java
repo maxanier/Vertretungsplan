@@ -7,11 +7,11 @@ public class SchuelerVertretung {
 			String klausur, String bemerkung) {
 		this.klasse = (klasse == null) ? "" : klasse;
 		this.stunde = (stunde == null) ? "" : stunde;
-		
-		String replaceArt=Constants.getReplacementForArt().get(art);
-		art = (replaceArt!=null) ? replaceArt : art;
-		
-		this.art  = (art == null) ? "" : art;
+
+		String replaceArt = Constants.getReplacementForArt().get(art);
+		art = (replaceArt != null) ? replaceArt : art;
+
+		this.art = (art == null) ? "" : art;
 		this.fach = (fach == null) ? "" : fach;
 		this.raum = (raum == null) ? "" : raum;
 		this.tag = (tag == null) ? "" : tag;

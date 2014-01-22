@@ -20,7 +20,6 @@ import de.maxgb.vertretungsplan.com.DownloadTask;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
-import de.maxgb.vertretungsplan.util.InfoBox.Anleitungen;
 import de.maxgb.vertretungsplan.util.SectionsPagerAdapter;
 import de.maxgb.vertretungsplan.util.Updater;
 
@@ -104,7 +103,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		outState.putInt(STATE_SELECTED_NAVIGATION_TAB, getSupportActionBar().getSelectedNavigationIndex());
 	}
 
-
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 		// When the given tab is selected, switch to the corresponding page in
@@ -112,7 +110,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		mViewPager.setCurrentItem(tab.getPosition());
 
 	}
-
 
 	/**
 	 * Implements OptionsActivity.OnUpdateFinishedListener Setzt den Status des Refresh-Icons auf false, wenn ein Update
@@ -212,32 +209,32 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_anzeige);
-		
-		//Logger mit App Verzeichnis initialisieren
+
+		// Logger mit App Verzeichnis initialisieren
 		Logger.init(Constants.PLAN_DIRECTORY);
 
 		actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
-		//Überprüfen ob Debugmode für den Logger aktiviert ist
+
+		// Überprüfen ob Debugmode für den Logger aktiviert ist
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		Logger.setDebugMode(pref.getBoolean(Constants.DEBUG_KEY, false));
-		
-		//Falls Beta Version automatisch Debugmode activieren
-		if(Constants.IS_BETA){
+
+		// Falls Beta Version automatisch Debugmode activieren
+		if (Constants.IS_BETA) {
 			Logger.setDebugMode(true);
 		}
-		
-		//Überprüfen ob im Emulator läuft, wenn ja Debugmode deaktivieren, da ja Logcat vorhanden ist
+
+		// Überprüfen ob im Emulator läuft, wenn ja Debugmode deaktivieren, da ja Logcat vorhanden ist
 		if (android.os.Build.MODEL.equals("google_sdk")) {
-			  Logger.setDebugMode(false);
-			  Logger.i(TAG, "Running on Emulator");
+			Logger.setDebugMode(false);
+			Logger.i(TAG, "Running on Emulator");
 		}
-		
-		//Falls notwendig Updates durchführen und Changelog speichern
-		String changelog=Updater.update(pref, this);
-		
+
+		// Falls notwendig Updates durchführen und Changelog speichern
+		String changelog = Updater.update(pref, this);
+
 		// SectionPagerAdapter erstellen, der die ausgewählten Fragments liefern kann
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), pref.getString(
 				Constants.JSON_TABS_KEY, ""));
@@ -247,7 +244,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
 		// When swiping between different pages, select the corresponding
-		// tab. 
+		// tab.
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
@@ -260,12 +257,12 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		// Register Listener
 		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
-		
-		//Tabs anzeigen
+
+		// Tabs anzeigen
 		updateTabs();
-		
-		//Falls Changelog vorhanden diesen anzeigen
-		if(changelog!=null){
+
+		// Falls Changelog vorhanden diesen anzeigen
+		if (changelog != null) {
 			InfoBox.showInfoBox(this, "Changelog", changelog);
 		}
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.ANZEIGEINFO);
@@ -281,7 +278,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		} catch (NullPointerException e) {
 
 		}
-		
+
 	}
 
 	public void onResume() {
@@ -311,13 +308,13 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

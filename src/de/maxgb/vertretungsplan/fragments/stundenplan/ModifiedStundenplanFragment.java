@@ -2,7 +2,6 @@ package de.maxgb.vertretungsplan.fragments.stundenplan;
 
 import java.util.ArrayList;
 
-
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -43,7 +42,7 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		} catch (NullPointerException e) {
 			// Sowieso schon gelöscht
 		}
-		
+
 	}
 
 	@Override
@@ -65,19 +64,21 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getClonedStundenplan();
 
 		if (stundenplan == null) {
-			s.addView(newTextViewCentered("Stundenplan noch nicht heruntergeladen bitte öffne das entsprechende Optionsmenu: ("+StundenplanManager.getInstance().getLastResult()+")"));
+			s.addView(newTextViewCentered("Stundenplan noch nicht heruntergeladen bitte öffne das entsprechende Optionsmenu: ("
+					+ StundenplanManager.getInstance().getLastResult() + ")"));
 			return;
 		}
 		if (vertretungen == null) {
-			if(pref.getString(Constants.USERNAME_KEY, null)==null||(pref.getString(Constants.KURSE_KEY,null)==null&&pref.getString(Constants.LEHRER_KUERZEL_KEY,null)==null)){
+			if (pref.getString(Constants.USERNAME_KEY, null) == null
+					|| (pref.getString(Constants.KURSE_KEY, null) == null && pref.getString(
+							Constants.LEHRER_KUERZEL_KEY, null) == null)) {
 				s.addView(newTextViewCentered("Bitte aktualisiere den Vertretungsplan. Gebe dafür deinen Nutzernamen, dein Passwort und deine Stufe in den Optionen ein"));
-			}
-			else{
+			} else {
 				s.addView(newTextViewCentered("Bitte aktuallieiere den Vertretungsplan"));
 			}
 			return;
 		}
-		
+
 		// Neues TableLayout für: 1. Experimentell Hinweis 2. Stand 3. StundenplanScrollView
 		TableLayout t = new TableLayout(getActivity());
 		// Experimentell Hinweis
@@ -95,9 +96,8 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 		t.addView(s2);
 		addUebersichtButton(t);
 		s.addView(t);
-		
-		// TODO Remove Experimentell status
 
+		// TODO Remove Experimentell status
 
 		String stufe = pref.getString(Constants.STUFE_KEY, "");
 		boolean oberstufe = pref.getBoolean(Constants.OBERSTUFE_KEY, false);
@@ -121,16 +121,15 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 				int stunde = Integer.parseInt(v.stunde);
 				Stunde st = tag[stunde - 1];
 				Logger.i(TAG, "Entsprechende Stunde: " + st.toString() + " am: " + this.convertToDayString(day));
-				
-				//Je nach Art unterschiedliche Fächer anzeigen
+
+				// Je nach Art unterschiedliche Fächer anzeigen
 				String fach = Constants.getReplacementForSPVP().get(v.art);
-				if(fach==null){
-					fach=v.fach;
+				if (fach == null) {
+					fach = v.fach;
 				}
-				
+
 				if (!oberstufe) {
-					
-					
+
 					st.vertreteten(fach, v.raum, v.bemerkung, v.klausur, v.art, v.tag);
 				} else {
 					if (st.getKurs().trim().equals(v.fach.trim())) {

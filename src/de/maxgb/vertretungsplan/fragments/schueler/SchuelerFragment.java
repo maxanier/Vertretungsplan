@@ -103,7 +103,6 @@ public abstract class SchuelerFragment extends VertretungsplanFragment {
 
 	protected void anzeigen(ArrayList<SchuelerVertretung> vertretungen, String stand, ScrollView s) {
 
-
 		// Layout erstellen
 		LayoutParams params = new LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT,
 				android.view.ViewGroup.LayoutParams.WRAP_CONTENT);

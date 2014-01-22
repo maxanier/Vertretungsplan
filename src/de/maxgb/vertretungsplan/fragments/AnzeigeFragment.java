@@ -18,7 +18,7 @@ import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.util.Constants;
 
 public class AnzeigeFragment extends Fragment {
-	
+
 	private final String TAG = "AnzeigeFragment";
 	/**
 	 * DiplaySize: 0=Normal //3 Tage 1=VerySmall //3 Tage 2=Small //3 Tage -1=Big //4 Tage -2=Very Big //7 Tage
