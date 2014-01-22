@@ -53,10 +53,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 																								// right class from the TabManager
 																								// instance
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 

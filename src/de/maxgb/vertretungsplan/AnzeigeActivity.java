@@ -104,11 +104,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		outState.putInt(STATE_SELECTED_NAVIGATION_TAB, getSupportActionBar().getSelectedNavigationIndex());
 	}
 
-	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
@@ -118,11 +113,6 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 
 	}
 
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-		// TODO Auto-generated method stub
-
-	}
 
 	/**
 	 * Implements OptionsActivity.OnUpdateFinishedListener Setzt den Status des Refresh-Icons auf false, wenn ein Update
@@ -316,6 +306,18 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		Toast.makeText(this, errortext, Toast.LENGTH_SHORT).show();
 		setRefreshActionButtonState(false);
 
+	}
+
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
