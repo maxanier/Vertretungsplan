@@ -37,6 +37,7 @@ public class Updater {
 			Logger.e(TAG, "Holen der aktuellen Versionsnummer fehlgeschlagen",e);
 			return null;
 		}
+		
 		if(last<=19){
 			ArrayList<TabSelector> tabs= SelectTabsActivity.createStandardSelection(new ArrayList<TabSelector>(),pref);
 			
@@ -52,10 +53,12 @@ public class Updater {
 		pref.edit().putInt(Constants.LAST_UPDATED_KEY, version).commit();
 		
 		if(updated){
+			Logger.i(TAG, "Updating stuff from Version: "+last+" to "+version);
 			changelog+="</body></html>";
 			return changelog;
 		}
 		else{
+			Logger.i(TAG, "No updates neccessary (old: "+last+"; new: "+version+")");
 			return null;
 		}
 		
