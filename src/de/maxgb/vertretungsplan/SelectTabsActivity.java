@@ -3,14 +3,10 @@ package de.maxgb.vertretungsplan;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,6 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.mobeta.android.dslv.DragSortListView;
 
 import de.maxgb.android.util.Logger;
@@ -26,7 +26,7 @@ import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
 import de.maxgb.vertretungsplan.util.Constants;
 
-public class SelectTabsActivity extends ListActivity {
+public class SelectTabsActivity extends SherlockListActivity {
 
 	private class TabSelectorAdapter extends ArrayAdapter<TabSelector> {
 		private List<TabSelector> objects;
@@ -63,8 +63,6 @@ public class SelectTabsActivity extends ListActivity {
 		boolean lehrer = pref.getBoolean(Constants.LEHRER_KEY, false);
 		boolean oberstufe = pref.getBoolean(Constants.OBERSTUFE_KEY, false);
 		boolean stundenplan = true;
-		// boolean stundenplan = pref.getBoolean(Constants.SP_GEKAUFT, false);
-		// TODO Anpassen
 
 		if (schueler) {
 			tabs.add(new TabSelector("AllesSchuelerFragment.class", true));
@@ -110,7 +108,7 @@ public class SelectTabsActivity extends ListActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
+		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.select_tabs, menu);
 		return true;
 	}
@@ -127,6 +125,10 @@ public class SelectTabsActivity extends ListActivity {
 			adapter = new TabSelectorAdapter(this, R.layout.list_item_checkable, R.id.select_tabs_item_text,
 					createStandardSelection(new ArrayList<TabSelector>(), pref));
 			setListAdapter(adapter);
+			return true;
+		case android.R.id.home:
+			this.finish();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -137,6 +139,7 @@ public class SelectTabsActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_tabs);
 
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		tabManager = new TabManager();
 		ArrayList<TabSelector> tabs = TabManager.convertToArrayList(pref.getString(Constants.JSON_TABS_KEY, ""));
@@ -169,8 +172,9 @@ public class SelectTabsActivity extends ListActivity {
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onPause() {
+		super.onPause();
+		Logger.i(TAG, "Speichere Tabsettings");
 		ArrayList<TabSelector> tabs = new ArrayList<TabSelector>();
 		for (int i = 0; i < adapter.getCount(); i++) {
 
@@ -181,7 +185,7 @@ public class SelectTabsActivity extends ListActivity {
 		editor.putString(Constants.JSON_TABS_KEY, TabManager.convertToString(tabs));// Save the current selection via the
 																					// TabManger in SharedPreferences
 		editor.commit();
-		
+
 	}
 
 }

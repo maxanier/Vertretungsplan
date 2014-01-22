@@ -17,7 +17,6 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,11 +27,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
@@ -43,7 +46,7 @@ import de.maxgb.vertretungsplan.util.Constants;
  * @author Max Becker
  * 
  */
-public class StundenplanOptionsActivity extends Activity {
+public class StundenplanOptionsActivity extends SherlockActivity {
 
 	private class DownloadPlanTask extends AsyncTask<Integer, Void, String> {
 		/**
@@ -139,27 +142,21 @@ public class StundenplanOptionsActivity extends Activity {
 
 	private boolean old_kurse_mit_namen;
 
-	public void fertig(View v) {
-		SharedPreferences.Editor editor = getSharedPreferences(Constants.PREFS_NAME, 0).edit();
-		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
-		try {
-			editor.putInt(Constants.SP_ID, Integer.parseInt(edit_id.getText().toString()));
-		} catch (NumberFormatException e) {
-			Logger.w(TAG, "Id Feld fehlerhaft oder leer");
-		}
-		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
-		editor.commit();
-		if (old_kurse_mit_namen != checkBox_kurse_with_namen.isChecked()) {
-			StundenplanManager.getInstance().notifyListener();
-		}
-		finish();
-	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.stundenplan_options, menu);
+		getSupportMenuInflater().inflate(R.menu.stundenplan_options, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			this.finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void save(String s, String file) throws IOException {
@@ -199,10 +196,28 @@ public class StundenplanOptionsActivity extends Activity {
 		return false;
 	}
 
+	private void speichern() {
+		Logger.i(TAG, "Speichere Stundenplanoptions");
+		SharedPreferences.Editor editor = getSharedPreferences(Constants.PREFS_NAME, 0).edit();
+		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
+		try {
+			editor.putInt(Constants.SP_ID, Integer.parseInt(edit_id.getText().toString()));
+		} catch (NumberFormatException e) {
+			Logger.w(TAG, "Id Feld fehlerhaft oder leer");
+		}
+		editor.putBoolean(Constants.SP_KURSE_MIT_NAMEN, checkBox_kurse_with_namen.isChecked());
+		editor.commit();
+		if (old_kurse_mit_namen != checkBox_kurse_with_namen.isChecked()) {
+			StundenplanManager.getInstance().notifyListener();
+		}
+
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		// Load Layout
 		setContentView(R.layout.activity_stundenplan_options);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
@@ -216,5 +231,11 @@ public class StundenplanOptionsActivity extends Activity {
 			checkBox_kurse_with_namen.setEnabled(false);
 
 		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		speichern();
 	}
 }

@@ -3,7 +3,6 @@ package de.maxgb.vertretungsplan;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -12,16 +11,18 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
@@ -34,7 +35,7 @@ import de.maxgb.vertretungsplan.util.InfoBox;
  * @author Max Becker
  * 
  */
-public class OptionsActivity extends FragmentActivity {
+public class OptionsActivity extends SherlockFragmentActivity {
 
 	/**
 	 * Select Type Dialog, allows the user to choose between Schueler,Lehrer ans Oberstufenschueler
@@ -164,8 +165,18 @@ public class OptionsActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.options, menu);
+		getSupportMenuInflater().inflate(R.menu.options, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			this.finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void sendLog(View v) {
@@ -239,8 +250,57 @@ public class OptionsActivity extends FragmentActivity {
 		de.maxgb.android.util.Logger.i(TAG, "LAyout loaded");
 	}
 
-	public void speichern(View v) {
-		System.out.println("Speichervorgang");
+	public void stundenplan(View c) {
+		Intent i = new Intent(this, StundenplanOptionsActivity.class);
+		startActivity(i);
+	}
+	//@formatter:off
+	/**
+	 * Alert Boc falls nicht alle Felder ausgefüllt sind
+	 */
+	/* Not used
+	private void alertBox() {
+		de.maxgb.android.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+			}
+		});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
+	}
+	*/
+	//@formatter:on
+
+	private void requestTabUpdate() {
+		update_tabs = true;
+		Logger.i(TAG, "Tab Update requestet");
+	}
+
+	private void requestVertretungsplanUpdate() {
+		update_vertretungsplan = true;
+		Logger.i(TAG, "Vertretungsplan Update requestet");
+	}
+
+	private void resetUpdateRequests() {
+		update_vertretungsplan = false;
+		update_tabs = false;
+		Logger.i(TAG, "Update Request resetet");
+	}
+
+	/**
+	 * Set up the {@link com.actionbarsherlock.app.ActionBar}, if the API is available.
+	 */
+	private void setupActionBar() {
+
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+
+	private void speichern() {
+		Logger.i(TAG, "Speichervorgang");
 		String temp_username = username_eingabe.getText().toString().trim().toLowerCase();
 		String temp_password = password_eingabe.getText().toString().trim();
 		// Schueler
@@ -263,109 +323,48 @@ public class OptionsActivity extends FragmentActivity {
 				temp_klasse = "OIIId";
 			}
 
-			if (!temp_username.trim().isEmpty() && !temp_password.trim().isEmpty() && !temp_klasse.trim().isEmpty()) {
-				System.out.println("speichern");
-				SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
-				SharedPreferences.Editor editor = settings.edit();
-				if (!temp_username.equals(oldUsername) || !temp_password.equals(oldPassword)) {
-					editor.putString(Constants.USERNAME_KEY, temp_username);
-					editor.putString(Constants.PASSWORD_KEY, temp_password);
-					editor.putString(Constants.STUFE_KEY, temp_klasse);
-					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
-					editor.commit();
-					de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert");
-					requestVertretungsplanUpdate();// Update anfordern
-				} else {
-					editor.putString(Constants.STUFE_KEY, temp_klasse);
-					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
-					editor.commit();
-					de.maxgb.android.util.Logger.i(TAG,
-							"Einstellungen gespeichert. Nutzername und Passwort unverändert");
-
-				}
-
-				finish();
+			Logger.i(TAG, "Speichern Schueler");
+			SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
+			SharedPreferences.Editor editor = settings.edit();
+			if (!temp_username.equals(oldUsername) || !temp_password.equals(oldPassword)) {
+				editor.putString(Constants.USERNAME_KEY, temp_username);
+				editor.putString(Constants.PASSWORD_KEY, temp_password);
+				editor.putString(Constants.STUFE_KEY, temp_klasse);
+				editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
+				editor.commit();
+				de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert");
+				requestVertretungsplanUpdate();// Update anfordern
 			} else {
-				alertBox();
+				editor.putString(Constants.STUFE_KEY, temp_klasse);
+				editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
+				editor.commit();
+				de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert. Nutzername und Passwort unverändert");
+
 			}
 		}
 		// Lehrer
 		else {
 			String temp_kuerzel = kuerzel_eingabe.getText().toString().trim();
-			if (!temp_username.trim().isEmpty() && !temp_password.trim().isEmpty() && !temp_kuerzel.trim().isEmpty()) {
-				System.out.println("speichern");
-				SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
-				SharedPreferences.Editor editor = settings.edit();
+			Logger.i(TAG, "Speichern Lehrer");
+			SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
+			SharedPreferences.Editor editor = settings.edit();
 
-				if (!temp_username.equals(oldUsername) || !temp_password.equals(oldPassword)) {
-					editor.putString(Constants.USERNAME_KEY, temp_username);
-					editor.putString(Constants.PASSWORD_KEY, temp_password);
-					editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
-					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
-					editor.commit();
-					de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert");
-					requestVertretungsplanUpdate();// Update anfordern
-				} else {
-					editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
-					editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
-					editor.commit();
-					de.maxgb.android.util.Logger.i(TAG,
-							"Einstellungen gespeichert. Nutzername und Passwort unverändert");
-
-				}
-				Logger.setDebugMode(checkbox_debug.isChecked());
-				finish();
+			if (!temp_username.equals(oldUsername) || !temp_password.equals(oldPassword)) {
+				editor.putString(Constants.USERNAME_KEY, temp_username);
+				editor.putString(Constants.PASSWORD_KEY, temp_password);
+				editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
+				editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
+				editor.commit();
+				de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert");
+				requestVertretungsplanUpdate();// Update anfordern
 			} else {
-				alertBox();
+				editor.putString(Constants.LEHRER_KUERZEL_KEY, temp_kuerzel);
+				editor.putBoolean(Constants.DEBUG_KEY, checkbox_debug.isChecked());
+				editor.commit();
+				de.maxgb.android.util.Logger.i(TAG, "Einstellungen gespeichert. Nutzername und Passwort unverändert");
+
 			}
-		}
-	}
-
-	public void stundenplan(View c) {
-		Intent i = new Intent(this, StundenplanOptionsActivity.class);
-		startActivity(i);
-	}
-
-	/**
-	 * Alert Boc falls nicht alle Felder ausgefüllt sind
-	 */
-	private void alertBox() {
-		de.maxgb.android.util.Logger.i(TAG, "Einstellungen nicht ausreichend ausgefüllt");
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Bitte alle Felder ausfüllen").setTitle("Fehler");
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-			}
-		});
-
-		AlertDialog dialog = builder.create();
-		dialog.show();
-	}
-
-	private void requestTabUpdate() {
-		update_tabs = true;
-		Logger.i(TAG, "Tab Update requestet");
-	}
-
-	private void requestVertretungsplanUpdate() {
-		update_vertretungsplan = true;
-		Logger.i(TAG, "Vertretungsplan Update requestet");
-	}
-
-	private void resetUpdateRequests() {
-		update_vertretungsplan = false;
-		update_tabs = false;
-		Logger.i(TAG, "Update Request resetet");
-	}
-
-	/**
-	 * Set up the {@link android.app.ActionBar}, if the API is available.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getActionBar().setDisplayHomeAsUpEnabled(false);
+			Logger.setDebugMode(checkbox_debug.isChecked());
 		}
 	}
 
@@ -390,6 +389,12 @@ public class OptionsActivity extends FragmentActivity {
 		de.maxgb.android.util.Logger.i(TAG, "Options created");
 	}
 
-	
+	/**
+	 * Pauses activity and saves data;
+	 */
+	protected void onPause() {
+		super.onPause();
+		speichern();
+	}
 
 }

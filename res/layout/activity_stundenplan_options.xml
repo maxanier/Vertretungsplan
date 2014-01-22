@@ -54,14 +54,6 @@
 	        android:layout_height="wrap_content"
 	        android:text="Kursnamen anzeigen(z.B. Sport statt sp4)" />
     
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:onClick="fertig"
-        android:text="Ok" />
 
 	</TableLayout>
 

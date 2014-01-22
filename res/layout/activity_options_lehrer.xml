@@ -26,6 +26,7 @@
 	        android:id="@+id/edit_username"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:hint="Notwendig"
 	        android:singleLine="true" >
 	
 	        <requestFocus />
@@ -43,6 +44,7 @@
 	        android:id="@+id/edit_password"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:hint="Notwendig"
 	        android:inputType="textPassword"
 	        android:singleLine="true" />
 	
@@ -58,6 +60,7 @@
 	        android:id="@+id/edit_kuerzel"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:hint="Notwendig"
 	        android:singleLine="true" />
 
 	    <TextView
@@ -74,20 +77,6 @@
 	        android:layout_height="wrap_content"
 	        android:onClick="chooseTabs"
 	        android:text="Anzeige Tabs festlegen" />
-
-	    <Button
-	        android:id="@+id/button2"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:onClick="speichern"
-	        android:text="Fertig" />
-
-	    <Button
-	        android:id="@+id/button3"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:onClick="abbrechen"
-	        android:text="Abbrechen" />
 	    	   <TextView
 	        android:id="@+id/invisible2"
 	        android:layout_width="wrap_content"
