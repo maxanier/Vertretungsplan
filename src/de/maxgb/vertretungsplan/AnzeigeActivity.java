@@ -233,9 +233,15 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		Logger.setDebugMode(pref.getBoolean(Constants.DEBUG_KEY, false));
 		
-		//Falls BetaVersion automatisch Debugmode activieren
+		//Falls Beta Version automatisch Debugmode activieren
 		if(Constants.IS_BETA){
 			Logger.setDebugMode(true);
+		}
+		
+		//Überprüfen ob im Emulator läuft, wenn ja Debugmode deaktivieren, da ja Logcat vorhanden ist
+		if (android.os.Build.MODEL.equals("google_sdk")) {
+			  Logger.setDebugMode(false);
+			  Logger.i(TAG, "Running on Emulator");
 		}
 		
 		//Falls notwendig Updates durchführen und Changelog speichern
