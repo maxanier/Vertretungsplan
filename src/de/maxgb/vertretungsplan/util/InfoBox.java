@@ -38,7 +38,7 @@ public class InfoBox {
 				14,
 				"<html><body>Je nach Display Größe werden Bemerkungen und/oder Klasurmarkierungen in einem gesonderten Fenster angezeigt. Wenn dies der Fall ist, wird hinter der Vertretung ein X angezeigt. Zum Anzeigen der Informationen, einfach auf die Vertretung klicken.<p>Sollten die angezeigten Vertretungen auf ihrem Gerät zu klein oder nicht mehr lesbar sein, dann sagen sie mir bitte Bescheid und teilen mir die Bildschirmgröße und Auflösung mit (app@maxgb.de).<br>Danke</body></html>",
 				3), FEATURE_USED_INFO(
-				"Anzeige",
+				"Anzeige_Features",
 				24,
 				"<html><body>Schon die neuen Features genutzt:<br>Die angezeigten Tabs lassen sich jetzt beliebig auswählen und anordnen. Habe zum Beispiel deinen Stundenplan mit integrierter Vertretung vorne und die Vertretungen für alle ganz hinten<p>Oder den Stundenplan genutzt(Schüler exklusiv)? Es sind zwei Varianten verfügbar: Mit Vertretungen und ohne Vertretungen</body></html>",
 				6);
@@ -52,7 +52,7 @@ public class InfoBox {
 		 * Anleitung
 		 * 
 		 * @param name
-		 *            Name der dazugehörigen Activity
+		 *            Name zum Speichern der Aufrufe, am besten den namen der zugehörigen Activity, darf aber nicht mehrfach der gleiche sein
 		 * @param letzte_aenderung
 		 *            Letzte Aktualisierung der Activity
 		 * @param text
@@ -68,7 +68,7 @@ public class InfoBox {
 		 * Anleitung
 		 * 
 		 * @param name
-		 *            Name der dazugehörigen Activity
+		 *            Name zum Speichern der Aufrufe, am besten den namen der zugehörigen Activity, darf aber nicht mehrfach der gleiche sein
 		 * @param letzte_aenderung
 		 *            Letzte Aktualisierung der Activity
 		 * @param text

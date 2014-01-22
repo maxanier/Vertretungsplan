@@ -20,6 +20,7 @@ import de.maxgb.vertretungsplan.com.DownloadTask;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
+import de.maxgb.vertretungsplan.util.InfoBox.Anleitungen;
 import de.maxgb.vertretungsplan.util.SectionsPagerAdapter;
 import de.maxgb.vertretungsplan.util.Updater;
 
@@ -277,6 +278,8 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		if(changelog!=null){
 			InfoBox.showInfoBox(this, "Changelog", changelog);
 		}
+		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.ANZEIGEINFO);
+		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.FEATURE_USED_INFO);
 
 	}
 
