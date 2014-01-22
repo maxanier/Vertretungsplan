@@ -40,7 +40,7 @@ public class InfoBox {
 				3), FEATURE_USED_INFO(
 				"Anzeige_Features",
 				24,
-				"<html><body>Schon die neuen Features genutzt:<br>Die angezeigten Tabs lassen sich jetzt beliebig auswählen und anordnen. Habe zum Beispiel deinen Stundenplan mit integrierter Vertretung vorne und die Vertretungen für alle ganz hinten<p>Oder den Stundenplan genutzt(Schüler exklusiv)? Es sind zwei Varianten verfügbar: Mit Vertretungen und ohne Vertretungen</body></html>",
+				"<html><body>Schon die neuen Features genutzt?<p>Die angezeigten Tabs lassen sich jetzt beliebig auswählen und anordnen. Lasse  zum Beispiel deinen Stundenplan mit integrierter Vertretung vorne und die Vertretungen für alle ganz hinten oder gar nicht anzeigen<p>Habe deinen Stundenplan immer dabei und sehe immer was du gleich wo hast(Schüler exklusiv)? Es sind zwei Varianten verfügbar: Mit Vertretungen und ohne Vertretungen</body></html>",
 				6);
 
 		public String activity_name;
