@@ -195,14 +195,15 @@ public class OptionsActivity extends SherlockFragmentActivity {
 		mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { Constants.LOG_REPORT_EMAIL });
 		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF + version);
 		mailIntent.putExtra(Intent.EXTRA_TEXT, "");
-		Uri uri = Uri.fromFile(Logger.getLogFile());
-		mailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-		Uri uri2 = Uri.fromFile(Logger.getOldLogFile());
-		mailIntent.putExtra(Intent.EXTRA_STREAM, uri2);
+		ArrayList<Uri> uris=new ArrayList<Uri>();
+		uris.add(Uri.fromFile(Logger.getLogFile()));
+	
+		uris.add(Uri.fromFile(Logger.getOldLogFile()));
+		mailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
 		// Send, if possible
 		try {
-			startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+			startActivity(Intent.createChooser(mailIntent, "Send logs ..."));
 		} catch (android.content.ActivityNotFoundException ex) {
 			Toast.makeText(getApplicationContext(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
 		}
