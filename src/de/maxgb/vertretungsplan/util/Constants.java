@@ -40,7 +40,7 @@ public class Constants {
 															// neu Aktuallisiert
 															// wird in
 															// Millisekunden
-	public static final int CONNECTION_TIMEOUT = 10000;
+	public static final int CONNECTION_TIMEOUT = 15000;
 	public static final String PLAN_DIRECTORY = Environment.getExternalStorageDirectory().getPath()
 			+ "/vertretungsplan/";
 	public static final String SCHUELER_PLAN_FILE_NAME = "schueler_plan.html";
