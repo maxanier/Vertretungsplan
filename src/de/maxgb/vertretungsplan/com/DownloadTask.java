@@ -48,6 +48,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 	private final int MISSINGLOGININFO = 1;
 	private final int NOCONNECTION = 2;
 	private final int OTHEREXCEPTION = -1;
+	private String error="";
 
 	public DownloadTask(SharedPreferences pref, DownloadFinishedListener listener, Context context) {
 		this.pref = pref;
@@ -126,6 +127,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 			return SUCCESS;
 		} catch (Exception e) {
 			Logger.e(TAG, "Abrufen des Plans fehlgeschlagen", e);
+			error=e.getMessage();
 			return OTHEREXCEPTION;
 		}
 	}
@@ -241,7 +243,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 			listener.onDownloadFailed("Keine Internetverbindung");
 			break;
 		case OTHEREXCEPTION:
-			listener.onDownloadFailed("Fehler beim Aktualisieren");
+			listener.onDownloadFailed("Fehler beim Aktualisieren ("+error+")");
 			break;
 		}
 
