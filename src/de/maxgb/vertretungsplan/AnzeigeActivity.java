@@ -61,6 +61,15 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		this.optionsMenu = menu;
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getSupportMenuInflater().inflate(R.menu.anzeige, menu);
+		
+		// Doing this here because in onCreate the refreshActionButton is not existing and this method here is also called on appstart
+		// Check if Stundenplan is too old
+				if (System.currentTimeMillis()
+						- getSharedPreferences(Constants.PREFS_NAME, 0).getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
+					Logger.i(TAG, "Last refresh is to old -> Refreshing");
+					updateAll();
+				}
+				
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -146,6 +155,12 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 					refreshItem.setActionView(null);
 				}
 			}
+			else{
+				Logger.w(TAG,"RefreshItem is null, unable to set refreshButtonState");
+			}
+		}
+		else{
+			Logger.w(TAG,"Optionsmenu is null, unable to set refreshButtonState");
 		}
 	}
 
@@ -284,12 +299,7 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 	public void onResume() {
 		super.onResume();
 
-		// Check if Stundenplan is too old
-		if (System.currentTimeMillis()
-				- getSharedPreferences(Constants.PREFS_NAME, 0).getLong(Constants.REFRESH_TIME_KEY, 0) > Constants.REFRESH_DIFF) {
-			Logger.i(TAG, "Last refresh is to old -> Refreshing");
-			updateAll();
-		}
+		
 	}
 
 	@Override
