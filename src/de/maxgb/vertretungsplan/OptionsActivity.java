@@ -190,8 +190,8 @@ public class OptionsActivity extends SherlockFragmentActivity {
 		}
 
 		// Send the email
-		Intent mailIntent = new Intent(Intent.ACTION_SEND);
-		mailIntent.setType("text/Message");
+		Intent mailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+		mailIntent.setType("text/plain");
 		mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { Constants.LOG_REPORT_EMAIL });
 		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF + version);
 		mailIntent.putExtra(Intent.EXTRA_TEXT, "");
