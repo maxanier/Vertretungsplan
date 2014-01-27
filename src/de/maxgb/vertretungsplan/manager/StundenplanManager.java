@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,7 +48,6 @@ public class StundenplanManager {
 	}
 
 	private final String TAG = "StundenplanManager";
-	private int id;
 	private int lastResult = 0;
 	public static final int BEGINN_NACHMITTAG = 8;
 	public static final int ANZAHL_SAMSTAG = 4;
@@ -186,7 +184,6 @@ public class StundenplanManager {
 			String line = br.readLine();
 			br.close();
 			JSONObject stundenplan = new JSONObject(line);
-			id = Integer.parseInt(stundenplan.getString("id"));
 			JSONArray mo = stundenplan.getJSONArray("mo");
 			JSONArray di = stundenplan.getJSONArray("di");
 			JSONArray mi = stundenplan.getJSONArray("mi");

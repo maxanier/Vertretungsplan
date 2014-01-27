@@ -227,11 +227,11 @@ public class StundenplanOptionsActivity extends SherlockActivity {
 		edit_id.setText(Integer.toString(pref.getInt(Constants.SP_ID_KEY, 0)));
 		checkBox_kurse_with_namen.setChecked(pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN_KEY, false));
 		old_kurse_mit_namen = pref.getBoolean(Constants.SP_KURSE_MIT_NAMEN_KEY, false);
-		if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
+		/*if (!pref.getBoolean(Constants.OBERSTUFE_KEY, false)) {
 			checkBox_kurse_with_namen.setVisibility(View.INVISIBLE);
 			checkBox_kurse_with_namen.setEnabled(false);
 
-		}
+		}*/
 
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.STUNDENPLAN_INFO);
 	}
