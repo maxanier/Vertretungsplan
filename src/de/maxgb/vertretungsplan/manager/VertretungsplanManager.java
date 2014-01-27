@@ -145,11 +145,16 @@ public class VertretungsplanManager {
 	}
 
 	public void registerOnUpdateFinishedListener(OnUpdateFinishedListener listener) {
-		this.update_finished_listener.add(listener);
+		if(!this.update_finished_listener.contains(listener)){
+			this.update_finished_listener.add(listener);
+		}
+		
 	}
 
 	public void registerOnUpdateListener(OnUpdateListener listener) {
-		this.update_listener.add(listener);
+		if(!this.update_listener.contains(listener)){
+			this.update_listener.add(listener);
+		}
 	}
 
 	public void unregisterOnUpdateFinishedListener(OnUpdateFinishedListener listener) {

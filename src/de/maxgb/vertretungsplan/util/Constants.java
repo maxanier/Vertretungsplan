@@ -14,7 +14,7 @@ public class Constants {
 	public static final String PREFS_NAME = "Settings";
 	// Versions
 	public static final String LAST_UPDATED_KEY = "last_updated";
-	public static final boolean IS_BETA = true;// TODO Change for release
+	public static final boolean IS_BETA = false;// TODO Change for release
 
 	// Keys----------------------------------------------------
 	public static final String SCHUELER_KEY = "Schueler";

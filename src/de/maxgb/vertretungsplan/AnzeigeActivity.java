@@ -198,6 +198,8 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 		setRefreshActionButtonState(true);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
 		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
+				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
+		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).asyncAuswerten();
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.ANZEIGEINFO);
 	}
