@@ -102,6 +102,14 @@ public class Constants {
 		map.put("ph", "Physik");
 		map.put("vtr.", "Vertretung");
 		map.put("freis.", "Freisetzung");
+		//UnterstufenBezeichnung
+		map.put("en", "Englisch");
+		map.put("pol", "Politik");
+		map.put("la", "Latein");
+		map.put("de","Deutsch");
+		map.put("ma", "Mathe");
+		map.put("bio", "Biologie");
+		map.put("phy", "Physik");
 		return map;
 	}
 
