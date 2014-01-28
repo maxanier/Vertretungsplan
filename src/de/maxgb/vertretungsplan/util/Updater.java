@@ -53,7 +53,12 @@ public class Updater {
 			changelog += "Version 2.1:<br><ul><li>Erneuertes Tabmanagment(Tabs jetzt beliebig sortierbar)</li><li>Stundenplan für Schüler (siehe Optionen)</li><li>Stundenplan mit integrierten Vertretungen</li><li>Kleine Verbesserungen</li></ul><p>";
 		}
 		if(last <=28){
+			updated= true;
 			changelog += "Version 2.1.1:<br><ul><li>Bugfix</li></ul><p>";
+		}
+		if(last <=29){
+			updated=true;
+			changelog += "Version 2.1.2:<br><ul><li>Weitere Namensersetzungen</li></ul><p>";
 		}
 		// Aktuelle Version als Last Updated speichern
 		pref.edit().putInt(Constants.LAST_UPDATED_KEY, version).commit();
