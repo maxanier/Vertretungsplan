@@ -46,11 +46,11 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 		} else {
 			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);
 			if (pref.getString(Constants.USERNAME_KEY, null) == null
-					|| (pref.getString(Constants.KURSE_KEY, null) == null && pref.getString(
+					|| (pref.getString(Constants.STUFE_KEY, null) == null && pref.getString(
 							Constants.LEHRER_KUERZEL_KEY, null) == null)) {
 				s.addView(newTextViewCentered("Bitte aktualisiere den Vertretungsplan. Gebe dafür deinen Nutzernamen, dein Passwort und deine Stufe in den Optionen ein"));
 			} else {
-				s.addView(newTextViewCentered("Bitte aktuallieiere den Vertretungsplan"));
+				s.addView(newTextViewCentered("Bitte aktualisiere den Vertretungsplan"));
 			}
 
 		}
