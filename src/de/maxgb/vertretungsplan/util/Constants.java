@@ -110,6 +110,7 @@ public class Constants {
 		map.put("ma", "Mathe");
 		map.put("bio", "Biologie");
 		map.put("phy", "Physik");
+		map.put("ma-ph", "Mathe-Physik");
 		return map;
 	}
 
