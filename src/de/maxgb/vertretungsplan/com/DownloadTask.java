@@ -263,7 +263,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 				out.close();
 				String responseString = out.toString();
 
-				save(responseString, Constants.SCHUELER_PLAN_FILE_NAME);
+				save(responseString.replace('&','+'), Constants.SCHUELER_PLAN_FILE_NAME);
 
 			} else {
 				StatusLine statusLine = response.getStatusLine();
@@ -282,7 +282,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 				out.close();
 				String responseString = out.toString();
 
-				save(responseString, Constants.LEHRER_PLAN_FILE_NAME);
+				save(responseString.replace('&','+'), Constants.LEHRER_PLAN_FILE_NAME);
 
 			} else {
 				StatusLine statusLine = response.getStatusLine();
