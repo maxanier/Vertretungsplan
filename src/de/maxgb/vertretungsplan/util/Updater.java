@@ -60,6 +60,10 @@ public class Updater {
 			updated=true;
 			changelog += "Version 2.1.2:<br><ul><li>Weitere Namensersetzungen</li></ul><p>";
 		}
+		if(last <=31){
+			updated=true;
+			changelog+= "Version 2.1.4:<br><ul><li>Anpassung an geänderten online Vertretungsplan (Schueler)</li><li>Lehrer Version folgt demnächst</li></ul><p>";
+		}
 		// Aktuelle Version als Last Updated speichern
 		pref.edit().putInt(Constants.LAST_UPDATED_KEY, version).commit();
 
