@@ -375,8 +375,6 @@ public class VertretungsplanManager {
 		NodeList table = doc.getElementsByTagName("table");
 		Logger.i(TAG, table.getLength() + " Tableelemente");
 
-		ArrayList<Node> mon_heads = getElementsByClassName(table, "mon_head");
-		Logger.i(TAG, mon_heads.size() + " Mon Head Elemente");
 
 		ArrayList<Node> mon_lists = getElementsByClassName(table, "mon_list");
 		Logger.i(TAG, mon_lists.size() + " Mon List Elemente");
