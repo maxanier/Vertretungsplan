@@ -63,7 +63,9 @@ public class Stunde implements Cloneable {
 		if (stunde >= 8) {
 			this.uhrzeit = uhrzeit;
 		} else {
-			Logger.w(TAG, "Uhrzeit übergeben, obwohl Stunde 1-7");
+			if(uhrzeit!=null&&!uhrzeit.equals("")){
+				Logger.w(TAG, "Uhrzeit übergeben, obwohl Stunde 1-7");
+			}
 		}
 
 	}
