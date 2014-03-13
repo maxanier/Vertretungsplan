@@ -190,41 +190,38 @@ public class VertretungsplanManager {
 		} else {
 			lehrerStand = neuerStand;
 		}
-
-		// Vertretungen auslesen
-		NodeList font = doc.getElementsByTagName("font"); // Filtern der
-															// neun
-															// Font-Nodes
-		Logger.i(TAG, font.getLength() + " Font-Elemente gefunden");
-
+		
 		ArrayList<LehrerVertretung> vertretungen = new ArrayList<LehrerVertretung>();
-		for (int j = 0; j < font.getLength(); j += 3) { // Durchlaufen
-														// der
-														// Font-Nodes,
-														// wobei
-														// jede dritte
-														// Node
-														// ein Tag ist
-			String tag = font.item(j).getChildNodes().item(1).getChildNodes()
-					.item(0).getNodeValue();// Auslesen
-											// des
-											// Tags
+		
+		//NEUE VERSION
 
-			// Zwei Möglichkeiten: 1. Mit Nachrichten zum Tag 2. ohne
-			// Nachrichten zum Tag
-			Node table = null;
-			table = font.item(j).getChildNodes().item(5);// Table falls mit
-															// Nachrichten zum
-															// Tag
+		// Mon_* Elemente
+		NodeList table = doc.getElementsByTagName("table");
+		Logger.i(TAG, table.getLength() + " Tableelemente");
 
-			if (!table.getNodeName().equals("table")) {
-				table = font.item(j).getChildNodes().item(3);// Table falls ohne
-																// Nachrichten
-																// zum Tag
-			}
 
-			NodeList tr = table.getChildNodes();
-			Logger.i(TAG, tag + ": " + tr.getLength() + " tr-Elemente gefunden");
+		ArrayList<Node> mon_lists = getElementsByClassName(table, "mon_list");
+		Logger.i(TAG, mon_lists.size() + " Mon List Elemente");
+
+		NodeList divs = doc.getElementsByTagName("div");
+
+		ArrayList<Node> mon_titles = getElementsByClassName(divs, "mon_title");
+		Logger.i(TAG, mon_titles.size() + " Mon Title Elemente");
+
+		if (mon_titles.size() != mon_lists.size()) {
+			Logger.w(TAG, "Mon element count doesnt match");
+		}
+		int daycount = mon_lists.size();
+		
+
+		for (int j = 0; j < daycount; j++) {
+			String tag = mon_titles.get(j).getChildNodes().item(0)
+					.getNodeValue();
+			Logger.i(TAG, "Processing Tag: " + tag);
+			NodeList tr = mon_lists.get(j).getChildNodes();
+			Logger.i(TAG, "Found " + tr.getLength() + " TR-Elements");
+			
+		
 
 			for (int i = 2; i < tr.getLength(); i++)// Durchlaufen aller
 													// tr-Elemente
@@ -328,6 +325,7 @@ public class VertretungsplanManager {
 											.getNodeValue();
 								} catch (NullPointerException e) {
 								}
+								bemerkung=bemerkung.replace("+nbsp;", "");
 
 								String klausur = "";
 								try {
@@ -336,6 +334,8 @@ public class VertretungsplanManager {
 											.getNodeValue();
 								} catch (NullPointerException e) {
 								}
+								
+								klausur=klausur.replace("+nbsp;", "");
 
 								vertretungen.add(new LehrerVertretung(klasse,
 										stunde, art, sfach, raum, tag, klausur,
@@ -600,7 +600,7 @@ public class VertretungsplanManager {
 			return "Login-Info vlt. falsch";
 		}
 		
-		/*
+		/* ALT
 		// Stand herausfinden
 		try {
 			NodeList table = doc.getElementsByTagName("TABLE");
