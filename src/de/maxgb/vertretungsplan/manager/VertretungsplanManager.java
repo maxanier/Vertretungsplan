@@ -109,16 +109,18 @@ public class VertretungsplanManager {
 	public boolean auswerten() {
 		boolean modified = false;
 		if (schueler) {
-			File f1 = new File(Constants.PLAN_DIRECTORY
-					+ Constants.SCHUELER_PLAN_FILE_NAME);
-			if (schuelerDateiLastModified != f1.lastModified()
-					|| schuelerVertretungen == null) {
-				schuelerDateiLastModified = f1.lastModified();
-				modified = auswertenSchueler(f1);
-
-			}
-
+				File f1 = new File(Constants.PLAN_DIRECTORY
+						+ Constants.SCHUELER_PLAN_FILE_NAME);
+				if (schuelerDateiLastModified != f1.lastModified()
+						|| schuelerVertretungen == null) {
+					schuelerDateiLastModified = f1.lastModified();
+					modified = auswertenSchueler(f1);
+	
+				}
+	
 		}
+		
+
 		if (lehrer) {
 			File f2 = new File(Constants.PLAN_DIRECTORY
 					+ Constants.LEHRER_PLAN_FILE_NAME);
