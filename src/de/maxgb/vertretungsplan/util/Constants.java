@@ -43,7 +43,7 @@ public class Constants {
 	public static final int CONNECTION_TIMEOUT = 15000;
 	public static final String PLAN_DIRECTORY = Environment.getExternalStorageDirectory().getPath()
 			+ "/vertretungsplan/";
-	public static final String SCHUELER_PLAN_FILE_NAME = "schueler_plan.html";
+	public static final String SCHUELER_PLAN_FILE_NAME = "schueler_plan_neu.html";
 	public static final String LEHRER_PLAN_FILE_NAME = "lehrer_plan.html";
 	public static final String SP_FILE_NAME = "stundenplan.json";
 	public static final String LOG_FILE_NAME = "log.txt";

@@ -64,6 +64,10 @@ public class Updater {
 			updated=true;
 			changelog+= "Version 2.1.4:<br><ul><li>Anpassung an geänderten online Vertretungsplan (Schueler)</li><li>Lehrer Version folgt demnächst</li></ul><p>";
 		}
+		if(last <=32){
+			updated= true;
+			changelog += "Version 2.1.1:<br><ul><li>Bugfix</li></ul><p>";
+		}
 		// Aktuelle Version als Last Updated speichern
 		pref.edit().putInt(Constants.LAST_UPDATED_KEY, version).commit();
 
