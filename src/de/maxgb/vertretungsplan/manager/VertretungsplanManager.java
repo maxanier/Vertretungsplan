@@ -260,6 +260,7 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e1) {
 									Logger.i(TAG, "Vertreter Feld Leer");
 								}
+								vertreter=vertreter.replace("+nbsp;", "");
 
 								String art = "";
 								try {
@@ -268,6 +269,7 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Art Feld");
 								}
+								art=art.replace("+nbsp;", "");
 
 								String stunde = "";
 								try {
@@ -276,6 +278,7 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Stunden Feld");
 								}
+								stunde=stunde.replace("+nbsp;", "");
 
 								String klasse = "";
 								try {
@@ -284,6 +287,7 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Klassen Feld");
 								}
+								klasse=klasse.replace("+nbsp;", "");
 
 								String zuVertretender = "";
 								try {
@@ -293,7 +297,8 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres zuVertretender Feld");
 								}
-
+								zuVertretender=zuVertretender.replace("+nbsp;", "---");
+								
 								Node fach = childnodes.item(5).getChildNodes()
 										.item(0);
 								String sfach = null;
@@ -309,8 +314,9 @@ public class VertretungsplanManager {
 									sfach = "";
 								}
 								if (sfach == null) {
-									sfach = "--";
+									sfach = "---";
 								}
+								sfach=sfach.replace("+nbsp;", "");
 
 								String raum = "";
 								try {
@@ -319,6 +325,7 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Raum Feld");
 								}
+								raum=raum.replace("+nbsp;", "");
 
 								String bemerkung = "";
 								try {
