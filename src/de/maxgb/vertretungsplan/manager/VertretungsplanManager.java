@@ -1,17 +1,22 @@
 package de.maxgb.vertretungsplan.manager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
 
-import org.w3c.dom.DOMException;
+import org.ccil.cowan.tagsoup.Parser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -524,10 +529,34 @@ public class VertretungsplanManager {
 		// Erstellen eines DocBuilder und parsen der PlanWebsite in ein
 		// Document
 		try {
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(file);
+			//DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+			//DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+			
+			  XMLReader reader = new Parser();
+			  reader.setFeature(Parser.namespacesFeature, false);
+			  reader.setFeature(Parser.namespacePrefixesFeature, false);
+			  
+
+			  Transformer transformer = TransformerFactory.newInstance().newTransformer();
+					
+			  DOMResult result = new DOMResult();
+			  transformer.transform(new SAXSource(reader, new InputSource(new FileInputStream(file))), 
+			                        result);
+					
+			  // here we go - an DOM built from abitrary HTML
+			  Document doc= (Document) result.getNode();
+			
+			/*
+			  Tidy tidy=new Tidy();
+			tidy.setXHTML(true);
+			tidy.setShowErrors(0);
+			tidy.setPrintBodyOnly(true);
+			tidy.setQuiet(true);
+
+			
+			Document doc=tidy.parseDOM(new FileInputStream(file), null);*/
+			
+			//Document doc = docBuilder.parse(file);
 			doc.getDocumentElement().normalize();
 			return doc;
 		} catch (IOException e) {
@@ -592,14 +621,15 @@ public class VertretungsplanManager {
 			
 			Log.d(TAG, "Stand herausfinden: Aufbau: Name Typ Value");
 			NodeList table_childs = mon_heads.get(0).getChildNodes();
-			Node tr = table_childs.item(1);
-			Log.d(TAG, "TR Info: "+tr.getNodeName()+" "+tr.getNodeType()+" "+tr.getNodeValue());
+			Node tr = table_childs.item(0);
+			Log.d(TAG, "TR Info: "+tr.getNodeName()+" "+tr.getNodeType()+" "+tr.getNodeValue()+" "+tr.getChildNodes().getLength());
 			NodeList tr_childs=tr.getChildNodes();
-			Node td = tr_childs.item(5);
-			Log.d(TAG, "TD Info: "+td.getNodeName()+" "+td.getNodeType()+" "+td.getNodeValue());
+			Node td = tr_childs.item(2);
+			
+			Log.d(TAG, "TD Info: "+td.getNodeName()+" "+td.getNodeType()+" "+td.getNodeValue()+" "+td.getChildNodes().getLength());
 			NodeList td_childs=td.getChildNodes();
 			Node font = td_childs.item(7);
-			Log.d(TAG, "Font Info: "+font.getNodeName()+" "+font.getNodeType()+" "+font.getNodeValue());
+			Log.d(TAG, "Font Info: "+font.getNodeName()+" "+font.getNodeType()+" "+font.getNodeValue()+" "+font.getChildNodes().getLength());
 			Node text = font.getFirstChild();
 			String stand = text.getNodeValue().trim();
 			return stand;
