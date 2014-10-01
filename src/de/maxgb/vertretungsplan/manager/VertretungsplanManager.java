@@ -267,12 +267,15 @@ public class VertretungsplanManager {
 								}
 								vertreter=vertreter.replace("+nbsp;", "");
 
-								String art = "";
+								String art=null;
 								try {
 									art = childnodes.item(1).getChildNodes()
 											.item(0).getNodeValue();
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Art Feld");
+								}
+								if(art==null){
+									art="";
 								}
 								art=art.replace("+nbsp;", "");
 
