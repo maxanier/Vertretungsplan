@@ -119,9 +119,22 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 				int day = getWeekDayFromString(v.tag);
 				Stunde[] tag = stundenplan.get(day - 1 - 1);// Sonntag fällt weg: -1,Liste beginnt bei 0: -1
 				int stunde = Integer.parseInt(v.stunde);
-				Stunde st = tag[stunde - 1];
+				
+				Stunde st=null;
+				if(stunde>=8){
+					if(tag[7].getName().equals(v.fach)){
+						st=tag[7];
+					}
+					else if(tag[8].getName().equals(v.fach)){
+						st=tag[8];
+					}
+				}
+				if(st==null){
+					st = tag[stunde - 1];
+				}
 				Logger.i(TAG, "Entsprechende Stunde: " + st.toString() + " am: " + this.convertToDayString(day));
 
+				
 				// Je nach Art unterschiedliche Fächer anzeigen
 				String fach = Constants.getReplacementForSPVP().get(v.art);
 				if (fach == null) {
