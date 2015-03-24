@@ -21,6 +21,7 @@ import org.xml.sax.XMLReader;
 import android.os.AsyncTask;
 import android.util.Log;
 import de.maxgb.android.util.Logger;
+import de.maxgb.vertretungsplan.AnzeigeActivity;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.LehrerVertretung;
 import de.maxgb.vertretungsplan.util.SchuelerVertretung;
@@ -113,29 +114,35 @@ public class VertretungsplanManager {
 
 	public boolean auswerten() {
 		boolean modified = false;
-		if (schueler) {
-				File f1 = new File(Constants.PLAN_DIRECTORY
-						+ Constants.SCHUELER_PLAN_FILE_NAME);
-				if (schuelerDateiLastModified != f1.lastModified()
-						|| schuelerVertretungen == null) {
-					schuelerDateiLastModified = f1.lastModified();
-					modified = auswertenSchueler(f1);
-	
-				}
-	
-		}
-		
+		try {
+			if (schueler) {
+					File f1 = new File(Constants.PLAN_DIRECTORY
+							+ Constants.SCHUELER_PLAN_FILE_NAME);
+					if (schuelerDateiLastModified != f1.lastModified()
+							|| schuelerVertretungen == null) {
+						schuelerDateiLastModified = f1.lastModified();
+						modified = auswertenSchueler(f1);
 
-		if (lehrer) {
-			File f2 = new File(Constants.PLAN_DIRECTORY
-					+ Constants.LEHRER_PLAN_FILE_NAME);
-			if (lehrerDateiLastModified != f2.lastModified()
-					|| lehrerVertretungen == null) {
-				lehrerDateiLastModified = f2.lastModified();
-				modified = auswertenLehrer(f2);
+					}
 
 			}
+			
 
+			if (lehrer) {
+				File f2 = new File(Constants.PLAN_DIRECTORY
+						+ Constants.LEHRER_PLAN_FILE_NAME);
+				if (lehrerDateiLastModified != f2.lastModified()
+						|| lehrerVertretungen == null) {
+					lehrerDateiLastModified = f2.lastModified();
+					modified = auswertenLehrer(f2);
+
+				}
+
+			}
+		} catch (Exception e) {
+			Logger.e(TAG, "Auswerten fehlgeschlagen",e);
+			modified=false;
+			AnzeigeActivity.fehler("Bitte sende einen Fehlerreport in den Einstellungen");
 		}
 		return modified;
 	}
@@ -464,10 +471,11 @@ public class VertretungsplanManager {
 									art = "";
 								}
 
-								Node fach = childnodes.item(3).getChildNodes()
-										.item(0);
+
 								String sfach = null;
 								try {
+									Node fach = childnodes.item(3).getChildNodes()
+											.item(0);
 									if (fach.getNodeType() == Node.TEXT_NODE) {
 										sfach = fach.getNodeValue();
 									} else if (fach.getNodeType() == Node.ELEMENT_NODE) {
@@ -478,7 +486,7 @@ public class VertretungsplanManager {
 									Logger.i(TAG, "Leeres Fach Feld");
 									sfach = "";
 								}
-								if (sfach == null) {
+								if (sfach == null||"+nbsp;".equals(sfach)) {
 									sfach = "--";
 								}
 
@@ -496,24 +504,38 @@ public class VertretungsplanManager {
 									bemerkung = childnodes.item(6)
 											.getChildNodes().item(0)
 											.getNodeValue();
+									bemerkung=bemerkung.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
-									bemerkung = "";
+									bemerkung = "Unknown";
 								}
-								bemerkung=bemerkung.replace("+nbsp;", "");
-
+								
+								
 								String klausur;
 								try {
-									klausur = childnodes.item(7)
+									klausur = childnodes.item(8)
 											.getChildNodes().item(0)
 											.getNodeValue();
+									klausur=klausur.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
+									Logger.e(TAG, "test",e);
 									klausur = "";
 								}
-								klausur=klausur.replace("+nbsp;", "");
+								
+								String vertreter;
+								try {
+									vertreter = childnodes.item(7)
+											.getChildNodes().item(0)
+											.getNodeValue();
+									vertreter=vertreter.replace("+nbsp;", "");
+								} catch (NullPointerException e) {
+									vertreter = "";
+								}
+								
+
 
 								vertretungen.add(new SchuelerVertretung(klasse,
 										stunde, art, sfach, raum, tag, klausur,
-										bemerkung));
+										bemerkung,vertreter));
 
 							}
 						}

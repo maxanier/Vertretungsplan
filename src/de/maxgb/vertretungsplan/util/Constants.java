@@ -61,8 +61,8 @@ public class Constants {
 	// ScreenSize
 	public static final int very_smallWidth = 450;
 	public static final int smallWidth = 550;
-	public static final int largeWidth = 700;
-	public static final int ultra_lageWidth = 900;
+	public static final int largeWidth = 850;
+	public static final int ultra_lageWidth = 1000;
 	public static final int TEXTSIZELEHRER = 12;
 	public static final int TEXTSIZESCHUELER = 15;
 	public static final int TEXTSIZEBIGGER = 3;

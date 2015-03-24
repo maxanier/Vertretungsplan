@@ -1,6 +1,7 @@
 package de.maxgb.vertretungsplan;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,16 +37,22 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 	private static final String STATE_SELECTED_NAVIGATION_TAB = "selected_navigation_tab";
 	private static final String TAG = "Anzeige";
 	private static final int SHOW_OPTIONS_REQUEST = 0;
+	/**
+	 * Check if not null, etc before usage
+	 */
+	private static Context context;
 	private ActionBar actionBar;
 	private Menu optionsMenu;
 	ViewPager mViewPager;
 	SectionsPagerAdapter mSectionsPagerAdapter;
 
-	public void fehler(Exception e) {
-
-		Logger.e(TAG, "Fehler", e);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(e.getMessage()).setTitle("Fehler");
+	public static void fehler(String message) {
+		if(context==null){
+			Logger.w(TAG, "Cant show error dialog because context is null");
+			return;
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(message).setTitle("Fehler");
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
@@ -248,6 +255,8 @@ public class AnzeigeActivity extends SherlockFragmentActivity implements ActionB
 			Logger.setDebugMode(false);
 			Logger.i(TAG, "Running on Emulator");
 		}
+		
+		context=this;
 
 		// Falls notwendig Updates durchführen und Changelog speichern
 		String changelog = Updater.update(pref, this);

@@ -78,6 +78,9 @@ public abstract class SchuelerFragment extends VertretungsplanFragment {
 
 		SpannableString spanKlausur = new SpannableString("Kl. ");
 		spanKlausur.setSpan(new StyleSpan(Typeface.BOLD), 0, spanKlausur.length(), 0);
+		
+		SpannableString spanVertreter = new SpannableString("Ver. ");
+		spanVertreter.setSpan(new StyleSpan(Typeface.BOLD), 0, spanVertreter.length(), 0);
 
 		SpannableString spanInfo = new SpannableString("Info ");
 		spanInfo.setSpan(new StyleSpan(Typeface.BOLD), 0, spanInfo.length(), 0);
@@ -88,8 +91,10 @@ public abstract class SchuelerFragment extends VertretungsplanFragment {
 		tr2.addView(newTextView(spanArt));
 		tr2.addView(newTextView(spanFach));
 		tr2.addView(newTextView(spanRaum));
+		tr2.addView(newTextView(spanVertreter));
 		tr2.addView(newTextView(spanKlausur));
-		if (displaySize == -1) {
+
+		if (displaySize <= -1) {
 			tr2.addView(newTextView(spanBemerkung));
 		} else {
 			// tr2.addView(newTextView(spanInfo));
@@ -154,9 +159,10 @@ public abstract class SchuelerFragment extends VertretungsplanFragment {
 				tr.addView(newTextView(v.art.trim() + " "));
 				tr.addView(newTextView(v.fach.trim() + " "));
 				tr.addView(newTextView(v.raum));
+				tr.addView(newTextView(v.vertreter));
 				tr.addView(newTextView(v.klausur));
 
-				if (displaySize != -1) {
+				if (displaySize >= -1) {
 
 					if (!v.bemerkung.equals("")) {
 						final String bemerkung = v.bemerkung;
