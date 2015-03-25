@@ -56,7 +56,7 @@ public class Constants {
 	public static final String LOGIN_SEITE_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/login";
 	public static final String LOG_REPORT_EMAIL = "app@maxgb.de";
 	public static final String LOG_REPORT_BETREFF = "Error/Log Report for Vertretungsplanapp Version:+ ";
-	public static final String SP_GET_PLAN_URL = "http://sp.maxgb.de/get.php?id=";// ID muss angehängt werden
+	public static final String SP_GET_PLAN_URL = "http://maxgb.de/sp/get.php?id=";// ID muss angehängt werden
 
 	// ScreenSize
 	public static final int very_smallWidth = 450;

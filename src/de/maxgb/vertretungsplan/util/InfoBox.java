@@ -44,7 +44,7 @@ public class InfoBox {
 				6), STUNDENPLAN_INFO(
 				"Stundenplan_Options",
 				24,
-				"<html><body>So bekommst du deinen Stundenplan in die App:<br>Besuche (am besten am PC) die seite sp.maxgb.de, dort kannst du deinen Stundenplan erstellen. Es wird eine ID generiert, die du dann hier eingeben und den Plan herunterladen kannst. Dann musste du nur noch in den Anzeige Tabs Optionen die passenden Tabs auswählen und schon hast du deinen Stundenplan immer dabei.");
+				"<html><body>So bekommst du deinen Stundenplan in die App:<br>Besuche (am besten am PC) die seite maxgb.de/sp, dort kannst du deinen Stundenplan erstellen. Es wird eine ID generiert, die du dann hier eingeben und den Plan herunterladen kannst. Dann musste du nur noch in den Anzeige Tabs Optionen die passenden Tabs auswählen und schon hast du deinen Stundenplan immer dabei.");
 
 		public String activity_name;
 		public int letzte_aenderung;
