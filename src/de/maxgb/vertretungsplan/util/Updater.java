@@ -1,6 +1,3 @@
-/**
- * 
- */
 package de.maxgb.vertretungsplan.util;
 
 import java.util.ArrayList;
