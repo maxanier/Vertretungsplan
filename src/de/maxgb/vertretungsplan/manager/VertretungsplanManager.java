@@ -269,50 +269,53 @@ public class VertretungsplanManager {
 										vertreter = nVertreter.getChildNodes()
 												.item(0).getNodeValue();
 									}
+									vertreter=vertreter.replace("+nbsp;", "");
 								} catch (NullPointerException e1) {
 									Logger.i(TAG, "Vertreter Feld Leer");
 								}
-								vertreter=vertreter.replace("+nbsp;", "");
 
 								String art=null;
 								try {
 									art = childnodes.item(1).getChildNodes()
 											.item(0).getNodeValue();
+									art=art.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Art Feld");
 								}
 								if(art==null){
 									art="";
 								}
-								art=art.replace("+nbsp;", "");
+
 
 								String stunde = "";
 								try {
 									stunde = childnodes.item(2).getChildNodes()
 											.item(0).getNodeValue();
+									stunde=stunde.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Stunden Feld");
 								}
-								stunde=stunde.replace("+nbsp;", "");
+
 
 								String klasse = "";
 								try {
 									klasse = childnodes.item(3).getChildNodes()
 											.item(0).getNodeValue();
+									klasse=klasse.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Klassen Feld");
 								}
-								klasse=klasse.replace("+nbsp;", "");
+
 
 								String zuVertretender = "";
 								try {
-									zuVertretender = childnodes.item(4)
-											.getChildNodes().item(0)
-											.getNodeValue();
+									//Logger.i(TAG,nodeToString(childnodes.item(4),0));
+									zuVertretender = childnodes.item(4).getTextContent();
+									zuVertretender=zuVertretender.replace("+nbsp;", "---");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres zuVertretender Feld");
 								}
-								zuVertretender=zuVertretender.replace("+nbsp;", "---");
+
 								
 								Node fach = childnodes.item(5).getChildNodes()
 										.item(0);
@@ -324,6 +327,7 @@ public class VertretungsplanManager {
 										sfach = fach.getChildNodes().item(0)
 												.getNodeValue();
 									}
+									sfach=sfach.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Fach Feld");
 									sfach = "";
@@ -331,35 +335,38 @@ public class VertretungsplanManager {
 								if (sfach == null) {
 									sfach = "---";
 								}
-								sfach=sfach.replace("+nbsp;", "");
+
 
 								String raum = "";
 								try {
 									raum = childnodes.item(6).getChildNodes()
 											.item(0).getNodeValue();
+									raum=raum.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres Raum Feld");
 								}
-								raum=raum.replace("+nbsp;", "");
+
 
 								String bemerkung = "";
 								try {
 									bemerkung = childnodes.item(8)
 											.getChildNodes().item(0)
 											.getNodeValue();
+									bemerkung=bemerkung.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 								}
-								bemerkung=bemerkung.replace("+nbsp;", "");
+
 
 								String klausur = "";
 								try {
 									klausur = childnodes.item(9)
 											.getChildNodes().item(0)
 											.getNodeValue();
+									klausur=klausur.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 								}
 								
-								klausur=klausur.replace("+nbsp;", "");
+
 
 								vertretungen.add(new LehrerVertretung(klasse,
 										stunde, art, sfach, raum, tag, klausur,
@@ -653,9 +660,8 @@ public class VertretungsplanManager {
 			
 			Log.d(TAG, "TD Info: "+td.getNodeName()+" "+td.getNodeType()+" "+td.getNodeValue()+" "+td.getChildNodes().getLength());
 			NodeList td_childs=td.getChildNodes();
-			Node font = td_childs.item(7);
-			Log.d(TAG, "Font Info: "+font.getNodeName()+" "+font.getNodeType()+" "+font.getNodeValue()+" "+font.getChildNodes().getLength());
-			Node text = font.getFirstChild();
+			Node text = td_childs.item(13);
+			Log.d(TAG, "Font Info: "+text.getNodeName()+" "+text.getNodeType()+" "+text.getNodeValue()+" "+text.getChildNodes().getLength());
 			String stand = text.getNodeValue().trim();
 			return stand;
 
@@ -693,5 +699,36 @@ public class VertretungsplanManager {
 			return "Login-Info vlt. falsch";
 		}
 		*/
+	}
+	
+	private String nodeToString(Node n,int depth){
+		if(n==null){
+			return "null";
+		}
+		String s="Name: "+n.getNodeName()+" Type: "+n.getNodeType()+" Value: "+n.getNodeValue()+" TxtContent: "+n.getTextContent();
+		NamedNodeMap m=n.getAttributes();
+		if(m!=null&&m.getLength()>0){
+			for(int i=0;i<m.getLength();i++){
+				s+="\n"+getSpace(depth)+"Attribute: "+nodeToString(m.item(i),depth+1);
+			}
+		}
+		NodeList l=n.getChildNodes();
+		if(l!=null&&l.getLength()>0){
+			for(int i=0;i<l.getLength();i++){
+				s+="\n"+getSpace(depth)+"Child: "+nodeToString(l.item(i),depth+1);
+			}
+		}
+		return s;
+	}
+	
+	private String getSpace(int n){
+		if(n<=0){
+			return "";
+		}
+		String s="";
+		for(int i=0;i<n;i++){
+			s+="   ";
+		}
+		return s;
 	}
 }

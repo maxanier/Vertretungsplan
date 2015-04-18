@@ -36,7 +36,10 @@ public class Updater {
 			Logger.e(TAG, "Holen der aktuellen Versionsnummer fehlgeschlagen", e);
 			return null;
 		}
-
+		if(last <41){
+			updated=true;
+			changelog += "<b>Diese App muss leider regelmäßig an Änderungen der Website angepasst werden. Da ich die App aber selber nicht mehr verwende, wird die App mit der nächsten Anpassung zu einem kostenplichtigen Abo-Modell umgestellt. <u> Es sei denn</u>, es findet sich jemand anderes der die App übernehmen möchte (meldet euch hier app@maxgb.de)!</b>";
+		}
 		if (last <= 19) {
 			ArrayList<TabSelector> tabs = SelectTabsActivity
 					.createStandardSelection(new ArrayList<TabSelector>(), pref);
