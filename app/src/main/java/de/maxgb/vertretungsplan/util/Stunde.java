@@ -1,16 +1,15 @@
 package de.maxgb.vertretungsplan.util;
 
-import java.util.HashMap;
-
 import android.annotation.SuppressLint;
 import de.maxgb.android.util.Logger;
-import de.maxgb.vertretungsplan.manager.StundenplanManager;
+
+import java.util.HashMap;
 
 public class Stunde implements Cloneable {
 	@SuppressLint("DefaultLocale")
 	private static String getName(String kurs) {
 		kurs = removeNumbers(kurs).toLowerCase();
-		HashMap<String, String> map = StundenplanManager.getInstance().getKursnamen();
+		HashMap<String, String> map = Constants.KURSNAMEN;
 		String name = map.get(kurs);
 		if (name == null) {
 			name = kurs;
@@ -32,12 +31,11 @@ public class Stunde implements Cloneable {
 		return s;
 	}
 
+	private final String TAG = "Stunde";
 	private String kurs;
 	private String raum;
 	private int stunde;
-
 	private String uhrzeit;// wenn stunde >=8
-	private final String TAG = "Stunde";
 	// Für die Anzeige von Vertretenden/Modifizierten Stunden
 	private boolean modified = false;
 	private String oldKurs;

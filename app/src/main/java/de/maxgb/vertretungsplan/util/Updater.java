@@ -1,14 +1,14 @@
 package de.maxgb.vertretungsplan.util;
 
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.SelectTabsActivity;
 import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
+
+import java.util.ArrayList;
 
 /**
  * @author Max Updater Klasse, die zum Beispiel Einstellung oder Tabauswahl bei einem App-Update, fall n�tig, updated. Stellt
@@ -36,9 +36,13 @@ public class Updater {
 			Logger.e(TAG, "Holen der aktuellen Versionsnummer fehlgeschlagen", e);
 			return null;
 		}
+		if (last < 45) {
+			updated = true;
+			changelog += "<b>Achtung: Stundenplan muss in den Optionen neu heruntergeladen werden</b><p>Version 2.1.15:<br><ul><li>Anpassungen für Android 6</li><li>Anpassung an geänderte Webseite</li></ul>";
+		}
 		if(last <41){
 			updated=true;
-			changelog += "<b>Diese App muss leider regelmäßig an Änderungen der Website angepasst werden. Da ich die App aber selber nicht mehr verwende, wird die App mit der nächsten Anpassung zu einem kostenplichtigen Abo-Modell umgestellt. <u> Es sei denn</u>, es findet sich jemand anderes der die App übernehmen möchte (meldet euch hier app@maxgb.de)!</b>";
+			changelog += "<b>Diese App muss leider regelmäßig an Änderungen der Website angepasst werden. Da ich die App aber selber nicht mehr verwende, wird die App eventuell zu einem kostenplichtigen Abo-Modell umgestellt. <u> Es sei denn</u>, es findet sich jemand anderes der die App übernehmen möchte (meldet euch hier app@maxgb.de)!</b><br>";
 		}
 		if (last <= 19) {
 			ArrayList<TabSelector> tabs = SelectTabsActivity
@@ -51,6 +55,10 @@ public class Updater {
 
 			updated = true;
 			changelog += "Version 2.1:<br><ul><li>Erneuertes Tabmanagment(Tabs jetzt beliebig sortierbar)</li><li>Stundenplan für Schüler (siehe Optionen)</li><li>Stundenplan mit integrierten Vertretungen</li><li>Kleine Verbesserungen</li></ul><p>";
+		}
+		if (last < 44) {
+			updated = true;
+			changelog += "Version 2.1.14:<br><ul><li>Bugfix</li></ul><p>";
 		}
 		if(last <=28){
 			updated= true;

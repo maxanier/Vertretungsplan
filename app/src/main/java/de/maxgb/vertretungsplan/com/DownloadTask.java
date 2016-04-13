@@ -1,6 +1,21 @@
 package de.maxgb.vertretungsplan.com;
 
-import java.io.*;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import com.squareup.okhttp.*;
+import de.maxgb.android.util.Logger;
+import de.maxgb.vertretungsplan.util.Constants;
+import okio.Buffer;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.security.GeneralSecurityException;
@@ -8,30 +23,8 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import com.squareup.okhttp.*;
-
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.widget.Toast;
-import de.maxgb.android.util.Logger;
-import de.maxgb.vertretungsplan.AnzeigeActivity;
-import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
-import de.maxgb.vertretungsplan.util.Constants;
-import okio.Buffer;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Async Download Task Lädt den Vertretungsplan herunter
@@ -40,14 +33,14 @@ import javax.net.ssl.TrustManagerFactory;
  * 
  */
 public class DownloadTask extends AsyncTask<Void, Void, Integer> {
-	private SharedPreferences pref;
 	private final String TAG = "DownloadTask";
-	private DownloadFinishedListener listener;
-	private Context context;
 	private final int SUCCESS = 0;
 	private final int MISSINGLOGININFO = 1;
 	private final int NOCONNECTION = 2;
 	private final int OTHEREXCEPTION = -1;
+	private SharedPreferences pref;
+	private DownloadFinishedListener listener;
+	private Context context;
 	private String error="";
 
 	public DownloadTask(SharedPreferences pref, DownloadFinishedListener listener, Context context) {
@@ -56,29 +49,59 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		this.context = context;
 	}
 
-	public interface DownloadFinishedListener {
-		public void onDownloadSuccesfullyFinished();
+	/**
+	 * Returns a SSL context that trusts {@code certificates} and none other. HTTPS services whose
+	 * certificates have not been signed by these certificates will fail with a {@code
+	 * SSLHandshakeException}.
+	 * <p>
+	 * <p>This can be used to replace the host platform's built-in trusted certificates with a custom
+	 * set. This is useful in development where certificate authority-trusted certificates aren't
+	 * available. Or in production, to avoid reliance on third-party certificate authorities.
+	 * <p>
+	 * <p>See also {@link CertificatePinner}, which can limit trusted certificates while still using
+	 * the host platform's built-in trust store.
+	 * <p>
+	 * <h3>Warning: Customizing Trusted Certificates is Dangerous!</h3>
+	 * Relying on your own trusted certificates limits your server team's ability to update their TLS
+	 * certificates. By installing a specific set of trusted certificates, you take on additional
+	 * operational complexity and limit your ability to migrate between certificate authorities. Do
+	 * not use custom trusted certificates in production without the blessing of your server's TLS
+	 * administrator.
+	 * <p>
+	 * Source: https://github.com/square/okhttp/blob/master/samples/guide/src/main/java/com/squareup/okhttp/recipes/CustomTrust.java
+	 */
+	public SSLContext sslContextForTrustedCertificates(InputStream in) {
+		try {
+			CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+			Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
+			if (certificates.isEmpty()) {
+				throw new IllegalArgumentException("expected non-empty set of trusted certificates");
+			}
 
-		public void onDownloadFailed(String errortext);
-	}
+			// Put the certificates a key store.
+			char[] password = "password".toCharArray(); // Any password will work.
+			KeyStore keyStore = newEmptyKeyStore(password);
+			int index = 0;
+			for (Certificate certificate : certificates) {
+				String certificateAlias = Integer.toString(index++);
+				keyStore.setCertificateEntry(certificateAlias, certificate);
+			}
 
-	private boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting())
-			return true;
-		return false;
-	}
+			// Wrap it up in an SSL context.
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
+					KeyManagerFactory.getDefaultAlgorithm());
+			keyManagerFactory.init(keyStore, password);
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
+					TrustManagerFactory.getDefaultAlgorithm());
+			trustManagerFactory.init(keyStore);
+			SSLContext sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(),
+					new SecureRandom());
+			return sslContext;
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
 
-	private void save(String s, String file) throws IOException {
-		Logger.i(TAG, "Speichern der Datei: " + file + " gestartet");
-		FileWriter o = new FileWriter(Environment.getExternalStorageDirectory().getPath() + "/vertretungsplan/" + file,
-				false);
-		BufferedWriter bw = new BufferedWriter(o);
-		bw.write(s);
-		bw.close();
-		o.close();
-		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
 
 	}
 
@@ -107,8 +130,7 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		}
 		// Abrufen des Plans
 
-		File dir = new File(Constants.PLAN_DIRECTORY);
-		dir.mkdirs(); // Erstellen des Verzeichnises falls noch nicht vorhanden
+
 
 		Logger.i(TAG, "Anfrage gestartet");
 
@@ -269,60 +291,10 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		}
 	}
 
-	/**
-	 * Returns a SSL context that trusts {@code certificates} and none other. HTTPS services whose
-	 * certificates have not been signed by these certificates will fail with a {@code
-	 * SSLHandshakeException}.
-	 *
-	 * <p>This can be used to replace the host platform's built-in trusted certificates with a custom
-	 * set. This is useful in development where certificate authority-trusted certificates aren't
-	 * available. Or in production, to avoid reliance on third-party certificate authorities.
-	 *
-	 * <p>See also {@link CertificatePinner}, which can limit trusted certificates while still using
-	 * the host platform's built-in trust store.
-	 *
-	 * <h3>Warning: Customizing Trusted Certificates is Dangerous!</h3>
-	 * Relying on your own trusted certificates limits your server team's ability to update their TLS
-	 * certificates. By installing a specific set of trusted certificates, you take on additional
-	 * operational complexity and limit your ability to migrate between certificate authorities. Do
-	 * not use custom trusted certificates in production without the blessing of your server's TLS
-	 * administrator.
-	 *
-	 * Source: https://github.com/square/okhttp/blob/master/samples/guide/src/main/java/com/squareup/okhttp/recipes/CustomTrust.java
-	 */
-	public SSLContext sslContextForTrustedCertificates(InputStream in) {
-		try {
-			CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-			Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-			if (certificates.isEmpty()) {
-				throw new IllegalArgumentException("expected non-empty set of trusted certificates");
-			}
-
-			// Put the certificates a key store.
-			char[] password = "password".toCharArray(); // Any password will work.
-			KeyStore keyStore = newEmptyKeyStore(password);
-			int index = 0;
-			for (Certificate certificate : certificates) {
-				String certificateAlias = Integer.toString(index++);
-				keyStore.setCertificateEntry(certificateAlias, certificate);
-			}
-
-			// Wrap it up in an SSL context.
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(
-					KeyManagerFactory.getDefaultAlgorithm());
-			keyManagerFactory.init(keyStore, password);
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(
-					TrustManagerFactory.getDefaultAlgorithm());
-			trustManagerFactory.init(keyStore);
-			SSLContext sslContext = SSLContext.getInstance("TLS");
-			sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(),
-					new SecureRandom());
-			return sslContext;
-		} catch (GeneralSecurityException e) {
-			throw new RuntimeException(e);
-		}
-
-
+	private boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		return netInfo != null && netInfo.isConnectedOrConnecting();
 	}
 
 	private KeyStore newEmptyKeyStore(char[] password) throws GeneralSecurityException {
@@ -336,12 +308,27 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		}
 	}
 
+	private void save(String s, String file) throws IOException {
+		Logger.i(TAG, "Speichern der Datei: " + file + " gestartet");
+		FileOutputStream fos = this.context.openFileOutput(file, Context.MODE_PRIVATE);
+		fos.write(s.getBytes());
+		fos.close();
+		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
+
+	}
+
 	private InputStream trustedCertificatesInputStream(){
 		String rats_certificate=Constants.getCertificate();
 		return new Buffer()
 				.writeUtf8(rats_certificate)
 				.writeUtf8(Constants.getDebugFiddlerCertificate())
 				.inputStream();
+	}
+
+	public interface DownloadFinishedListener {
+		void onDownloadFailed(String errortext);
+
+		void onDownloadSuccesfullyFinished();
 	}
 
 }

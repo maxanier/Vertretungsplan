@@ -1,66 +1,41 @@
 package de.maxgb.vertretungsplan.manager;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import de.maxgb.android.util.Logger;
+import de.maxgb.vertretungsplan.util.Constants;
+import de.maxgb.vertretungsplan.util.Stunde;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.os.AsyncTask;
-import de.maxgb.android.util.Logger;
-import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.Stunde;
 
 public class StundenplanManager {
-	public interface OnUpdateListener {
-		public void onStundenplanUpdate();
-	}
-
-	// ------------------------
-	private class AuswertenTask extends AsyncTask<Void, Void, Void> {
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			auswerten();
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void v) {
-			notifyListener();
-
-		}
-	}
-
-	private static StundenplanManager instance;
-
-	public static synchronized StundenplanManager getInstance() {
-		if (instance == null) {
-			instance = new StundenplanManager();
-		}
-		return instance;
-	}
-
-	private final String TAG = "StundenplanManager";
-	private int lastResult = 0;
 	public static final int BEGINN_NACHMITTAG = 8;
 	public static final int ANZAHL_SAMSTAG = 4;
 	public static final int ANZAHL_NACHMITTAG = 2;
+	private static StundenplanManager instance;
 
+	public static synchronized StundenplanManager getInstance(Context context) {
+		if (instance == null) {
+			instance = new StundenplanManager(context);
+		}
+		return instance;
+	}
+	private final String TAG = "StundenplanManager";
+	private int lastResult = 0;
 	private ArrayList<Stunde[]> woche;
-
-	private HashMap<String, String> kursnamen;
+	private Context context;
 	// Listener-------------
 	private ArrayList<OnUpdateListener> listener = new ArrayList<OnUpdateListener>();
 
-	private StundenplanManager() {
-		kursnamen = Constants.getKursnamen();
+	private StundenplanManager(Context context) {
+		this.context = context;
 		auswerten();
 	}
 
@@ -85,6 +60,7 @@ public class StundenplanManager {
 	}
 
 	public ArrayList<Stunde[]> getClonedStundenplan() {
+		if (woche == null) return null;
 		ArrayList<Stunde[]> clone;
 		try {
 			clone = new ArrayList<Stunde[]>(woche.size());
@@ -98,13 +74,9 @@ public class StundenplanManager {
 			}
 			return clone;
 		} catch (NullPointerException e) {
-			e.printStackTrace();
+			Logger.e(TAG, "Failed to clone stundenplan", e);
 			return null;
 		}
-	}
-
-	public HashMap<String, String> getKursnamen() {
-		return kursnamen;
 	}
 
 	public String getLastResult() {
@@ -161,13 +133,13 @@ public class StundenplanManager {
 
 	/**
 	 * Wertet die Stundenplandatei aus
-	 * 
+	 *
 	 * @return Fehlercode -1 bei Erfolg,1 Datei existiert nicht, 2 Datei kann nicht gelesen werden,3 Fehler beim Lesen,4 Fehler
 	 *         beim Parsen
-	 * 
+	 *
 	 */
 	private int dateiAuswerten() {
-		File loadoutFile = new File(Constants.PLAN_DIRECTORY + Constants.SP_FILE_NAME);
+		File loadoutFile = new File(context.getFilesDir(), Constants.SP_FILE_NAME);
 		ArrayList<Stunde[]> w = new ArrayList<Stunde[]>();
 		if (!loadoutFile.exists()) {
 			Logger.w(TAG, "Stundenplan file doesn´t exist");
@@ -230,5 +202,26 @@ public class StundenplanManager {
 		}
 		woche = w;
 		return -1;
+	}
+
+	public interface OnUpdateListener {
+		void onStundenplanUpdate();
+	}
+
+	// ------------------------
+	private class AuswertenTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			auswerten();
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void v) {
+			notifyListener();
+
+		}
 	}
 }

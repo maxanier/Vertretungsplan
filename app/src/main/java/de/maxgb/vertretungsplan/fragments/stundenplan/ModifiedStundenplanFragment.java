@@ -1,7 +1,5 @@
 package de.maxgb.vertretungsplan.fragments.stundenplan;
 
-import java.util.ArrayList;
-
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +17,8 @@ import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 import de.maxgb.vertretungsplan.util.Stunde;
+
+import java.util.ArrayList;
 
 public class ModifiedStundenplanFragment extends StundenplanFragment implements VertretungsplanManager.OnUpdateListener {
 
@@ -57,15 +57,15 @@ public class ModifiedStundenplanFragment extends StundenplanFragment implements 
 
 		// Vertretungen und Stundenplan holen
 		SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);
-		ArrayList<SchuelerVertretung> vertretungen = VertretungsplanManager.getInstance(
+		ArrayList<SchuelerVertretung> vertretungen = VertretungsplanManager.getInstance(getContext(),
 				pref.getBoolean(Constants.SCHUELER_KEY, false), pref.getBoolean(Constants.LEHRER_KEY, false))
 				.getSchuelerVertretungen();
 		ArrayList<SchuelerVertretung> eigeneVertretungen = new ArrayList<SchuelerVertretung>();
-		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getClonedStundenplan();
+		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance(getContext()).getClonedStundenplan();
 
 		if (stundenplan == null) {
 			s.addView(newTextViewCentered("Stundenplan noch nicht heruntergeladen bitte öffne das entsprechende Optionsmenu: ("
-					+ StundenplanManager.getInstance().getLastResult() + ")"));
+					+ StundenplanManager.getInstance(getContext()).getLastResult() + ")"));
 			return;
 		}
 		if (vertretungen == null) {

@@ -10,13 +10,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.com.DownloadTask;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
@@ -42,10 +39,6 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 	 * Check if not null, etc before usage
 	 */
 	private static Context context;
-	private ActionBar actionBar;
-	private Menu optionsMenu;
-	ViewPager mViewPager;
-	SectionsPagerAdapter mSectionsPagerAdapter;
 
 	public static void fehler(String message) {
 		if(context==null){
@@ -64,6 +57,11 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 		dialog.show();
 	}
 
+	ViewPager mViewPager;
+	SectionsPagerAdapter mSectionsPagerAdapter;
+	private ActionBar actionBar;
+	private Menu optionsMenu;
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		this.optionsMenu = menu;
@@ -79,6 +77,19 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 				}
 				
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public void onDownloadFailed(String errortext) {
+		Toast.makeText(this, errortext, Toast.LENGTH_SHORT).show();
+		setRefreshActionButtonState(false);
+
+	}
+
+	@Override
+	public void onDownloadSuccesfullyFinished() {
+		updateVertretungsplanAuswertung();
+
 	}
 
 	@Override
@@ -113,11 +124,22 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 		}
 	}
 
+	public void onResume() {
+		super.onResume();
+
+
+	}
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// Serialize the current tab position.
 		outState.putInt("TabCount", getSupportActionBar().getTabCount());
 		outState.putInt(STATE_SELECTED_NAVIGATION_TAB, getSupportActionBar().getSelectedNavigationIndex());
+	}
+
+	@Override
+	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+
 	}
 
 	@Override
@@ -130,11 +152,6 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 
 	@Override
 	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-	}
-
-	@Override
-	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
 	}
 
@@ -156,7 +173,7 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 
 	/**
 	 * Setzt Status des Refresh-Icons
-	 * 
+	 *
 	 * @param refreshing
 	 *            active or inactive
 	 * @see 'http://www.michenux.net/android-refresh-item-action-bar-circular-progressbar-578.html'
@@ -181,6 +198,8 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 			Logger.w(TAG,"Optionsmenu is null, unable to set refreshButtonState");
 		}
 	}
+
+	// Sonstige
 
 	// Update Methoden
 	public void updateAll() {
@@ -215,14 +234,12 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 	public void updateVertretungsplanAuswertung() {
 		setRefreshActionButtonState(true);
 		SharedPreferences pref = getSharedPreferences(Constants.PREFS_NAME, 0);
-		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
+		VertretungsplanManager.getInstance(this, pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
-		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
+		VertretungsplanManager.getInstance(this, pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).asyncAuswerten();
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.ANZEIGEINFO);
 	}
-
-	// Sonstige
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -246,7 +263,7 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 		setContentView(R.layout.activity_anzeige);
 
 		// Logger mit App Verzeichnis initialisieren
-		Logger.init(Constants.PLAN_DIRECTORY);
+		Logger.init(getFilesDir());
 
 		actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
@@ -266,7 +283,7 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 			Logger.setDebugMode(false);
 			Logger.i(TAG, "Running on Emulator");
 		}
-		
+
 		context=this;
 
 		// Falls notwendig Updates durchführen und Changelog speichern
@@ -292,7 +309,7 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 		});
 
 		// Register Listener
-		VertretungsplanManager.getInstance(pref.getBoolean(Constants.SCHUELER_KEY, false),
+		VertretungsplanManager.getInstance(this, pref.getBoolean(Constants.SCHUELER_KEY, false),
 				pref.getBoolean(Constants.LEHRER_KEY, false)).registerOnUpdateFinishedListener(this);
 
 		// Tabs anzeigen
@@ -315,25 +332,6 @@ public class AnzeigeActivity extends AppCompatActivity implements ActionBar.TabL
 		} catch (NullPointerException e) {
 
 		}
-
-	}
-
-	public void onResume() {
-		super.onResume();
-
-		
-	}
-
-	@Override
-	public void onDownloadSuccesfullyFinished() {
-		updateVertretungsplanAuswertung();
-
-	}
-
-	@Override
-	public void onDownloadFailed(String errortext) {
-		Toast.makeText(this, errortext, Toast.LENGTH_SHORT).show();
-		setRefreshActionButtonState(false);
 
 	}
 

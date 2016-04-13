@@ -106,7 +106,14 @@
 	            android:layout_height="wrap_content"
 	            android:onClick="sendLog"
 	            android:text="Fehlermeldung/Log senden" />
-	    
+
+		<Button
+			android:id="@+id/button11"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:onClick="donate"
+			android:text="Donate (via Paypal)"/>
+
 	</TableLayout>
 
 </ScrollView>

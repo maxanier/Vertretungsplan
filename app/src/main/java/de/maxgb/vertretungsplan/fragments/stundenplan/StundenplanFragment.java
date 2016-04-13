@@ -1,8 +1,5 @@
 package de.maxgb.vertretungsplan.fragments.stundenplan;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,12 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
+import android.widget.*;
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.NormalUebersichtActivity;
 import de.maxgb.vertretungsplan.R;
@@ -29,6 +21,9 @@ import de.maxgb.vertretungsplan.fragments.AnzeigeFragment;
 import de.maxgb.vertretungsplan.manager.StundenplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.Stunde;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 public abstract class StundenplanFragment extends AnzeigeFragment implements StundenplanManager.OnUpdateListener {
 
@@ -41,7 +36,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		StundenplanManager.getInstance().registerOnUpdateListener(this);
+		StundenplanManager.getInstance(getContext()).registerOnUpdateListener(this);
 
 		View rootView = inflater.inflate(R.layout.fragment_scroll_view, container, false);
 
@@ -57,7 +52,7 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		StundenplanManager.getInstance().unregisterOnUpdateListener(this);
+		StundenplanManager.getInstance(getContext()).unregisterOnUpdateListener(this);
 
 	}
 
@@ -78,30 +73,27 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 
 	}
 
-	protected TableRow newHeadline() {
-		TableRow headline = newTableRow();
-		SpannableString stunde = new SpannableString("Stunde ");
-		stunde.setSpan(new StyleSpan(Typeface.BOLD), 0, stunde.length(), 0);
-		headline.addView(newTextView(stunde));
+	/**
+	 * Fügt dem übergeben TableLayout ein Button hinzu, der zur NormalUebersichtActivity führt
+	 *
+	 * @param t Layout
+	 */
+	protected void addUebersichtButton(TableLayout t) {
+		Button uebersicht = new Button(getActivity());
+		uebersicht.setOnClickListener(new OnClickListener() {
 
-		for (int i = 0; i < getVisibleDayCount(); i++) {
-			int day = ((getCurrentDayOfWeek() - 1 + i) % 7) + 1;
-			if (day != Calendar.SUNDAY) {
-				SpannableString tag;
-				if (i == 0) {
-					tag = new SpannableString(" Heute ");
-					tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
-				} else if (i == 1) {
-					tag = new SpannableString(" Morgen ");
-					tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
-				} else {
-					tag = new SpannableString(" " + convertToDayString(day) + " ");
-					tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
-				}
-				headline.addView(newTextViewCentered(tag));
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getActivity(), NormalUebersichtActivity.class);
+				startActivity(i);
+
 			}
-		}
-		return headline;
+
+		});
+		uebersicht.setText("Übersicht");
+		uebersicht.setHeight(15);
+
+		t.addView(uebersicht);
 	}
 
 	protected void anzeigen(ArrayList<Stunde[]> stundenplan, ScrollView s) {
@@ -360,33 +352,35 @@ public abstract class StundenplanFragment extends AnzeigeFragment implements Stu
 		throw new IllegalArgumentException("Kein bekannter Tag");
 	}
 
+	protected TableRow newHeadline() {
+		TableRow headline = newTableRow();
+		SpannableString stunde = new SpannableString("Stunde ");
+		stunde.setSpan(new StyleSpan(Typeface.BOLD), 0, stunde.length(), 0);
+		headline.addView(newTextView(stunde));
+
+		for (int i = 0; i < getVisibleDayCount(); i++) {
+			int day = ((getCurrentDayOfWeek() - 1 + i) % 7) + 1;
+			if (day != Calendar.SUNDAY) {
+				SpannableString tag;
+				if (i == 0) {
+					tag = new SpannableString(" Heute ");
+					tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
+				} else if (i == 1) {
+					tag = new SpannableString(" Morgen ");
+					tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
+				} else {
+					tag = new SpannableString(" " + convertToDayString(day) + " ");
+					tag.setSpan(new StyleSpan(Typeface.BOLD), 0, tag.length(), 0);
+				}
+				headline.addView(newTextViewCentered(tag));
+			}
+		}
+		return headline;
+	}
+
 	protected void update() {
 		ScrollView s = (ScrollView) this.getView().findViewById(R.id.standard_scroll_view);
 		anzeigen(s);
-	}
-
-	/**
-	 * Fügt dem übergeben TableLayout ein Button hinzu, der zur NormalUebersichtActivity führt
-	 * 
-	 * @param t
-	 *            Layout
-	 */
-	protected void addUebersichtButton(TableLayout t) {
-		Button uebersicht = new Button(getActivity());
-		uebersicht.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(getActivity(), NormalUebersichtActivity.class);
-				startActivity(i);
-
-			}
-
-		});
-		uebersicht.setText("Übersicht");
-		uebersicht.setHeight(15);
-
-		t.addView(uebersicht);
 	}
 
 }

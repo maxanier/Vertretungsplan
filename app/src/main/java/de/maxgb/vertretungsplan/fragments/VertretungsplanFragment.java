@@ -1,7 +1,5 @@
 package de.maxgb.vertretungsplan.fragments;
 
-import java.io.File;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +11,8 @@ import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager.OnUpdateListener;
 import de.maxgb.vertretungsplan.util.Constants;
+
+import java.io.File;
 
 /**
  * Standard Fragment für Vertretungen
@@ -40,8 +40,8 @@ public abstract class VertretungsplanFragment extends AnzeigeFragment implements
 		Logger.i(TAG, "Creating VertretungsplanFragmentView");
 		ScrollView s = (ScrollView) rootView.findViewById(R.id.standard_scroll_view);
 
-		if (new File(Constants.PLAN_DIRECTORY + Constants.SCHUELER_PLAN_FILE_NAME).exists()
-				|| new File(Constants.PLAN_DIRECTORY + Constants.LEHRER_PLAN_FILE_NAME).exists()) {
+		if (new File(getActivity().getFilesDir(), Constants.SCHUELER_PLAN_FILE_NAME).exists()
+				|| new File(getActivity().getFilesDir(), Constants.LEHRER_PLAN_FILE_NAME).exists()) {
 			anzeigen(s);
 		} else {
 			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);

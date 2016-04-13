@@ -1,9 +1,5 @@
 package de.maxgb.vertretungsplan;
 
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.TreeSet;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -25,6 +21,10 @@ import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.InfoBox;
 import de.maxgb.vertretungsplan.util.Stunde;
 
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Kurswahlactivity zum Hinzufügen/Entfernen eigener Kurse Erst ab API 11 genutzt
  * 
@@ -41,6 +41,33 @@ public class KurswahlActivity extends FragmentActivity implements KursEingabeDia
 	public void kursHinzufuegen(View v) {
 		DialogFragment dialog = new KursEingabeDialog();
 		dialog.show(getSupportFragmentManager(), "Kurs Eingabe");
+	}
+
+	/**
+	 * Liest alle unterschiedlichen Kurse aus dem Stundenplan aus und fügt sie zur ListView hinzu
+	 *
+	 * @param v
+	 */
+	public void kurseAusSPAuslesen(View v) {
+		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance(this).getStundenplan();
+		ArrayList<String> kurse = new ArrayList<String>();
+		if (stundenplan == null) {
+			alert("Stundenplan noch nicht heruntergeladen");
+			return;
+		}
+		for (int i = 0; i < stundenplan.size(); i++) {
+			Stunde[] tag = stundenplan.get(i);
+			for (int j = 0; j < tag.length; j++) {
+				if (!tag[j].getKurs().equals("") && !kurse.contains(tag[j].getKurs())) {
+					kurse.add(tag[j].getKurs());
+				}
+			}
+
+		}
+		Logger.i(TAG, "Kurse aus SP ausgelesen: " + kurse.toString());
+
+		kurse_liste.addAll(kurse);
+		((ArrayAdapter) liste.getAdapter()).notifyDataSetChanged();
 	}
 
 	@Override
@@ -83,19 +110,12 @@ public class KurswahlActivity extends FragmentActivity implements KursEingabeDia
 		}
 	}
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getActionBar().setDisplayHomeAsUpEnabled(true);
-		}
-	}
-
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_kurswahl);
-		Logger.init(Constants.PLAN_DIRECTORY);
+		Logger.init(getFilesDir());
 
 		// Settings laden sofern mindestens SDK 11, sonst beenden
 		SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
@@ -139,37 +159,17 @@ public class KurswahlActivity extends FragmentActivity implements KursEingabeDia
 		InfoBox.showAnleitungBox(this, InfoBox.Anleitungen.KURSWAHL);
 	}
 
-	/**
-	 * Liest alle unterschiedlichen Kurse aus dem Stundenplan aus und fügt sie zur ListView hinzu
-	 * 
-	 * @param v
-	 */
-	public void kurseAusSPAuslesen(View v) {
-		ArrayList<Stunde[]> stundenplan = StundenplanManager.getInstance().getStundenplan();
-		ArrayList<String> kurse = new ArrayList<String>();
-		if (stundenplan == null) {
-			alert("Stundenplan noch nicht heruntergeladen");
-			return;
-		}
-		for (int i = 0; i < stundenplan.size(); i++) {
-			Stunde[] tag = stundenplan.get(i);
-			for (int j = 0; j < tag.length; j++) {
-				if (!tag[j].getKurs().equals("") && !kurse.contains(tag[j].getKurs())) {
-					kurse.add(tag[j].getKurs());
-				}
-			}
-
-		}
-		Logger.i(TAG, "Kurse aus SP ausgelesen: " + kurse.toString());
-
-		kurse_liste.addAll(kurse);
-		((ArrayAdapter) liste.getAdapter()).notifyDataSetChanged();
-	}
-
 	private void alert(String msg) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(msg);
 		builder.setPositiveButton("Ok", null);
 		builder.create().show();
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setupActionBar() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			getActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 	}
 }

@@ -2,8 +2,6 @@ package de.maxgb.vertretungsplan.util;
 
 import java.util.HashMap;
 
-import android.os.Environment;
-
 /**
  * Konstanten
  * 
@@ -41,8 +39,6 @@ public class Constants {
 															// wird in
 															// Millisekunden
 	public static final int CONNECTION_TIMEOUT = 15000;
-	public static final String PLAN_DIRECTORY = Environment.getExternalStorageDirectory().getPath()
-			+ "/vertretungsplan/";
 	public static final String SCHUELER_PLAN_FILE_NAME = "schueler_plan_neu.html";
 	public static final String LEHRER_PLAN_FILE_NAME = "lehrer_plan.html";
 	public static final String SP_FILE_NAME = "stundenplan.json";
@@ -50,68 +46,75 @@ public class Constants {
 	public static final String LOG_FILE_NAME_2 = "log.old.txt";
 	public static final String COOKIE_SUCH_STRING = "<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";
 	// URLS----------------------------------------------------
-	public static final String LOGIN_URL = "https://ratsgymnasium-bielefeld.de/index.php/login?task=user.login";
-	public static final String SCHUELER_PLAN_URL = "https://ratsgymnasium-bielefeld.de/index.php/intern/vertretungsplan-schueler";
-	public static final String LEHRER_PLAN_URL = "https://ratsgymnasium-bielefeld.de/index.php/intern/vertretungsplan-lehrer";
-	public static final String LOGIN_SEITE_URL = "https://ratsgymnasium-bielefeld.de/index.php/login";
+	public static final String LOGIN_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/login?task=user.login";
+	public static final String SCHUELER_PLAN_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/intern/vertretungsplan-schueler";
+	public static final String LEHRER_PLAN_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/intern/vertretungsplan-lehrer";
+	public static final String LOGIN_SEITE_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/login";
 	public static final String LOG_REPORT_EMAIL = "vertretungsplan@maxgb.de";
 	public static final String LOG_REPORT_BETREFF = "Error/Log Report for Vertretungsplanapp Version:+ ";
 	public static final String SP_GET_PLAN_URL = "http://maxgb.de/projects/stundenplan/get.php?id=";// ID muss angehängt werden
-
+	public static final String DONATE_URL = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9RRTJDDYL7D2Y";
 	// ScreenSize
 	public static final int very_smallWidth = 450;
-	public static final int smallWidth = 550;
-	public static final int largeWidth = 850;
-	public static final int ultra_lageWidth = 1000;
+	public static final int smallWidth = 700;
+	public static final int largeWidth = 1200;
+	public static final int ultra_lageWidth = 1700;
 	public static final int TEXTSIZELEHRER = 12;
 	public static final int TEXTSIZESCHUELER = 15;
 	public static final int TEXTSIZEBIGGER = 3;
 	public static final int TEXTSIZESMALLER = 5;
 
 	// HashMaps
-	public static final HashMap<String, String> getKursnamen() {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("ge", "Geschichte");
-		map.put("sw", "SoWi");
-		map.put("m", "Mathe");
-		map.put("if", "Info");
-		map.put("er", "Reli");
-		map.put("d", "Deutsch");
-		map.put("l", "Latein");
-		map.put("bi", "Bio");
-		map.put("ch", "Chemie");
-		map.put("e", "Englisch");
-		map.put("gr", "Griechisch");
-		map.put("pl", "Philo");
-		map.put("kr", "Reli");
-		map.put("sp", "Sport");
-		map.put("gee", "Geschichte");
-		map.put("swe", "SoWi");
-		map.put("ku", "Kunst");
-		map.put("mu", "Musik");
-		map.put("ek", "Erdkunde");
-		map.put("s", "Spanisch");
-		map.put("z-la", "Latein");
-		map.put("z-ru", "Russisch");
-		map.put("la", "Latein");
-		map.put("f", "Französisch");
-		map.put("fr", "Französisch");
-		map.put("ru", "Russisch");
-		map.put("cn", "Chinesisch");
-		map.put("z-cn", "Chinesisch");
-		map.put("ph", "Physik");
-		map.put("vtr.", "Vertretung");
-		map.put("freis.", "Freisetzung");
+	public static final HashMap<String, String> KURSNAMEN = new HashMap<String, String>();
+
+	static {
+		KURSNAMEN.put("ge", "Geschichte");
+		KURSNAMEN.put("sw", "SoWi");
+		KURSNAMEN.put("m", "Mathe");
+		KURSNAMEN.put("if", "Info");
+		KURSNAMEN.put("er", "Reli");
+		KURSNAMEN.put("d", "Deutsch");
+		KURSNAMEN.put("l", "Latein");
+		KURSNAMEN.put("bi", "Bio");
+		KURSNAMEN.put("ch", "Chemie");
+		KURSNAMEN.put("e", "Englisch");
+		KURSNAMEN.put("gr", "Griechisch");
+		KURSNAMEN.put("pl", "Philo");
+		KURSNAMEN.put("kr", "Reli");
+		KURSNAMEN.put("sp", "Sport");
+		KURSNAMEN.put("gee", "Geschichte");
+		KURSNAMEN.put("swe", "SoWi");
+		KURSNAMEN.put("ku", "Kunst");
+		KURSNAMEN.put("mu", "Musik");
+		KURSNAMEN.put("ek", "Erdkunde");
+		KURSNAMEN.put("s", "Spanisch");
+		KURSNAMEN.put("z-la", "Latein");
+		KURSNAMEN.put("z-ru", "Russisch");
+		KURSNAMEN.put("la", "Latein");
+		KURSNAMEN.put("f", "Französisch");
+		KURSNAMEN.put("fr", "Französisch");
+		KURSNAMEN.put("ru", "Russisch");
+		KURSNAMEN.put("cn", "Chinesisch");
+		KURSNAMEN.put("z-cn", "Chinesisch");
+		KURSNAMEN.put("ph", "Physik");
+		KURSNAMEN.put("vtr.", "Vertretung");
+		KURSNAMEN.put("freis.", "Freisetzung");
+		KURSNAMEN.put("mint", "MINT");
+		KURSNAMEN.put("ma-if", "Ma-Inf");
+		KURSNAMEN.put("erel", "Religion");
+		KURSNAMEN.put("schwimmen", "Schwimm");
+		KURSNAMEN.put("rel", "Religion");
+		KURSNAMEN.put("che", "Chemie");
+		KURSNAMEN.put("eng", "Englisch");
 		//UnterstufenBezeichnung
-		map.put("en", "Englisch");
-		map.put("pol", "Politik");
-		map.put("la", "Latein");
-		map.put("de","Deutsch");
-		map.put("ma", "Mathe");
-		map.put("bio", "Biologie");
-		map.put("phy", "Physik");
-		map.put("ma-ph", "Mathe-Physik");
-		return map;
+		KURSNAMEN.put("en", "Englisch");
+		KURSNAMEN.put("pol", "Politik");
+		KURSNAMEN.put("la", "Latein");
+		KURSNAMEN.put("de", "Deutsch");
+		KURSNAMEN.put("ma", "Mathe");
+		KURSNAMEN.put("bio", "Biologie");
+		KURSNAMEN.put("phy", "Physik");
+		KURSNAMEN.put("ma-ph", "Mathe-Physik");
 	}
 
 	/**
@@ -142,6 +145,8 @@ public class Constants {
 		map.put("Betreuung", "Betreu.");
 		map.put("Freisetzung", "Freis.");
 		map.put("Verlegung", "Verlegt");
+		map.put("Statt-Vertretung", "St.Vtr.");
+		map.put("Unterricht geändert", "Geänd.");
 
 		return map;
 	}

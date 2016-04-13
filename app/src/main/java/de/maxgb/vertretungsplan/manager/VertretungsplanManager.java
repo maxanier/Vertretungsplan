@@ -1,15 +1,13 @@
 package de.maxgb.vertretungsplan.manager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.sax.SAXSource;
-
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+import de.maxgb.android.util.Logger;
+import de.maxgb.vertretungsplan.AnzeigeActivity;
+import de.maxgb.vertretungsplan.util.Constants;
+import de.maxgb.vertretungsplan.util.LehrerVertretung;
+import de.maxgb.vertretungsplan.util.SchuelerVertretung;
 import org.ccil.cowan.tagsoup.Parser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -18,13 +16,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import android.os.AsyncTask;
-import android.util.Log;
-import de.maxgb.android.util.Logger;
-import de.maxgb.vertretungsplan.AnzeigeActivity;
-import de.maxgb.vertretungsplan.util.Constants;
-import de.maxgb.vertretungsplan.util.LehrerVertretung;
-import de.maxgb.vertretungsplan.util.SchuelerVertretung;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.sax.SAXSource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Singleton Klasse zur Auswertung des Vertretungsplans und zur Speicherung der
@@ -34,46 +33,17 @@ import de.maxgb.vertretungsplan.util.SchuelerVertretung;
  * 
  */
 public class VertretungsplanManager {
-	public interface OnUpdateFinishedListener {
-		public void onVertretungsplanUpdateFinished(boolean update);// Wenn
-																	// update==false
-																	// Keine
-																	// Änderung
-	}
-
-	// Listener-------------
-	public interface OnUpdateListener {
-		public void onVertretungsplanUpdate();
-	}
-
-	private class AuswertenTask extends AsyncTask<Void, Void, Boolean> {
-
-		@Override
-		protected Boolean doInBackground(Void... params) {
-
-			return auswerten();
-		}
-
-		@Override
-		protected void onPostExecute(Boolean update) {
-			if (update) {
-				notifyUpdateListener();
-			}
-			notifyUpdateFinishedListener(update);
-		}
-	}
-
 	private static VertretungsplanManager instance;
 
 	public static VertretungsplanManager getCreatedInstance() {
 		return instance;
 	}
 
-	public static synchronized VertretungsplanManager getInstance(
-			boolean schueler, boolean lehrer) {
+	public static synchronized VertretungsplanManager getInstance(Context context,
+																  boolean schueler, boolean lehrer) {
 
 		if (instance == null) {
-			instance = new VertretungsplanManager(schueler, lehrer);
+			instance = new VertretungsplanManager(context, schueler, lehrer);
 		} else if (instance.schueler != schueler || instance.lehrer != lehrer) {
 			instance.schueler = schueler;
 			instance.lehrer = lehrer;
@@ -82,25 +52,23 @@ public class VertretungsplanManager {
 		return instance;
 	}
 
+	private final String TAG = "VertretungsplanManager";
+	private final Context context;
 	private ArrayList<OnUpdateListener> update_listener;
 	private ArrayList<OnUpdateFinishedListener> update_finished_listener;
-	private final String TAG = "VertretungsplanManager";
 	private String schuelerStand = "";
 	private String lehrerStand = "";
 	private ArrayList<SchuelerVertretung> schuelerVertretungen;
 	private ArrayList<LehrerVertretung> lehrerVertretungen;
-
 	private long schuelerDateiLastModified;
-
 	private long lehrerDateiLastModified;
-
 	private boolean schueler;
-
 	private boolean lehrer;
 
-	private VertretungsplanManager(boolean schueler, boolean lehrer) {
+	private VertretungsplanManager(Context context, boolean schueler, boolean lehrer) {
 		this.schueler = schueler;
 		this.lehrer = lehrer;
+		this.context = context;
 		update_listener = new ArrayList<OnUpdateListener>();
 		update_finished_listener = new ArrayList<OnUpdateFinishedListener>();
 		auswerten();
@@ -116,8 +84,9 @@ public class VertretungsplanManager {
 		boolean modified = false;
 		try {
 			if (schueler) {
-					File f1 = new File(Constants.PLAN_DIRECTORY
-							+ Constants.SCHUELER_PLAN_FILE_NAME);
+
+				File f1 = new File(context.getFilesDir()
+						, Constants.SCHUELER_PLAN_FILE_NAME);
 					if (schuelerDateiLastModified != f1.lastModified()
 							|| schuelerVertretungen == null) {
 						schuelerDateiLastModified = f1.lastModified();
@@ -126,11 +95,11 @@ public class VertretungsplanManager {
 					}
 
 			}
-			
+
 
 			if (lehrer) {
-				File f2 = new File(Constants.PLAN_DIRECTORY
-						+ Constants.LEHRER_PLAN_FILE_NAME);
+				File f2 = new File(context.getFilesDir()
+						, Constants.LEHRER_PLAN_FILE_NAME);
 				if (lehrerDateiLastModified != f2.lastModified()
 						|| lehrerVertretungen == null) {
 					lehrerDateiLastModified = f2.lastModified();
@@ -204,9 +173,9 @@ public class VertretungsplanManager {
 		} else {
 			lehrerStand = neuerStand;
 		}
-		
+
 		ArrayList<LehrerVertretung> vertretungen = new ArrayList<LehrerVertretung>();
-		
+
 		//NEUE VERSION
 
 		// Mon_* Elemente
@@ -226,7 +195,7 @@ public class VertretungsplanManager {
 			Logger.w(TAG, "Mon element count doesnt match");
 		}
 		int daycount = mon_lists.size();
-		
+
 
 		for (int j = 0; j < daycount; j++) {
 			String tag = mon_titles.get(j).getChildNodes().item(0)
@@ -234,8 +203,7 @@ public class VertretungsplanManager {
 			Logger.i(TAG, "Processing Tag: " + tag);
 			NodeList tr = mon_lists.get(j).getChildNodes();
 			Logger.i(TAG, "Found " + tr.getLength() + " TR-Elements");
-			
-		
+
 
 			for (int i = 2; i < tr.getLength(); i++)// Durchlaufen aller
 													// tr-Elemente
@@ -261,7 +229,6 @@ public class VertretungsplanManager {
 								String vertreter = "";
 								try {
 									Node nVertreter = childnodes.item(0)
-											.getChildNodes().item(0)
 											.getChildNodes().item(0);
 									if (nVertreter.getNodeType() == Node.TEXT_NODE) {
 										vertreter = nVertreter.getNodeValue();
@@ -316,7 +283,7 @@ public class VertretungsplanManager {
 									Logger.i(TAG, "Leeres zuVertretender Feld");
 								}
 
-								
+
 								Node fach = childnodes.item(5).getChildNodes()
 										.item(0);
 								String sfach = null;
@@ -365,7 +332,7 @@ public class VertretungsplanManager {
 									klausur=klausur.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
 								}
-								
+
 
 
 								vertretungen.add(new LehrerVertretung(klasse,
@@ -515,8 +482,8 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									bemerkung = "Unknown";
 								}
-								
-								
+
+
 								String klausur;
 								try {
 									klausur = childnodes.item(8)
@@ -527,7 +494,7 @@ public class VertretungsplanManager {
 									Logger.e(TAG, "test",e);
 									klausur = "";
 								}
-								
+
 								String vertreter;
 								try {
 									vertreter = childnodes.item(7)
@@ -537,7 +504,6 @@ public class VertretungsplanManager {
 								} catch (NullPointerException e) {
 									vertreter = "";
 								}
-								
 
 
 								vertretungen.add(new SchuelerVertretung(klasse,
@@ -563,21 +529,21 @@ public class VertretungsplanManager {
 		try {
 			//DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			//DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			
-			  XMLReader reader = new Parser();
+
+			XMLReader reader = new Parser();
 			  reader.setFeature(Parser.namespacesFeature, false);
 			  reader.setFeature(Parser.namespacePrefixesFeature, false);
-			  
 
-			  Transformer transformer = TransformerFactory.newInstance().newTransformer();
-					
-			  DOMResult result = new DOMResult();
-			  transformer.transform(new SAXSource(reader, new InputSource(new FileInputStream(file))), 
-			                        result);
-					
-			  // here we go - an DOM built from abitrary HTML
+
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
+			DOMResult result = new DOMResult();
+			transformer.transform(new SAXSource(reader, new InputSource(new FileInputStream(file))),
+					result);
+
+			// here we go - an DOM built from abitrary HTML
 			  Document doc= (Document) result.getNode();
-			
+
 			/*
 			  Tidy tidy=new Tidy();
 			tidy.setXHTML(true);
@@ -585,9 +551,9 @@ public class VertretungsplanManager {
 			tidy.setPrintBodyOnly(true);
 			tidy.setQuiet(true);
 
-			
+
 			Document doc=tidy.parseDOM(new FileInputStream(file), null);*/
-			
+
 			//Document doc = docBuilder.parse(file);
 			doc.getDocumentElement().normalize();
 			return doc;
@@ -623,6 +589,37 @@ public class VertretungsplanManager {
 		return found;
 	}
 
+	private String getSpace(int n) {
+		if (n <= 0) {
+			return "";
+		}
+		String s = "";
+		for (int i = 0; i < n; i++) {
+			s += "   ";
+		}
+		return s;
+	}
+
+	private String nodeToString(Node n, int depth) {
+		if (n == null) {
+			return "null";
+		}
+		String s = "Name: " + n.getNodeName() + " Type: " + n.getNodeType() + " Value: " + n.getNodeValue() + " TxtContent: " + n.getTextContent();
+		NamedNodeMap m = n.getAttributes();
+		if (m != null && m.getLength() > 0) {
+			for (int i = 0; i < m.getLength(); i++) {
+				s += "\n" + getSpace(depth) + "Attribute: " + nodeToString(m.item(i), depth + 1);
+			}
+		}
+		NodeList l = n.getChildNodes();
+		if (l != null && l.getLength() > 0) {
+			for (int i = 0; i < l.getLength(); i++) {
+				s += "\n" + getSpace(depth) + "Child: " + nodeToString(l.item(i), depth + 1);
+			}
+		}
+		return s;
+	}
+
 	private void notifyUpdateFinishedListener(boolean update) {
 		for (int i = 0; i < update_finished_listener.size(); i++) {
 			if (update_finished_listener.get(i) != null) {
@@ -641,23 +638,23 @@ public class VertretungsplanManager {
 	}
 
 	private String standHerausfinden(Document doc) {
-		
+
 		try {
-			
+
 			//Mon_Head Elemente finden
 			NodeList table = doc.getElementsByTagName("table");
 			Logger.i(TAG, table.getLength() + " Tableelemente");
 
 			ArrayList<Node> mon_heads = getElementsByClassName(table, "mon_head");
 			Logger.i(TAG, mon_heads.size() + " Mon Head Elemente");
-			
+
 			Log.d(TAG, "Stand herausfinden: Aufbau: Name Typ Value");
 			NodeList table_childs = mon_heads.get(0).getChildNodes();
 			Node tr = table_childs.item(0);
 			Log.d(TAG, "TR Info: "+tr.getNodeName()+" "+tr.getNodeType()+" "+tr.getNodeValue()+" "+tr.getChildNodes().getLength());
 			NodeList tr_childs=tr.getChildNodes();
 			Node td = tr_childs.item(2);
-			
+
 			Log.d(TAG, "TD Info: "+td.getNodeName()+" "+td.getNodeType()+" "+td.getNodeValue()+" "+td.getChildNodes().getLength());
 			NodeList td_childs=td.getChildNodes();
 			Node text = td_childs.item(13);
@@ -669,7 +666,7 @@ public class VertretungsplanManager {
 			Logger.e(TAG, "Failed to retrieve Stand",e1);
 			return "Login-Info vlt. falsch";
 		}
-		
+
 		/* ALT
 		// Stand herausfinden
 		try {
@@ -700,35 +697,33 @@ public class VertretungsplanManager {
 		}
 		*/
 	}
-	
-	private String nodeToString(Node n,int depth){
-		if(n==null){
-			return "null";
-		}
-		String s="Name: "+n.getNodeName()+" Type: "+n.getNodeType()+" Value: "+n.getNodeValue()+" TxtContent: "+n.getTextContent();
-		NamedNodeMap m=n.getAttributes();
-		if(m!=null&&m.getLength()>0){
-			for(int i=0;i<m.getLength();i++){
-				s+="\n"+getSpace(depth)+"Attribute: "+nodeToString(m.item(i),depth+1);
-			}
-		}
-		NodeList l=n.getChildNodes();
-		if(l!=null&&l.getLength()>0){
-			for(int i=0;i<l.getLength();i++){
-				s+="\n"+getSpace(depth)+"Child: "+nodeToString(l.item(i),depth+1);
-			}
-		}
-		return s;
+
+	public interface OnUpdateFinishedListener {
+		void onVertretungsplanUpdateFinished(boolean update);// Wenn
+		// update==false
+		// Keine
+		// Änderung
 	}
-	
-	private String getSpace(int n){
-		if(n<=0){
-			return "";
+
+	// Listener-------------
+	public interface OnUpdateListener {
+		void onVertretungsplanUpdate();
+	}
+
+	private class AuswertenTask extends AsyncTask<Void, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+
+			return auswerten();
 		}
-		String s="";
-		for(int i=0;i<n;i++){
-			s+="   ";
+
+		@Override
+		protected void onPostExecute(Boolean update) {
+			if (update) {
+				notifyUpdateListener();
+			}
+			notifyUpdateFinishedListener(update);
 		}
-		return s;
 	}
 }

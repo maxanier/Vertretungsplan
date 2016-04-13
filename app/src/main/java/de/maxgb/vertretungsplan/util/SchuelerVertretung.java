@@ -17,6 +17,6 @@ public class SchuelerVertretung {
 		this.tag = (tag == null) ? "" : tag;
 		this.klausur = (klausur == null) ? "" : klausur;
 		this.bemerkung = (bemerkung == null) ? "" : bemerkung;
-		this.vertreter = (vertreter == null) ? "" : vertreter;
+		this.vertreter = (vertreter == null) ? "?" : vertreter;
 	}
 }

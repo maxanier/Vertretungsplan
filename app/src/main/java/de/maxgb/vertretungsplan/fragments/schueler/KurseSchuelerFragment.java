@@ -1,8 +1,5 @@
 package de.maxgb.vertretungsplan.fragments.schueler;
 
-import java.util.ArrayList;
-import java.util.Set;
-
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.widget.ScrollView;
@@ -10,6 +7,9 @@ import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.VertretungsplanManager;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.SchuelerVertretung;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class KurseSchuelerFragment extends SchuelerFragment {
 	private final String TAG = "KurseSchuelerFragment";
@@ -21,7 +21,7 @@ public class KurseSchuelerFragment extends SchuelerFragment {
 			s.removeAllViews();
 			SharedPreferences pref = getActivity().getSharedPreferences(Constants.PREFS_NAME, 0);
 
-			VertretungsplanManager vertretungsplan = VertretungsplanManager.getInstance(
+			VertretungsplanManager vertretungsplan = VertretungsplanManager.getInstance(getContext(),
 					pref.getBoolean(Constants.SCHUELER_KEY, false), pref.getBoolean(Constants.LEHRER_KEY, false));
 			ArrayList<SchuelerVertretung> vertretungen = vertretungsplan.getSchuelerVertretungen();
 

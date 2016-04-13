@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import de.maxgb.android.util.Logger;
 import de.maxgb.vertretungsplan.manager.TabManager;
 import de.maxgb.vertretungsplan.manager.TabManager.TabSelector;
@@ -36,66 +35,10 @@ import java.util.ArrayList;
  */
 public class OptionsActivity extends AppCompatActivity {
 
-	/**
-	 * Select Type Dialog, allows the user to choose between Schueler,Lehrer ans Oberstufenschueler
-	 * 
-	 * @author Max Becker
-	 * 
-	 */
-	@SuppressLint("ValidFragment")
-	private class SelectTypeDialogFragment extends DialogFragment {
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle(R.string.select_type).setItems(R.array.type_array, new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
-					de.maxgb.android.util.Logger.i(TAG, "Selected " + which);
-					switch (which) {
-					case 0:
-						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
-								.putBoolean(Constants.OBERSTUFE_KEY, false).commit();
-						break;
-					case 1:
-						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
-								.putBoolean(Constants.OBERSTUFE_KEY, true).commit();
-						break;
-					case 2:
-						de.maxgb.android.util.Logger.i(
-								TAG,
-								"Lehrer selected: "
-										+ prefs.edit().putBoolean(Constants.LEHRER_KEY, true)
-												.putBoolean(Constants.SCHUELER_KEY, false).commit());
-						break;
-					default:
-						prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
-								.commit();
-						break;
-					}
-					prefs.edit()
-							.putString(
-									Constants.JSON_TABS_KEY,
-									TabManager.convertToString(SelectTabsActivity.createStandardSelection(
-											new ArrayList<TabSelector>(), prefs))).commit();// Creates a Standard TabSelection to
-																							// make a Json string of it, which is
-																							// saved as the tabselection
-																							// json_string to reset the
-																							// tabselection
-					requestVertretungsplanUpdate();
-					requestTabUpdate();
-					showLayout();
-				}
-			});
-			return builder.create();
-
-		}
-
-	}
-
+	public final static int UPDATE_NOTHING = -1;
+	public final static int UPDATE_ALL = 0;
+	public final static int UPDATE_VP = 1;
+	public final static int UPDATE_TABS = 2;
 	private final String TAG = "Options";
 	private TextView password_eingabe;
 	private TextView username_eingabe;
@@ -104,19 +47,11 @@ public class OptionsActivity extends AppCompatActivity {
 	private boolean type_oberstufe;
 	private TextView stufe_eingabe;
 	private TextView kuerzel_eingabe;
-
 	private Button button_kurse;
-
 	private String oldPassword;
-
 	private String oldUsername;
 	private boolean update_vertretungsplan;
 	private boolean update_tabs;
-	public final static int UPDATE_NOTHING = -1;
-	public final static int UPDATE_ALL = 0;
-	public final static int UPDATE_VP = 1;
-
-	public final static int UPDATE_TABS = 2;
 
 	public void abbrechen(View v) {
 		de.maxgb.android.util.Logger.i(TAG, "Abbrechen");
@@ -136,6 +71,14 @@ public class OptionsActivity extends AppCompatActivity {
 		Intent i = new Intent(this, SelectTabsActivity.class);
 		startActivity(i);
 		requestTabUpdate();
+	}
+
+	public void donate(View v) {
+		Intent intent = new Intent();
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.addCategory(Intent.CATEGORY_BROWSABLE);
+		intent.setData(Uri.parse(Constants.DONATE_URL));
+		startActivity(intent);
 	}
 
 	@Override
@@ -193,7 +136,7 @@ public class OptionsActivity extends AppCompatActivity {
 		mailIntent.setType("text/plain");
 		mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { Constants.LOG_REPORT_EMAIL });
 		mailIntent.putExtra(Intent.EXTRA_SUBJECT, Constants.LOG_REPORT_BETREFF + version);
-		mailIntent.putExtra(Intent.EXTRA_TEXT, "");
+		mailIntent.putExtra(Intent.EXTRA_TEXT, new ArrayList<CharSequence>());
 		ArrayList<Uri> uris=new ArrayList<Uri>();
 		uris.add(Uri.fromFile(Logger.getLogFile()));
 	
@@ -255,7 +198,37 @@ public class OptionsActivity extends AppCompatActivity {
 		startActivity(i);
 	}
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Logger.init(getFilesDir());
+		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
+		Logger.setDebugMode(prefs.getBoolean(Constants.DEBUG_KEY, false));
+		resetUpdateRequests();
+		if (!prefs.getBoolean(Constants.SCHUELER_KEY, false) && !prefs.getBoolean(Constants.LEHRER_KEY, false)) {
+			de.maxgb.android.util.Logger.i(TAG, "Created Type Dialog");
+			DialogFragment type_fragment = new SelectTypeDialogFragment();
+			type_fragment.show(getSupportFragmentManager(), "select_type");
+			de.maxgb.android.util.Logger.i(TAG, "Finished Type Dialog");
+		} else {
+			showLayout();
+		}
+
+		// Show the Up button in the action bar.
+		setupActionBar();
+		de.maxgb.android.util.Logger.i(TAG, "Options created");
+	}
+
 	//@formatter:off
+
+	/**
+	 * Pauses activity and saves data;
+	 */
+	protected void onPause() {
+		super.onPause();
+		speichern();
+	}
+
 	/**
 	 * Alert Boc falls nicht alle Felder ausgefüllt sind
 	 */
@@ -369,33 +342,64 @@ public class OptionsActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Logger.init(Constants.PLAN_DIRECTORY);
-		SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
-		Logger.setDebugMode(prefs.getBoolean(Constants.DEBUG_KEY, false));
-		resetUpdateRequests();
-		if (!prefs.getBoolean(Constants.SCHUELER_KEY, false) && !prefs.getBoolean(Constants.LEHRER_KEY, false)) {
-			de.maxgb.android.util.Logger.i(TAG, "Created Type Dialog");
-			DialogFragment type_fragment = new SelectTypeDialogFragment();
-			type_fragment.show(getSupportFragmentManager(), "select_type");
-			de.maxgb.android.util.Logger.i(TAG, "Finished Type Dialog");
-		} else {
-			showLayout();
+	/**
+	 * Select Type Dialog, allows the user to choose between Schueler,Lehrer ans Oberstufenschueler
+	 *
+	 * @author Max Becker
+	 *
+	 */
+	@SuppressLint("ValidFragment")
+	private class SelectTypeDialogFragment extends DialogFragment {
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle(R.string.select_type).setItems(R.array.type_array, new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					SharedPreferences prefs = getSharedPreferences(Constants.PREFS_NAME, 0);
+					de.maxgb.android.util.Logger.i(TAG, "Selected " + which);
+					switch (which) {
+						case 0:
+							prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
+									.putBoolean(Constants.OBERSTUFE_KEY, false).commit();
+							break;
+						case 1:
+							prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
+									.putBoolean(Constants.OBERSTUFE_KEY, true).commit();
+							break;
+						case 2:
+							de.maxgb.android.util.Logger.i(
+									TAG,
+									"Lehrer selected: "
+											+ prefs.edit().putBoolean(Constants.LEHRER_KEY, true)
+											.putBoolean(Constants.SCHUELER_KEY, false).commit());
+							break;
+						default:
+							prefs.edit().putBoolean(Constants.SCHUELER_KEY, true).putBoolean(Constants.LEHRER_KEY, false)
+									.commit();
+							break;
+					}
+					prefs.edit()
+							.putString(
+									Constants.JSON_TABS_KEY,
+									TabManager.convertToString(SelectTabsActivity.createStandardSelection(
+											new ArrayList<TabSelector>(), prefs))).commit();// Creates a Standard TabSelection to
+					// make a Json string of it, which is
+					// saved as the tabselection
+					// json_string to reset the
+					// tabselection
+					requestVertretungsplanUpdate();
+					requestTabUpdate();
+					showLayout();
+				}
+			});
+			return builder.create();
+
 		}
 
-		// Show the Up button in the action bar.
-		setupActionBar();
-		de.maxgb.android.util.Logger.i(TAG, "Options created");
-	}
-
-	/**
-	 * Pauses activity and saves data;
-	 */
-	protected void onPause() {
-		super.onPause();
-		speichern();
 	}
 
 }
