@@ -13,13 +13,13 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "de.maxgb.vertretungsplan"
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 45
         versionName "2.1.15"
     }
