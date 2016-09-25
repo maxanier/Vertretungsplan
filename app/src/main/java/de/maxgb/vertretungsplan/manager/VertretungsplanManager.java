@@ -226,15 +226,16 @@ public class VertretungsplanManager {
 									|| value.indexOf("list even") != -1) {
 								// Vertretung gefunden
 								NodeList childnodes = node.getChildNodes();
+
 								String vertreter = "";
 								try {
-									Node nVertreter = childnodes.item(0)
+									Node nVertreter = childnodes.item(1)
 											.getChildNodes().item(0);
 									if (nVertreter.getNodeType() == Node.TEXT_NODE) {
 										vertreter = nVertreter.getNodeValue();
 									} else if (nVertreter.getNodeType() == Node.ELEMENT_NODE) {
 										vertreter = nVertreter.getChildNodes()
-												.item(0).getNodeValue();
+												.item(1).getNodeValue();
 									}
 									vertreter=vertreter.replace("+nbsp;", "");
 								} catch (NullPointerException e1) {
@@ -243,7 +244,7 @@ public class VertretungsplanManager {
 
 								String art=null;
 								try {
-									art = childnodes.item(1).getChildNodes()
+									art = childnodes.item(2).getChildNodes()
 											.item(0).getNodeValue();
 									art=art.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
@@ -256,7 +257,7 @@ public class VertretungsplanManager {
 
 								String stunde = "";
 								try {
-									stunde = childnodes.item(2).getChildNodes()
+									stunde = childnodes.item(3).getChildNodes()
 											.item(0).getNodeValue();
 									stunde=stunde.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
@@ -266,7 +267,7 @@ public class VertretungsplanManager {
 
 								String klasse = "";
 								try {
-									klasse = childnodes.item(3).getChildNodes()
+									klasse = childnodes.item(4).getChildNodes()
 											.item(0).getNodeValue();
 									klasse=klasse.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
@@ -277,14 +278,14 @@ public class VertretungsplanManager {
 								String zuVertretender = "";
 								try {
 									//Logger.i(TAG,nodeToString(childnodes.item(4),0));
-									zuVertretender = childnodes.item(4).getTextContent();
+									zuVertretender = childnodes.item(5).getTextContent();
 									zuVertretender=zuVertretender.replace("+nbsp;", "---");
 								} catch (NullPointerException e) {
 									Logger.i(TAG, "Leeres zuVertretender Feld");
 								}
 
 
-								Node fach = childnodes.item(5).getChildNodes()
+								Node fach = childnodes.item(6).getChildNodes()
 										.item(0);
 								String sfach = null;
 								try {
@@ -306,7 +307,7 @@ public class VertretungsplanManager {
 
 								String raum = "";
 								try {
-									raum = childnodes.item(6).getChildNodes()
+									raum = childnodes.item(7).getChildNodes()
 											.item(0).getNodeValue();
 									raum=raum.replace("+nbsp;", "");
 								} catch (NullPointerException e) {
