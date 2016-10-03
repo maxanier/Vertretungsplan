@@ -36,6 +36,10 @@ public class Updater {
 			Logger.e(TAG, "Holen der aktuellen Versionsnummer fehlgeschlagen", e);
 			return null;
 		}
+		if(last < 46){
+			updated=true;
+			changelog+="Version 2.1.16:<br>Anpassungen an geänderte Lehrer-Website durch Mattis Harhoff.<p>";
+		}
 		if (last < 45) {
 			updated = true;
 			changelog += "<b>Achtung: Stundenplan muss in den Optionen neu heruntergeladen werden</b><p>Version 2.1.15:<br><ul><li>Anpassungen für Android 6</li><li>Anpassung an geänderte Webseite</li></ul>";
