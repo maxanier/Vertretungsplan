@@ -44,7 +44,8 @@ public class Constants {
 	public static final String SP_FILE_NAME = "stundenplan.json";
 	public static final String LOG_FILE_NAME = "log.txt";
 	public static final String LOG_FILE_NAME_2 = "log.old.txt";
-	public static final String COOKIE_SUCH_STRING = "<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";
+	public static final String COOKIE_SUCH_REGEX = "<input type=\"hidden\" name=\"(.{32})\" value=\"1\" \\/>" ;
+	//Unused public static final String COOKIE_SUCH_STRING = "<input type=\"hidden\" name=\"return\" value=\"L2luZGV4LnBocC9pbnRlcm4v\" />\n      <input type=\"hidden\" name=";
 	// URLS----------------------------------------------------
 	public static final String LOGIN_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/login?task=user.login";
 	public static final String SCHUELER_PLAN_URL = "https://www.ratsgymnasium-bielefeld.de/index.php/intern/vertretungsplan-schueler";

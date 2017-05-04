@@ -275,6 +275,10 @@ public class OptionsActivity extends AppCompatActivity {
 
 	private void speichern() {
 		Logger.i(TAG, "Speichervorgang");
+		if(username_eingabe==null){
+			Logger.w(TAG,"Layout noch nicht initialisiert. Kann nicht speichern");
+			return;
+		}
 		String temp_username = username_eingabe.getText().toString().trim().toLowerCase();
 		String temp_password = password_eingabe.getText().toString().trim();
 		// Schueler

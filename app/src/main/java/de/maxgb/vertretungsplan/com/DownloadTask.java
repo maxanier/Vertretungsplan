@@ -25,6 +25,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Async Download Task Lädt den Vertretungsplan herunter
@@ -176,23 +178,23 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 				}
 			}// Speichern der Seite zum Debuggen
 
-			int index = responseString.indexOf(Constants.COOKIE_SUCH_STRING);// Sucht
-																				// mit
-																				// dem
-			// Suchstring nach
-			// Anfang des
-			// "Cookies"
-			// System.out.println(index);
-			char[] chars = responseString.toCharArray();
-			String cookie = String.copyValueOf(chars, index + Constants.COOKIE_SUCH_STRING.length() + 1, 32);// Auslesen
-																												// des
-			// "Cookies"(LÃ¤nge:
-			// 32) und speichern
-			// in der globalen
-			// Variable cookie
-			Logger.i(TAG, "Cookie ausgelesen. Wert: " + cookie);
 
-			return cookie;
+
+			// Cookie mittels REGEX auslesen
+			Pattern cookiePattern = Pattern.compile(Constants.COOKIE_SUCH_REGEX);
+			Matcher cookieMatcher = cookiePattern.matcher(responseString);
+			if(cookieMatcher.find()&&cookieMatcher.groupCount()>=1){
+				String cookie=cookieMatcher.group(1);
+				Logger.i(TAG, "Cookie ausgelesen. Wert: " + cookie);
+
+				return cookie;
+			}
+			else{
+				Logger.i(TAG,cookieMatcher.toString()+" - "+cookieMatcher.group());
+
+				Logger.w(TAG,"Loginseite enthält keinen Cookie");
+				throw new IOException("Login Seite enthält keinen Cookie");
+			}
 
 		} else {
 
@@ -313,6 +315,9 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		FileOutputStream fos = this.context.openFileOutput(file, Context.MODE_PRIVATE);
 		fos.write(s.getBytes());
 		fos.close();
+		for(String l:s.split("\n")){
+			Logger.w(TAG,l);
+		}
 		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
 
 	}
