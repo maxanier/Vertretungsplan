@@ -227,6 +227,15 @@ public class VertretungsplanManager {
 								// Vertretung gefunden
 								NodeList childnodes = node.getChildNodes();
 
+								String neu = "";
+								try {
+									Node nNeu =childnodes.item(0).getChildNodes().item(0);
+									neu = nNeu.getNodeValue();
+									neu=neu.replace("+nbsp;","");
+								} catch (NullPointerException e1) {
+									Logger.i(TAG, "Neu Feld Leer");
+								}
+
 								String vertreter = "";
 								try {
 									Node nVertreter = childnodes.item(1)
@@ -336,7 +345,7 @@ public class VertretungsplanManager {
 
 
 
-								vertretungen.add(new LehrerVertretung(klasse,
+								vertretungen.add(new LehrerVertretung(neu, klasse,
 										stunde, art, sfach, raum, tag, klausur,
 										bemerkung, vertreter, zuVertretender));
 

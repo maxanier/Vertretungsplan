@@ -18,6 +18,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import de.maxgb.android.util.Logger;
+import de.maxgb.vertretungsplan.R;
 import de.maxgb.vertretungsplan.fragments.VertretungsplanFragment;
 import de.maxgb.vertretungsplan.util.Constants;
 import de.maxgb.vertretungsplan.util.LehrerVertretung;
@@ -59,7 +60,10 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 		TableRow tr2 = new TableRow(getActivity());
 		tr2.setLayoutParams(trparams);
 
-		// Definition der Spannabel Strings----------------------
+		// Definition der Spannable Strings----------------------
+		SpannableString spanNeu = new SpannableString("Neu ");
+		spanNeu.setSpan(new StyleSpan(Typeface.BOLD), 0, spanNeu.length(), 0);
+
 		SpannableString spanVertreter = new SpannableString("Ver. ");
 		spanVertreter.setSpan(new StyleSpan(Typeface.BOLD), 0, spanVertreter.length(), 0);
 
@@ -89,6 +93,7 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 
 		tr2.setLayoutParams(params);
 		tr2.setLayoutParams(params);
+		tr2.addView(newTextView(spanNeu));
 		tr2.addView(newTextView(spanVertreter));
 		tr2.addView(newTextView(spanArt));
 		tr2.addView(newTextView(spanStunde));
@@ -154,6 +159,7 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 					layoutTable = neuerTag(tag, l);
 				}
 
+				TextView neu = newTextView(v.neu.trim()+" ");
 				TextView vertreter = newTextView(v.vertreter.trim() + " ");
 				TextView art = newTextView(v.art.trim() + " ");
 				TextView stunde = newTextView(v.stunde.trim() + " ");
@@ -165,6 +171,18 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 				TableRow tr = new TableRow(getActivity());
 				tr.setLayoutParams(params);
 
+				if (v.neu.trim().equals("x")) {
+					neu.setBackgroundColor(0xffffff00);
+					vertreter.setBackgroundColor(0xffffff00);
+					art.setBackgroundColor(0xffffff00);
+					stunde.setBackgroundColor(0xffffff00);
+					klasse.setBackgroundColor(0xffffff00);
+					zuVertretender.setBackgroundColor(0xffffff00);
+					fach.setBackgroundColor(0xffffff00);
+					raum.setBackgroundColor(0xffffff00);
+				}
+
+				tr.addView(neu);
 				tr.addView(vertreter);
 				tr.addView(art);
 				tr.addView(stunde);
@@ -212,6 +230,10 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 								builder.create().show();
 							}
 						});
+						TextView tvx = newTextView("X");
+						if (v.neu.trim().equals("x")) {
+							tvx.setBackgroundColor(0xffffff00);
+						}
 						tr.addView(newTextView("X"));
 					}
 				} else if (displaySize == 0) {
@@ -244,11 +266,21 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 								builder.create().show();
 							}
 						});
+						TextView tvx = newTextView("X");
+						if (v.neu.trim().equals("x")) {
+							tvx.setBackgroundColor(0xffffff00);
+						}
 						tr.addView(newTextView("X"));
 					}
 				} else {
-					tr.addView(newTextView(v.klausur));
-					tr.addView(newTextView(v.bemerkung));
+					TextView tvk = newTextView(v.klausur);
+					TextView tvb = newTextView(v.bemerkung);
+					if (v.neu.trim().equals("x")) {
+						tvk.setBackgroundColor(0xffffff00);
+						tvb.setBackgroundColor(0xffffff00);
+					}
+					tr.addView(tvk);
+					tr.addView(tvb);
 				}
 
 				tr.setBackgroundColor(color.white);
