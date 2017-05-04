@@ -315,9 +315,6 @@ public class DownloadTask extends AsyncTask<Void, Void, Integer> {
 		FileOutputStream fos = this.context.openFileOutput(file, Context.MODE_PRIVATE);
 		fos.write(s.getBytes());
 		fos.close();
-		for(String l:s.split("\n")){
-			Logger.w(TAG,l);
-		}
 		Logger.i(TAG, "Speichern der Datei: " + file + " abgeschloï¿½en");
 
 	}

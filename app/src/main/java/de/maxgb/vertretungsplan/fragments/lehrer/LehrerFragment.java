@@ -6,6 +6,7 @@ import android.R.color;
 import android.app.AlertDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
@@ -61,8 +62,6 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 		tr2.setLayoutParams(trparams);
 
 		// Definition der Spannable Strings----------------------
-		SpannableString spanNeu = new SpannableString("Neu ");
-		spanNeu.setSpan(new StyleSpan(Typeface.BOLD), 0, spanNeu.length(), 0);
 
 		SpannableString spanVertreter = new SpannableString("Ver. ");
 		spanVertreter.setSpan(new StyleSpan(Typeface.BOLD), 0, spanVertreter.length(), 0);
@@ -93,7 +92,6 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 
 		tr2.setLayoutParams(params);
 		tr2.setLayoutParams(params);
-		tr2.addView(newTextView(spanNeu));
 		tr2.addView(newTextView(spanVertreter));
 		tr2.addView(newTextView(spanArt));
 		tr2.addView(newTextView(spanStunde));
@@ -150,16 +148,14 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 			// -------------------------------------------
 			String tag = vertretungen.get(0).tag;
 			TableLayout layoutTable = neuerTag(tag, l);
-			for (int i = 0; i < vertretungen.size(); i++) {
+			for (LehrerVertretung v : vertretungen) {
 
-				LehrerVertretung v = vertretungen.get(i);
-				if (tag != v.tag) {
+				if (!tag.equals(v.tag)) {
 					l.addView(layoutTable);
-					tag = vertretungen.get(i).tag;
+					tag = v.tag;
 					layoutTable = neuerTag(tag, l);
 				}
 
-				TextView neu = newTextView(v.neu.trim()+" ");
 				TextView vertreter = newTextView(v.vertreter.trim() + " ");
 				TextView art = newTextView(v.art.trim() + " ");
 				TextView stunde = newTextView(v.stunde.trim() + " ");
@@ -171,18 +167,16 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 				TableRow tr = new TableRow(getActivity());
 				tr.setLayoutParams(params);
 
-				if (v.neu.trim().equals("x")) {
-					neu.setBackgroundColor(0xffffff00);
-					vertreter.setBackgroundColor(0xffffff00);
-					art.setBackgroundColor(0xffffff00);
-					stunde.setBackgroundColor(0xffffff00);
-					klasse.setBackgroundColor(0xffffff00);
-					zuVertretender.setBackgroundColor(0xffffff00);
-					fach.setBackgroundColor(0xffffff00);
-					raum.setBackgroundColor(0xffffff00);
+				if (v.neu) {
+					vertreter.setBackgroundColor(0x33ffff00);
+					art.setBackgroundColor(0x33ffff00);
+					stunde.setBackgroundColor(0x33ffff00);
+					klasse.setBackgroundColor(0x33ffff00);
+					zuVertretender.setBackgroundColor(0x33ffff00);
+					fach.setBackgroundColor(0x33ffff00);
+					raum.setBackgroundColor(0x33ffff00);
 				}
 
-				tr.addView(neu);
 				tr.addView(vertreter);
 				tr.addView(art);
 				tr.addView(stunde);
@@ -220,7 +214,7 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 								LinearLayout l = new LinearLayout(getActivity());
 								l.setGravity(Gravity.CENTER_HORIZONTAL);
 								l.addView(table);
-								if (!(android.os.Build.VERSION.SDK_INT >= 11)) {
+								if (!(Build.VERSION.SDK_INT >= 11)) {
 									table.setBackgroundColor(Color.WHITE);
 									l.setBackgroundColor(Color.WHITE);
 
@@ -231,9 +225,6 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 							}
 						});
 						TextView tvx = newTextView("X");
-						if (v.neu.trim().equals("x")) {
-							tvx.setBackgroundColor(0xffffff00);
-						}
 						tr.addView(newTextView("X"));
 					}
 				} else if (displaySize == 0) {
@@ -256,7 +247,7 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 								LinearLayout l = new LinearLayout(getActivity());
 								l.setGravity(Gravity.CENTER_HORIZONTAL);
 								l.addView(table);
-								if (!(android.os.Build.VERSION.SDK_INT >= 11)) {
+								if (!(Build.VERSION.SDK_INT >= 11)) {
 									table.setBackgroundColor(Color.WHITE);
 									l.setBackgroundColor(Color.WHITE);
 
@@ -267,18 +258,11 @@ public abstract class LehrerFragment extends VertretungsplanFragment {
 							}
 						});
 						TextView tvx = newTextView("X");
-						if (v.neu.trim().equals("x")) {
-							tvx.setBackgroundColor(0xffffff00);
-						}
 						tr.addView(newTextView("X"));
 					}
 				} else {
 					TextView tvk = newTextView(v.klausur);
 					TextView tvb = newTextView(v.bemerkung);
-					if (v.neu.trim().equals("x")) {
-						tvk.setBackgroundColor(0xffffff00);
-						tvb.setBackgroundColor(0xffffff00);
-					}
 					tr.addView(tvk);
 					tr.addView(tvb);
 				}
