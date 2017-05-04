@@ -13,15 +13,15 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 24
     buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "de.maxgb.vertretungsplan"
         minSdkVersion 9
-        targetSdkVersion 25
-        versionCode 47
-        versionName "2.2"
+        targetSdkVersion 24
+        versionCode 48
+        versionName "2.2.1"
     }
 
     compileOptions {
@@ -41,7 +41,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:24.2.+'
     compile 'asia.ivity.android:drag-sort-listview:1.0@aar'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.2'
